@@ -1,15 +1,34 @@
 import filters, requests
 
-class Article:
+from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+Base = declarative_base()
+
+class Article(Base):
+	__tablename__ = 'article'
+	id = Column(Integer, primary_key=True)
+	url = Column(String(250), nullable=False)
+	title = Column(String(250), nullable=False)
+	category = Column(String(100), nullable=False)
+	content = Column(Text, nullable=False)
+
+
 	def __init__( self, *args, **kwargs ):
-		self.filter = kwargs['filter']
-		self.__read( args[0] )
+		try:
+			self.filter = kwargs['filter']
+			self.database = kwargs['database']
+			self.__read( args[0] )
+		except:
+			raise ValueError('need a filter, url and database in order to parse content')
 
 	def __read( self, url ):
 		response = requests.get( url )
 
 		self.url = url
-		self.raw_content = response.text
 		article = self.__parse( response.text )
 
 		self.title = article['title']
@@ -21,11 +40,22 @@ class Article:
 		if self.filter:
 			return self.filter( content )
 
+	def save( self ):
+		session = sessionmaker( bind=create_engine(self.database) )()
+		session.add(self)
+		session.commit()
+
+	def load( self ):
+		session = sessionmaker( bind=create_engine(self.database) )()
+
+
 
 
 if __name__=='__main__':
-	article = Article( 'http://www.cnn.com/2017/03/20/politics/james-comey-hearing-white-house-cloud/index.html', filter=filters.cnn )
-	print(article.title)
-	print(article.author)
-	print(article.category)
-	print(article.content)
+	# -------------------------------------------------------------------------
+	# if called as a standalone script, build the database
+	engine = create_engine('sqlite:///articles.db')
+	Base.metadata.create_all(engine)
+
+#	a = Article( 'http://www.cnn.com/2017/03/20/politics/james-comey-hearing-white-house-cloud/index.html', filter=filters.cnn, database='sqlite:///sqlalchemy_example.db' )
+#	a.save()
