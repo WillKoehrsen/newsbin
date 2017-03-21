@@ -13,14 +13,14 @@ def cnn( content ):
 
 	# find the author
 	author_meta = soup.find('meta', {'itemprop':'author'})
-	author = author_meta['content'].split(',')[0] if author_meta else 'None'
+	author = author_meta['content'].split(',')[0] if author_meta else 'unknown'
 
 	# find the title
 	title_meta = soup.find('meta', {'itemprop':'headline'})
-	title = title_meta['content'] if title_meta else 'None'
+	title = title_meta['content'] if title_meta else ''
 
 	# find the section
 	section_meta = soup.find('meta', {'itemprop':'articleSection'})
-	section = section_meta['content'] if section_meta else 'None'
+	section = section_meta['content'] if section_meta else ''
 
 	return {'category':section,'title':title,'author':author,'content':result}

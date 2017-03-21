@@ -1,4 +1,6 @@
 import filters, requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -26,7 +28,7 @@ class Article(Base):
 			raise ValueError('need a filter, url and database in order to parse content')
 
 	def __read( self, url ):
-		response = requests.get( url )
+		response = requests.get( url, verify=False )
 
 		self.url = url
 		article = self.__parse( response.text )
@@ -41,9 +43,13 @@ class Article(Base):
 			return self.filter( content )
 
 	def save( self ):
-		session = sessionmaker( bind=create_engine(self.database) )()
-		session.add(self)
-		session.commit()
+		if self.title and self.content:
+			session = sessionmaker( bind=create_engine(self.database) )()
+			session.add(self)
+			session.commit()
+			return True
+		else:
+			return False
 
 	def load( self ):
 		session = sessionmaker( bind=create_engine(self.database) )()
