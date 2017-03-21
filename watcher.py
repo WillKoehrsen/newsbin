@@ -1,9 +1,10 @@
-import requests
+import requests, filters
 from bs4 import BeautifulSoup
+from article import Article
 
 class Watcher:
 	def __init__( self, *args, **kwargs ):
-		pass
+		self.filter = kwargs['filter']
 
 	def __get_urls( rss ):
 		response = requests.get( rss )
