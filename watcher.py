@@ -39,21 +39,47 @@ class Watcher:
 
 		# check if etag is different and call notify if so
 		if header['etag'] != self.etag:
-			print('page changed')
+			print('CHANGED: . . . ' + self.feed[20:])
 			self.etag = header['etag']
 			self.__get_urls( self.feed )
 		else:
-			print('page unchanged')
+			print('	UNCHANGED: . . . ' + self.feed[20:])
+
+class Monitor:
+	def __init__( self, *args, **kwargs ):
+		self.feeds = kwargs['feeds']
+		self.filter = kwargs['filter']
+		self.database = kwargs['database']
+		self.watchers = []
+		for feed in self.feeds:
+			watcher = Watcher(feed, filter=self.filter, database=self.database)
+			self.watchers.append( watcher )
+
+	def run( self ):
+		try:
+			while True:
+				for watcher in self.watchers:
+					watcher.update()
+					time.sleep(5)
+		except KeyboardInterrupt:
+			pass
 
 
+feed_list = (
+	'http://rss.cnn.com/rss/edition.rss',
+	'http://rss.cnn.com/rss/cnn_world.rss',
+	'http://rss.cnn.com/rss/cnn_us.rss',
+	'http://rss.cnn.com/rss/money_latest.rss',
+	'http://rss.cnn.com/rss/cnn_allpolitics.rss',
+	'http://rss.cnn.com/rss/cnn_tech.rss',
+	'http://rss.cnn.com/rss/cnn_health.rss',
+	'http://rss.cnn.com/rss/cnn_showbiz.rss',
+	'http://rss.cnn.com/rss/cnn_travel.rss',
+	'http://rss.cnn.com/rss/cnn_living.rss',
+	'http://rss.cnn.com/rss/cnn_freevideo.rss',
+	'http://rss.cnn.com/rss/cnn_latest.rss',
+)
 
 if __name__=='__main__':
-	watcher = Watcher('http://rss.cnn.com/rss/edition.rss', filter=filters.cnn, database='sqlite:///articles.db')
-	watcher.update()
-
-	try:
-		while True:
-			time.sleep(10)
-			watcher.update()
-	except KeyboardInterrupt:
-		pass
+	monitor = Monitor(feeds=feed_list, filter=filters.cnn, database='sqlite:///articles.db')
+	monitor.run()
