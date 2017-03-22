@@ -2,7 +2,6 @@ from src.article import Article, Base
 from src import filters
 from src.logger import Logger
 from src.watcher import Watcher
-from src.spinner import Spinner
 
 from sqlalchemy import create_engine
 from configparser import ConfigParser, ExtendedInterpolation

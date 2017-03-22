@@ -2,6 +2,7 @@ import re
 from unidecode import unidecode
 from bs4 import BeautifulSoup
 from datetime import datetime
+import requests
 
 class Filter:
 	content_selectors = ()
@@ -47,9 +48,11 @@ class Filter:
 			else:
 				result['publish_date'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 
+		result['content'] = result['content'].strip()
 		return result
 
-
+# ------------------------------------------------------------------------------
+# cnn filter
 class CNN( Filter ):
 	source_name = 'cnn'
 
@@ -77,6 +80,56 @@ class CNN( Filter ):
 		'meta[itemprop=datePublished]',
 	)
 
+# ------------------------------------------------------------------------------
+# cnbc filter
+class CNBC( Filter ):
+	source_name = 'cnbc'
+
+	content_selectors = (
+		'div[itemprop="articleBody"] p',
+	)
+
+	author_selectors = (
+		'meta[name=author]',
+	)
+
+	title_selectors = (
+		'meta[name="twitter:title"]',
+	)
+
+	category_selectors = (
+		'meta[property="article:section"]',
+	)
+
+	date_selectors = (
+		'meta[itemprop=dateCreated]',
+	)
+
+# ------------------------------------------------------------------------------
+# nyt filter
+class NYT( Filter ):
+	source_name = 'nyt'
+
+	content_selectors = (
+		'.story-body-text.story-content',
+	)
+
+	author_selectors = (
+		'meta[name=author]',
+	)
+
+	title_selectors = (
+		'meta[property="og:title"]',
+	)
+
+	category_selectors = (
+		'meta[property="article:section"]',
+	)
+
+	date_selectors = (
+		'meta[itemprop=datePublished]',
+	)
+
 
 def lookup( clsname ):
 	for child in Filter.__subclasses__():
@@ -84,6 +137,11 @@ def lookup( clsname ):
 			return child()
 
 if __name__=='__main__':
-	with open( 'test/test.html', 'r' ) as f:
-		cnn = CNN()
-		cnn.process( f.read() )
+	response = requests.get( 'http://www.cnbc.com/2017/03/22/trump-sees-obamacare-replacement-passing-house-vote-needs-to-happen.html' )
+	test = CNBC()
+	result = test.process( response.content )
+	print(result['title'])
+	print(result['author'])
+	print(result['publish_date'])
+	print(result['category'])
+	print(result['content'])

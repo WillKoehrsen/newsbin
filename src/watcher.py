@@ -42,9 +42,9 @@ class Watcher:
 		header = requests.head(self.feed).headers
 
 		# check if etag is different and call notify if so
-		if header['etag'] != self.etag:
+		if 'etag' not in header or header['etag'] != self.etag:
 			self.log.debug(self.feed + ' has changed', echo=True)
-			self.etag = header['etag']
+			self.etag = header['etag'] if 'etag' in header else ''
 			self.__get_urls( self.feed )
 		else:
 			self.log.debug(self.feed + ' has NOT changed', echo=True)
