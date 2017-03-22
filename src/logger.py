@@ -44,7 +44,7 @@ class Logger:
 			sys.exit()
 
 	@classmethod
-	def load( cls ):
+	def load( cls, location ):
 		if not cls.instance:
-			cls.instance = cls('newsanno.log')
+			cls.instance = cls(location)
 		return cls.instance

@@ -65,21 +65,5 @@ class Monitor:
 		except KeyboardInterrupt:
 			pass
 
-
-feed_list = (
-	'http://rss.cnn.com/rss/edition.rss',
-	'http://rss.cnn.com/rss/cnn_world.rss',
-	'http://rss.cnn.com/rss/cnn_us.rss',
-	'http://rss.cnn.com/rss/money_latest.rss',
-	'http://rss.cnn.com/rss/cnn_allpolitics.rss',
-	'http://rss.cnn.com/rss/cnn_tech.rss',
-	'http://rss.cnn.com/rss/cnn_health.rss',
-	'http://rss.cnn.com/rss/cnn_showbiz.rss',
-	'http://rss.cnn.com/rss/cnn_travel.rss',
-	'http://rss.cnn.com/rss/cnn_living.rss',
-	'http://rss.cnn.com/rss/cnn_latest.rss',
-)
-
 if __name__=='__main__':
-	monitor = Monitor(feeds=feed_list, filter=filters.CNN(), database='sqlite:///articles.db')
-	monitor.run()
+	pass
