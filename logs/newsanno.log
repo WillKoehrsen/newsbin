@@ -1,0 +1,18 @@
+(2017-03-22 14:52:41) [NOTIFICATION] ------- NewsAnno -------
+(2017-03-22 14:52:41) [NOTIFICATION] date: 22/03/2017 02:52:41
+
+(2017-03-22 14:52:41) [NOTIFICATION] no filter for: cnbc
+(2017-03-22 14:52:41) [NOTIFICATION] creating watchers for: cnn
+(2017-03-22 14:52:41) [NOTIFICATION] no filter for: msnbc
+(2017-03-22 14:52:41) [NOTIFICATION] 11 watchers created
+(2017-03-22 14:52:41) [NOTIFICATION] running . . .
+(2017-03-22 14:52:41) DEBUG: http://rss.cnn.com/rss/edition.rss has changed
+(2017-03-22 14:52:41) DEBUG: updating:
+(2017-03-22 14:53:21) DEBUG: 	already found: 0 added: 33 unparseable: 12
+(2017-03-22 14:53:26) DEBUG: http://rss.cnn.com/rss/cnn_world.rss has changed
+(2017-03-22 14:53:26) DEBUG: updating:
+(2017-03-22 14:53:49) DEBUG: 	already found: 0 added: 25 unparseable: 4
+(2017-03-22 14:53:55) DEBUG: http://rss.cnn.com/rss/cnn_us.rss has changed
+(2017-03-22 14:53:55) DEBUG: updating:
+(2017-03-22 14:54:39) DEBUG: 	already found: 0 added: 21 unparseable: 8
+(2017-03-22 14:54:45) [NOTIFICATION] shutting down

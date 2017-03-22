@@ -1,7 +1,7 @@
-import time, requests, threading
+import time, requests
 from src import filters
 from bs4 import BeautifulSoup
-from article import Article
+from src.article import Article
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -9,11 +9,13 @@ class Watcher:
 	def __init__( self, *args, **kwargs ):
 		self.filter = kwargs['filter']
 		self.database = kwargs['database']
-		self.feed = args[0]
+		self.feed = kwargs['feed']
+		self.log = kwargs['log']
 		self.etag = ''
 
 	def __get_urls( self, rss ):
 		"""parses urls from feed and updates the database"""
+		self.log.debug('updating:')
 		session = sessionmaker( bind=create_engine(self.database) )()
 		response = requests.get( rss )
 		links = BeautifulSoup( response.text, 'html.parser' ).select('item link')
@@ -31,7 +33,8 @@ class Watcher:
 			else:
 				found_cnt +=1
 
-		print('found: ' + str(found_cnt) + ' added: ' + str(new_cnt) + ' ignored: ' + str(ignored_cnt))
+		self.log.debug('	already found: ' + str(found_cnt) + ' added: ' + str(new_cnt) + ' unparseable: ' + str(ignored_cnt), echo=True)
+
 
 	def update( self ):
 		"""checks to see if the page has changed, possibly updating database"""
@@ -40,30 +43,11 @@ class Watcher:
 
 		# check if etag is different and call notify if so
 		if header['etag'] != self.etag:
-			print('CHANGED: . . . ' + self.feed)
+			self.log.debug(self.feed + ' has changed', echo=True)
 			self.etag = header['etag']
 			self.__get_urls( self.feed )
 		else:
-			print('	UNCHANGED: . . . ' + self.feed)
-
-class Monitor:
-	def __init__( self, *args, **kwargs ):
-		self.feeds = kwargs['feeds']
-		self.filter = kwargs['filter']
-		self.database = kwargs['database']
-		self.watchers = []
-		for feed in self.feeds:
-			watcher = Watcher(feed, filter=self.filter, database=self.database)
-			self.watchers.append( watcher )
-
-	def run( self ):
-		try:
-			while True:
-				for watcher in self.watchers:
-					watcher.update()
-					time.sleep(5)
-		except KeyboardInterrupt:
-			pass
+			self.log.debug(self.feed + ' has NOT changed', echo=True)
 
 if __name__=='__main__':
 	pass
