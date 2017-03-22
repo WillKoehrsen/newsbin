@@ -39,11 +39,11 @@ class Watcher:
 
 		# check if etag is different and call notify if so
 		if header['etag'] != self.etag:
-			print('CHANGED: . . . ' + self.feed[20:])
+			print('CHANGED: . . . ' + self.feed)
 			self.etag = header['etag']
 			self.__get_urls( self.feed )
 		else:
-			print('	UNCHANGED: . . . ' + self.feed[20:])
+			print('	UNCHANGED: . . . ' + self.feed)
 
 class Monitor:
 	def __init__( self, *args, **kwargs ):
@@ -81,5 +81,5 @@ feed_list = (
 )
 
 if __name__=='__main__':
-	monitor = Monitor(feeds=feed_list, filter=filters.cnn, database='sqlite:///articles.db')
+	monitor = Monitor(feeds=feed_list, filter=filters.CNN(), database='sqlite:///articles.db')
 	monitor.run()

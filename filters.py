@@ -1,93 +1,77 @@
 import re
 from unidecode import unidecode
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 class Filter:
-	content_methods = ()
-	author_methods = ()
-	title_methods = ()
-	category_methods = ()
+	content_selectors = ()
+	author_selectors = ()
+	title_selectors = ()
+	category_selectors = ()
+	date_selectors = ()
+
 	def process( self, content ):
 		soup = BeautifulSoup(content, 'html.parser')
-		result = {'category':'','title':'','author':'','content':''}
+		result = {'category':'','title':'','author':'','content':'','publish_date':''}
 
-		for method in self.content_methods:
-			matches = soup.find_all( *method )
+		for selector in self.content_selectors:
+			matches = soup.select( selector )
 			if matches:
 				for match in matches:
 					result['content'] += unidecode( match.text ).strip() + '\n'
 				break
 
-		for method in self.author_methods:
-			match = soup.find( *method )
-			if match:
-				result['author'] = unidecode( match['content'] ).strip()
+		for selector in self.author_selectors:
+			matches = soup.select( selector )
+			if matches:
+				result['author'] = unidecode( matches[0]['content'] ).strip()
 				break
 
-		for method in self.title_methods:
-			match = soup.find( *method )
-			if match:
-				result['title'] = unidecode( match['content'] ).strip()
+		for selector in self.title_selectors:
+			matches = soup.select( selector )
+			if matches:
+				result['title'] = unidecode( matches[0]['content'] ).strip()
 				break
 
-		for method in self.category_methods:
-			match = soup.find( *method )
-			if match:
-				result['category'] = unidecode( match['content'] ).strip()
+		for selector in self.category_selectors:
+			matches = soup.select( selector )
+			if matches:
+				result['category'] = unidecode( matches[0]['content'] ).strip()
 				break
 
-		print(result['content'])
+		for selector in self.date_selectors:
+			matches = soup.select( selector )
+			if matches:
+				result['publish_date'] = unidecode( matches[0]['content'] ).strip()
+				break
+			else:
+				result['publish_date'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+		return result
 
 
-
-class cnn( Filter ):
-	content_methods = (
-		(['div','p'],{'class':'zn-body__paragraph'}),
-		('#storytext p',),
+class CNN( Filter ):
+	content_selectors = (
+		'.zn-body__paragraph',
+		'#storytext p'
 	)
-	author_methods = (
-		('meta',{'itemprop':'author'}),
-		('meta',{'name':'author'}),
+	author_selectors = (
+		'meta[itemprop=author]',
+		'meta[name=author]'
 	)
-	title_methods = (
-		('meta', {'itemprop':'headline'}),
-		('meta', {'name':'title'}),
+	title_selectors = (
+		'meta[itemprop=headline]',
+		'meta[name=title]'
 	)
-	category_methods = (
-		('meta', {'itemprop':'articleSection'}),
-		('meta', {'name':'section'}),
+	category_selectors = (
+		'meta[itemprop=articleSection]',
+		'meta[name=section]'
 	)
-
-#def cnn( content ):
-#	soup = BeautifulSoup(content, 'html.parser')
-#
-#	# find the content
-#	matches, result = soup.find_all(['div','p'], class_="zn-body__paragraph"), ''
-#	if len(matches):
-#		for match in matches:
-#			inner_text = match.find(text=True, recursive=False)
-#			result += unidecode( inner_text ).strip() + '\n' if inner_text else ''
-#	else:
-#		matches, result = soup.select('#storytext p'), ''
-#		for match in matches:
-#			inner_text = match.find(text=True, recursive=False)
-#			result += unidecode( inner_text ).strip() + '\n' if inner_text else ''
-#
-#	# find the author
-#	author_meta = soup.find('meta',{'itemprop':'author'})
-#	author = author_meta['content'].split(',')[0] if author_meta else 'unknown'
-#
-#	# find the title
-#	title_meta = soup.find('meta', {'itemprop':'headline'},{'name':'title'})
-#	title = title_meta['content'] if title_meta else ''
-#
-#	# find the section
-#	section_meta = soup.find('meta', {'itemprop':'articleSection'})
-#	section = section_meta['content'] if section_meta else ''
-#
-#	return {'category':section,'title':title,'author':author,'content':result}
+	date_selectors = (
+		'meta[itemprop=datePublished]',
+	)
 
 if __name__=='__main__':
 	with open( 'test/test.html', 'r' ) as f:
-		cnnf = cnn()
-		cnnf.process( f.read() )
+		cnn = CNN()
+		cnn.process( f.read() )

@@ -2,7 +2,7 @@ import filters, requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, ForeignKey, Integer, String, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -14,6 +14,7 @@ class Article(Base):
 	__tablename__ = 'article'
 	id = Column(Integer, primary_key=True)
 	url = Column(String(250), nullable=False)
+	publish_date = Column(String(50), nullable=False)
 	title = Column(String(250), nullable=False)
 	category = Column(String(100), nullable=False)
 	content = Column(Text, nullable=False)
@@ -33,6 +34,7 @@ class Article(Base):
 		self.url = url
 		article = self.__parse( response.text )
 
+		self.publish_date = article['publish_date']
 		self.title = article['title']
 		self.author = article['author']
 		self.category = article['category']
@@ -40,7 +42,7 @@ class Article(Base):
 
 	def __parse( self, content ):
 		if self.filter:
-			return self.filter( content )
+			return self.filter.process( content )
 
 	def save( self ):
 		if self.title and self.content:
