@@ -2,3 +2,4 @@ requests==2.12.4
 Unidecode==0.4.20
 beautifulsoup4==4.5.3
 sqlalchemy-1.1.6
+configparser==3.5.0

@@ -1,4 +1,5 @@
-import filters, requests
+import requests
+from src import filters
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 

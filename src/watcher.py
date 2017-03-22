@@ -1,4 +1,5 @@
-import time, requests, threading, filters
+import time, requests, threading
+from src import filters
 from bs4 import BeautifulSoup
 from article import Article
 from sqlalchemy import create_engine
@@ -76,7 +77,6 @@ feed_list = (
 	'http://rss.cnn.com/rss/cnn_showbiz.rss',
 	'http://rss.cnn.com/rss/cnn_travel.rss',
 	'http://rss.cnn.com/rss/cnn_living.rss',
-	'http://rss.cnn.com/rss/cnn_freevideo.rss',
 	'http://rss.cnn.com/rss/cnn_latest.rss',
 )
 

@@ -46,5 +46,5 @@ class Logger:
 	@classmethod
 	def load( cls ):
 		if not cls.instance:
-			cls.instance = cls('rebaseline.log')
+			cls.instance = cls('newsanno.log')
 		return cls.instance

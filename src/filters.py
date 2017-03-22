@@ -51,25 +51,37 @@ class Filter:
 
 
 class CNN( Filter ):
+	source_name = 'cnn'
+
 	content_selectors = (
 		'.zn-body__paragraph',
 		'#storytext p'
 	)
+
 	author_selectors = (
 		'meta[itemprop=author]',
 		'meta[name=author]'
 	)
+
 	title_selectors = (
 		'meta[itemprop=headline]',
 		'meta[name=title]'
 	)
+
 	category_selectors = (
 		'meta[itemprop=articleSection]',
 		'meta[name=section]'
 	)
+
 	date_selectors = (
 		'meta[itemprop=datePublished]',
 	)
+
+
+def lookup( clsname ):
+	for child in Filter.__subclasses__():
+		if child.source_name == clsname:
+			return child()
 
 if __name__=='__main__':
 	with open( 'test/test.html', 'r' ) as f:
