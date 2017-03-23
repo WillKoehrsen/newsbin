@@ -1,5 +1,5 @@
 import requests
-from src import filters
+from engine import filters
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -18,6 +18,7 @@ class Article(Base):
 	publish_date = Column(String(50), nullable=False)
 	title = Column(String(250), nullable=False)
 	category = Column(String(100), nullable=False)
+	source = Column(String(10), nullable=False)
 	content = Column(Text, nullable=False)
 
 
@@ -40,6 +41,7 @@ class Article(Base):
 		self.author = article['author']
 		self.category = article['category']
 		self.content = article['content']
+		self.source = self.filter.source_name.upper()
 
 	def __parse( self, content ):
 		if self.filter:

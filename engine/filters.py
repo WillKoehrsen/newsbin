@@ -5,6 +5,8 @@ from datetime import datetime
 import requests
 
 class Filter:
+	source_name = 'None'
+
 	content_selectors = ()
 	author_selectors = ()
 	title_selectors = ()
@@ -130,6 +132,11 @@ class NYT( Filter ):
 		'meta[itemprop=datePublished]',
 	)
 
+def categories():
+	pass
+
+def all():
+	return [ child.source_name for child in Filter.__subclasses__() ]
 
 def lookup( clsname ):
 	for child in Filter.__subclasses__():

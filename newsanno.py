@@ -1,7 +1,7 @@
-from src.article import Article, Base
-from src import filters
-from src.logger import Logger
-from src.watcher import Watcher
+from engine.article import Article, Base
+from engine import filters
+from engine.logger import Logger
+from engine.watcher import Watcher
 
 from sqlalchemy import create_engine
 from configparser import ConfigParser, ExtendedInterpolation

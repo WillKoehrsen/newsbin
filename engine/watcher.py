@@ -1,7 +1,7 @@
 import time, requests
-from src import filters
+from engine import filters
 from bs4 import BeautifulSoup
-from src.article import Article
+from engine.article import Article
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

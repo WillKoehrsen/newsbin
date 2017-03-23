@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Hello from Flask</title>
+		<link rel="stylesheet" type="text/css" href="/static/css/index.css">
+	</head>
+	<body>
+		<div id="sources_menu">
+			{% for source in sources %}
+				<a href="/{{ source }}">{{ source|upper }}</a>
+			{% endfor %}
+		</div>
+		<div id="sorting_menu">
+		</div>
+		<div id="content">
+		</div>
+	</body>
+</html>
