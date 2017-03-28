@@ -15,7 +15,7 @@ class Article(Base):
 	__tablename__ = 'article'
 	id = Column(Integer, primary_key=True)
 	url = Column(String(250), nullable=False)
-	publish_date = Column(String(50), nullable=False)
+	publish_date = Column(DateTime(timezone=True), nullable=False)
 	title = Column(String(250), nullable=False)
 	category = Column(String(100), nullable=False)
 	source = Column(String(10), nullable=False)
@@ -25,10 +25,9 @@ class Article(Base):
 	def __init__( self, *args, **kwargs ):
 		try:
 			self.filter = kwargs['filter']
-			self.database = kwargs['database']
 			self.__read( args[0] )
 		except:
-			raise ValueError('need a filter, url and database in order to parse content')
+			raise ValueError('need a filter and url in order to parse content')
 
 	def __read( self, url ):
 		response = requests.get( url, verify=False )
@@ -47,17 +46,11 @@ class Article(Base):
 		if self.filter:
 			return self.filter.process( content )
 
-	def save( self ):
+	def is_valid( self ):
 		if self.title and self.content:
-			session = sessionmaker( bind=create_engine(self.database) )()
-			session.add(self)
-			session.commit()
 			return True
 		else:
 			return False
-
-	def load( self ):
-		session = sessionmaker( bind=create_engine(self.database) )()
 
 
 

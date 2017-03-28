@@ -1,98 +1,10 @@
-(2017-03-22 15:47:06) [NOTIFICATION] ------- NewsAnno -------
-(2017-03-22 15:47:06) [NOTIFICATION] date: 22/03/2017 03:47:06
+(2017-03-28 06:18:44) DEBUG: ------- NewsAnno -------
+(2017-03-28 06:18:44) DEBUG: date: 28/03/2017 06:18:44
 
-(2017-03-22 15:47:06) [NOTIFICATION] creating watchers for: cnbc
-(2017-03-22 15:47:06) [NOTIFICATION] creating watchers for: cnn
-(2017-03-22 15:47:06) [NOTIFICATION] 35 watchers created
-(2017-03-22 15:47:06) [NOTIFICATION] running . . .
-(2017-03-22 15:47:07) DEBUG: http://www.cnbc.com/id/100003114/device/rss/rss.html has changed
-(2017-03-22 15:47:07) DEBUG: updating:
-(2017-03-22 15:47:25) DEBUG: 	already found: 0 added: 30 unparseable: 0
-(2017-03-22 15:47:31) DEBUG: http://www.cnbc.com/id/100727362/device/rss/rss.html has changed
-(2017-03-22 15:47:31) DEBUG: updating:
-(2017-03-22 15:47:54) DEBUG: 	already found: 3 added: 25 unparseable: 2
-(2017-03-22 15:48:00) DEBUG: http://www.cnbc.com/id/15837362/device/rss/rss.html has changed
-(2017-03-22 15:48:00) DEBUG: updating:
-(2017-03-22 15:48:11) DEBUG: 	already found: 15 added: 15 unparseable: 0
-(2017-03-22 15:48:16) DEBUG: http://www.cnbc.com/id/19832390/device/rss/rss.html has changed
-(2017-03-22 15:48:16) DEBUG: updating:
-(2017-03-22 15:48:44) DEBUG: 	already found: 0 added: 30 unparseable: 0
-(2017-03-22 15:48:50) DEBUG: http://www.cnbc.com/id/19794221/device/rss/rss.html has changed
-(2017-03-22 15:48:50) DEBUG: updating:
-(2017-03-22 15:49:08) DEBUG: 	already found: 11 added: 18 unparseable: 1
-(2017-03-22 15:49:13) DEBUG: http://www.cnbc.com/id/10001147/device/rss/rss.html has changed
-(2017-03-22 15:49:13) DEBUG: updating:
-(2017-03-22 15:49:38) DEBUG: 	already found: 7 added: 23 unparseable: 0
-(2017-03-22 15:49:43) DEBUG: http://www.cnbc.com/id/15839135/device/rss/rss.html has changed
-(2017-03-22 15:49:43) DEBUG: updating:
-(2017-03-22 15:50:04) DEBUG: 	already found: 2 added: 28 unparseable: 0
-(2017-03-22 15:50:10) DEBUG: http://www.cnbc.com/id/100370673/device/rss/rss.html has changed
-(2017-03-22 15:50:10) DEBUG: updating:
-(2017-03-22 15:50:32) DEBUG: 	already found: 2 added: 28 unparseable: 0
-(2017-03-22 15:50:37) DEBUG: http://www.cnbc.com/id/20910258/device/rss/rss.html has changed
-(2017-03-22 15:50:37) DEBUG: updating:
-(2017-03-22 15:50:59) DEBUG: 	already found: 1 added: 29 unparseable: 0
-(2017-03-22 15:51:04) DEBUG: http://www.cnbc.com/id/10000664/device/rss/rss.html has changed
-(2017-03-22 15:51:04) DEBUG: updating:
-(2017-03-22 15:51:23) DEBUG: 	already found: 11 added: 19 unparseable: 0
-(2017-03-22 15:51:28) DEBUG: http://www.cnbc.com/id/19854910/device/rss/rss.html has changed
-(2017-03-22 15:51:28) DEBUG: updating:
-(2017-03-22 15:51:44) DEBUG: 	already found: 12 added: 17 unparseable: 1
-(2017-03-22 15:51:49) DEBUG: http://www.cnbc.com/id/10000113/device/rss/rss.html has changed
-(2017-03-22 15:51:49) DEBUG: updating:
-(2017-03-22 15:52:03) DEBUG: 	already found: 11 added: 19 unparseable: 0
-(2017-03-22 15:52:08) DEBUG: http://www.cnbc.com/id/10000108/device/rss/rss.html has changed
-(2017-03-22 15:52:08) DEBUG: updating:
-(2017-03-22 15:52:28) DEBUG: 	already found: 8 added: 22 unparseable: 0
-(2017-03-22 15:52:33) DEBUG: http://www.cnbc.com/id/10000115/device/rss/rss.html has changed
-(2017-03-22 15:52:33) DEBUG: updating:
-(2017-03-22 15:53:06) DEBUG: 	already found: 8 added: 10 unparseable: 12
-(2017-03-22 15:53:14) DEBUG: http://www.cnbc.com/id/10001054/device/rss/rss.html has changed
-(2017-03-22 15:53:14) DEBUG: updating:
-(2017-03-22 15:53:39) DEBUG: 	already found: 1 added: 28 unparseable: 1
-(2017-03-22 15:53:45) DEBUG: http://www.cnbc.com/id/10000101/device/rss/rss.html has changed
-(2017-03-22 15:53:45) DEBUG: updating:
-(2017-03-22 15:54:16) DEBUG: 	already found: 3 added: 27 unparseable: 0
-(2017-03-22 15:54:21) DEBUG: http://www.cnbc.com/id/19836768/device/rss/rss.html has changed
-(2017-03-22 15:54:21) DEBUG: updating:
-(2017-03-22 15:54:47) DEBUG: 	already found: 11 added: 13 unparseable: 6
-(2017-03-22 15:54:52) DEBUG: http://www.cnbc.com/id/10000110/device/rss/rss.html has changed
-(2017-03-22 15:54:52) DEBUG: updating:
-(2017-03-22 15:55:55) DEBUG: 	already found: 0 added: 30 unparseable: 0
-(2017-03-22 15:56:00) DEBUG: http://www.cnbc.com/id/10000116/device/rss/rss.html has changed
-(2017-03-22 15:56:00) DEBUG: updating:
-(2017-03-22 15:56:17) DEBUG: 	already found: 14 added: 14 unparseable: 2
-(2017-03-22 15:56:23) DEBUG: http://www.cnbc.com/id/10000739/device/rss/rss.html has changed
-(2017-03-22 15:56:23) DEBUG: updating:
-(2017-03-22 15:57:08) DEBUG: 	already found: 7 added: 9 unparseable: 14
-(2017-03-22 15:57:13) DEBUG: http://www.cnbc.com/id/44877279/device/rss/rss.html has changed
-(2017-03-22 15:57:13) DEBUG: updating:
-(2017-03-22 15:57:48) DEBUG: 	already found: 0 added: 27 unparseable: 3
-(2017-03-22 15:57:53) DEBUG: http://www.cnbc.com/id/15839069/device/rss/rss.html has changed
-(2017-03-22 15:57:53) DEBUG: updating:
-(2017-03-22 15:58:22) DEBUG: 	already found: 9 added: 21 unparseable: 0
-(2017-03-22 15:58:27) DEBUG: http://www.cnbc.com/id/100646281/device/rss/rss.html has changed
-(2017-03-22 15:58:27) DEBUG: updating:
-(2017-03-22 15:59:06) DEBUG: 	already found: 0 added: 25 unparseable: 5
-(2017-03-22 15:59:11) DEBUG: http://www.cnbc.com/id/21324812/device/rss/rss.html has changed
-(2017-03-22 15:59:11) DEBUG: updating:
-(2017-03-22 15:59:42) DEBUG: 	already found: 4 added: 26 unparseable: 0
-(2017-03-22 15:59:47) DEBUG: http://rss.cnn.com/rss/edition.rss has changed
-(2017-03-22 15:59:47) DEBUG: updating:
-(2017-03-22 15:59:56) DEBUG: 	already found: 33 added: 1 unparseable: 12
-(2017-03-22 16:00:01) DEBUG: http://rss.cnn.com/rss/cnn_world.rss has changed
-(2017-03-22 16:00:01) DEBUG: updating:
-(2017-03-22 16:00:05) DEBUG: 	already found: 25 added: 0 unparseable: 4
-(2017-03-22 16:00:10) DEBUG: http://rss.cnn.com/rss/cnn_us.rss has changed
-(2017-03-22 16:00:10) DEBUG: updating:
-(2017-03-22 16:00:19) DEBUG: 	already found: 21 added: 0 unparseable: 8
-(2017-03-22 16:00:25) DEBUG: http://rss.cnn.com/rss/money_latest.rss has changed
-(2017-03-22 16:00:25) DEBUG: updating:
-(2017-03-22 16:00:25) DEBUG: 	already found: 20 added: 0 unparseable: 0
-(2017-03-22 16:00:30) DEBUG: http://rss.cnn.com/rss/cnn_allpolitics.rss has changed
-(2017-03-22 16:00:30) DEBUG: updating:
-(2017-03-22 16:00:33) DEBUG: 	already found: 28 added: 0 unparseable: 2
-(2017-03-22 16:00:38) DEBUG: http://rss.cnn.com/rss/cnn_tech.rss has changed
-(2017-03-22 16:00:38) DEBUG: updating:
-(2017-03-22 16:00:39) DEBUG: 	already found: 19 added: 0 unparseable: 1
-(2017-03-22 16:00:43) [NOTIFICATION] shutting down
+(2017-03-28 06:18:44) DEBUG: creating watchers for: nyt
+(2017-03-28 06:18:44) DEBUG: creating watchers for: cnbc
+(2017-03-28 06:18:44) DEBUG: creating watchers for: cnn
+(2017-03-28 06:18:44) DEBUG: 60 watchers created
+(2017-03-28 06:18:44) DEBUG: running . . .
+(2017-03-28 06:18:45) DEBUG: http://rss.nytimes.com/services/xml/rss/nyt/World.xml has changed
+(2017-03-28 06:18:45) DEBUG: updating:

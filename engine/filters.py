@@ -2,6 +2,7 @@ import re
 from unidecode import unidecode
 from bs4 import BeautifulSoup
 from datetime import datetime
+import dateparser
 import requests
 
 class Filter:
@@ -45,10 +46,10 @@ class Filter:
 		for selector in self.date_selectors:
 			matches = soup.select( selector )
 			if matches:
-				result['publish_date'] = unidecode( matches[0]['content'] ).strip()
+				result['publish_date'] = dateparser.parse( unidecode( matches[0]['content'] ).strip() )
 				break
 			else:
-				result['publish_date'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+				result['publish_date'] = datetime.now()
 
 		result['content'] = result['content'].strip()
 		return result

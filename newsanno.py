@@ -4,49 +4,51 @@ from engine.logger import Logger
 from engine.watcher import Watcher
 
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from configparser import ConfigParser, ExtendedInterpolation
 from types import SimpleNamespace
+import threading
 
 from datetime import datetime
 import os, time
 
+DEBUG = False
+
 class NewsAnno:
 	def __init__( self, *args, **kwargs ):
 		self.settings = kwargs['settings']
+		self.sessionmaker = kwargs['sessionmaker']
 		self.sources = kwargs['sources']
-		self.log = Logger.load(settings.log)
+		self.log = Logger.load(self.settings.log)
 		self.watchers = []
 
-		# if the database specified by config doesn't exist, create it.
-		if not os.path.isfile( settings.database ):
-			engine = create_engine(settings.database)
-			Base.metadata.create_all(engine)
-
-		self.log.notify('------- NewsAnno -------',echo=True)
-		self.log.notify('date: ' + datetime.now().strftime('%d/%m/%Y %I:%M:%S') + '\n',echo=True)
+		self.log.debug('------- NewsAnno -------',echo=DEBUG)
+		self.log.debug('date: ' + datetime.now().strftime('%d/%m/%Y %I:%M:%S') + '\n',echo=DEBUG)
 		self.init_watchers()
 
 	def init_watchers( self ):
 		for source in self.sources:
 			site_filter = filters.lookup( source )
 			if site_filter:
-				self.log.notify('creating watchers for: ' + source, echo=True)
+				self.log.debug('creating watchers for: ' + source,echo=DEBUG)
 				for feed in self.sources[source]:
-					watcher = Watcher(feed=feed, filter=site_filter, database=self.settings.database, log=self.log)
+					session = self.sessionmaker()
+					watcher = Watcher(feed=feed, filter=site_filter, database=session, log=self.log)
+					watcher.debug = DEBUG
 					self.watchers.append( watcher )
 			else:
-				self.log.notify('no filter for: ' + source)
-		self.log.notify( str(len(self.watchers)) + ' watchers created')
+				self.log.debug('no filter for: ' + source)
+		self.log.debug( str(len(self.watchers)) + ' watchers created')
 
 	def run( self ):
-		self.log.notify('running . . .',echo=True)
+		self.log.debug('running . . .',echo=DEBUG)
 		try:
 			while True:
 				for watcher in self.watchers:
 					watcher.update()
 					time.sleep(5)
 		except KeyboardInterrupt:
-			self.log.notify('shutting down',echo=True)
+			self.log.notify('shutting down',echo=DEBUG)
 
 if __name__=='__main__':
 	# create a config parser and find newsanno.conf in local dir
@@ -61,5 +63,14 @@ if __name__=='__main__':
 	for source in ( item for item in config['sources'] if item not in config.defaults() ):
 		sources[source] = [ item.strip() for item in config['sources'][source].split(',') if item ]
 
-	newsanno = NewsAnno(settings=settings,sources=sources)
+	# get a database engine
+	engine = create_engine(settings.database)
+
+	# if the database specified by config doesn't exist, create it.
+	if not os.path.isfile( settings.database ):
+		Base.metadata.create_all(engine)
+
+	DEBUG = True
+
+	newsanno = NewsAnno(settings=settings,sources=sources, sessionmaker=sessionmaker(bind=engine))
 	newsanno.run()

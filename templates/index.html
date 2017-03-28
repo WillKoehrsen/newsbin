@@ -1,18 +1,46 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Hello from Flask</title>
+		<title>newsanno</title>
 		<link rel="stylesheet" type="text/css" href="/static/css/index.css">
 	</head>
 	<body>
+
 		<div id="sources_menu">
 			{% for source in sources %}
 				<a href="/{{ source }}">{{ source|upper }}</a>
 			{% endfor %}
 		</div>
-		<div id="sorting_menu">
+
+		<div id="search_menu">
 		</div>
-		<div id="content">
+
+		<div id="article_titles">
+			{% for article in articles %}
+				<div class="title" onclick="setContent( {{ article.id }} )">
+					{{ article.title }}
+				</div>
+			{% endfor %}
 		</div>
+
+		<div id="article_contents">
+			{% for article in articles %}
+				<div class="content" id={{article.id}}>
+					{{ article.content }}
+				</div>
+			{% endfor %}
+		<div>
+
+		<script>
+			var previous;
+			function setContent( id ){
+				var content = document.getElementById(id);
+				if(previous){
+					previous.style.display = 'none';
+				}
+				content.style.display = 'block';
+				previous = content;
+			}
+		</script>
 	</body>
 </html>

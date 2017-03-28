@@ -1,13 +1,37 @@
 #sources_menu {
-
+	width:100%;
+	margin:2px;
+	padding:2px;
 }
 
 #sorting_menu {
 
 }
 
-#content {
-	width:100%;
-	min-height:400px;
+#article_titles {
+	width:50%;
+	float:left;
+}
+
+.title {
+	border: 1px solid black;
+	margin-bottom:2px;
+	padding:2px;
 	background-color: lightgrey;
+	cursor:pointer;
+}
+
+#article_contents {
+	width:49%;
+	height:95%;
+	position:fixed;
+	right:0;
+	overflow-y: scroll;
+	border: 1px solid black;
+}
+
+.content {
+	display:none;
+
+	padding: 5px;
 }
