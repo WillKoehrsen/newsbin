@@ -1,29 +1,39 @@
-import re
+import regex
 from unidecode import unidecode
 from bs4 import BeautifulSoup
 from datetime import datetime
-import dateparser
+from dateutil.parser import parse
 import requests
+from package import utilities, annotation
 
 class Filter:
-	source_name = 'None'
+	source_name = ''
 
 	content_selectors = ()
 	author_selectors = ()
-	title_selectors = ()
-	category_selectors = ()
 	date_selectors = ()
 
 	def process( self, content ):
 		soup = BeautifulSoup(content, 'html.parser')
-		result = {'category':'','title':'','author':'','content':'','publish_date':''}
+		result = {'keywords':'','author':'','content':'','publish_date':datetime.now()}
 
 		for selector in self.content_selectors:
 			matches = soup.select( selector )
 			if matches:
 				for match in matches:
-					result['content'] += unidecode( match.text ).strip() + '\n'
+					result['content'] += ' ' + unidecode( match.text )
 				break
+
+		people = annotation.get_mentions( result['content'] )
+		for item in people:
+			match = regex.compile( '(?<!value=\".*?)' + regex.escape(item) + '(?!\">|</span>)' )
+			replacement = '<span class=\"summarize\" value=\"{}\">{}</span>'.format(people[item]['clean'],item)
+			result['content'] = regex.sub( match, replacement, result['content'] )
+			for alias in people[item]['aliases']:
+				replacement = '<span class=\"summarize\" value=\"{}\">{}</span>'.format(people[item]['clean'],alias)
+				result['content'] = regex.sub( match, replacement, result['content'] )
+
+		# 'https://en.wikipedia.org/wiki/{}'.format( self.name.replace(' ','_') )
 
 		for selector in self.author_selectors:
 			matches = soup.select( selector )
@@ -31,25 +41,14 @@ class Filter:
 				result['author'] = unidecode( matches[0]['content'] ).strip()
 				break
 
-		for selector in self.title_selectors:
-			matches = soup.select( selector )
-			if matches:
-				result['title'] = unidecode( matches[0]['content'] ).strip()
-				break
-
-		for selector in self.category_selectors:
-			matches = soup.select( selector )
-			if matches:
-				result['category'] = unidecode( matches[0]['content'] ).strip()
-				break
-
 		for selector in self.date_selectors:
 			matches = soup.select( selector )
 			if matches:
-				result['publish_date'] = dateparser.parse( unidecode( matches[0]['content'] ).strip() )
+				try:
+					result['publish_date'] = parse( unidecode( matches[0]['content'] ).strip(), default=datetime.now())
+				except:
+					pass
 				break
-			else:
-				result['publish_date'] = datetime.now()
 
 		result['content'] = result['content'].strip()
 		return result
@@ -69,16 +68,6 @@ class CNN( Filter ):
 		'meta[name=author]'
 	)
 
-	title_selectors = (
-		'meta[itemprop=headline]',
-		'meta[name=title]'
-	)
-
-	category_selectors = (
-		'meta[itemprop=articleSection]',
-		'meta[name=section]'
-	)
-
 	date_selectors = (
 		'meta[itemprop=datePublished]',
 	)
@@ -90,28 +79,22 @@ class CNBC( Filter ):
 
 	content_selectors = (
 		'div[itemprop="articleBody"] p',
+		'.article-body p',
 	)
 
 	author_selectors = (
 		'meta[name=author]',
 	)
 
-	title_selectors = (
-		'meta[name="twitter:title"]',
-	)
-
-	category_selectors = (
-		'meta[property="article:section"]',
-	)
-
 	date_selectors = (
 		'meta[itemprop=dateCreated]',
+		'meta[name="DC.date.issued"]',
 	)
 
 # ------------------------------------------------------------------------------
 # nyt filter
-class NYT( Filter ):
-	source_name = 'nyt'
+class NYTimes( Filter ):
+	source_name = 'nytimes'
 
 	content_selectors = (
 		'.story-body-text.story-content',
@@ -121,23 +104,56 @@ class NYT( Filter ):
 		'meta[name=author]',
 	)
 
-	title_selectors = (
-		'meta[property="og:title"]',
+	date_selectors = (
+		'meta[itemprop=datePublished]',
 	)
 
-	category_selectors = (
-		'meta[property="article:section"]',
+class WashingtonPost( Filter ):
+	source_name = 'washingtonpost'
+
+	content_selectors = (
+		'article[itemprop=articleBody] p',
+	)
+
+	author_selectors = (
 	)
 
 	date_selectors = (
 		'meta[itemprop=datePublished]',
 	)
 
-def categories():
-	pass
+class Reuters( Filter ):
+	source_name = 'reuters'
+
+	content_selectors = (
+		'#article-text p',
+	)
+
+	author_selectors = (
+		'meta[name=Author]',
+	)
+
+	date_selectors = (
+		'meta[property="og:article:published_time"]',
+	)
+
+class FoxNews( Filter ):
+	source_name = 'foxnews'
+
+	content_selectors = (
+		'.article-text p',
+	)
+
+	author_selectors = (
+		'meta[name="dc.creator"]',
+	)
+
+	date_selectors = (
+		'meta[name="dcterms.created"]',
+	)
 
 def all():
-	return [ child.source_name for child in Filter.__subclasses__() ]
+	return [ child.source_name for child in Filter.__subclasses__() if child.source_name ]
 
 def lookup( clsname ):
 	for child in Filter.__subclasses__():
@@ -151,5 +167,5 @@ if __name__=='__main__':
 	print(result['title'])
 	print(result['author'])
 	print(result['publish_date'])
-	print(result['category'])
+	print(result['keywords'])
 	print(result['content'])

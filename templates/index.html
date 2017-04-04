@@ -7,32 +7,80 @@
 	<body>
 
 		<div id="sources_menu">
-			{% for source in sources %}
-				<a href="/{{ source }}">{{ source|upper }}</a>
-			{% endfor %}
-		</div>
+			<form id="search_form" method="post">
+				<div id="sources">
+					{% if all_checked %}
+						<label><input type="checkbox" name="all" onClick="setAll(this)" value="True" checked /> all</label>
+					{% else %}
+						<label><input type="checkbox" name="all" onClick="setAll(this)" value="True" /> all</label>
+					{% endif %}
 
-		<div id="search_menu">
+					{% for source in all_sources %}
+						{% if source in checked %}
+							<label><input type="checkbox" name="{{ source }}" value="True" checked /> {{ source }}</label>
+						{% else %}
+							<label><input type="checkbox" name="{{ source }}" value="True" /> {{ source }}</label>
+						{% endif %}
+					{% endfor %}
+
+				</div>
+				<div id="options">
+					{% if results %}
+						<label>results: <input name="results" type="text" placeholder="100" value={{results}}></label>
+					{% else %}
+						<label>results: <input name="results" type="text" placeholder="100"></label>
+					{% endif %}
+				</div>
+				<div id="search">
+					{% if results %}
+						<label>search: <input name="search" type="text" placeholder="plain or regex" value={{search}}></label>
+					{% else %}
+						<label>search: <input name="search" type="text" placeholder="plain or regex"></label>
+					{% endif %}
+				</div>
+				<input type="submit" value="apply">
+			</form>
 		</div>
 
 		<div id="article_titles">
 			{% for article in articles %}
 				<div class="title" onclick="setContent( {{ article.id }} )">
-					{{ article.title }}
+					{{article.source}}: {{ article.title }}
 				</div>
 			{% endfor %}
 		</div>
 
-		<div id="article_contents">
+		<div id="article_contents" class="unexpanded">
 			{% for article in articles %}
 				<div class="content" id={{article.id}}>
-					{{ article.content }}
+					{{article.source|upper}}: {{ article.publish_date }}<br/>
+					<a href="{{article.url}}" target="_blank">original</a><br/>
+					{{ article.content|safe }}
 				</div>
 			{% endfor %}
 		<div>
 
 		<script>
+			//Globals:
+			//	aka- we always want to do this stuff and set these
+			//	variables/listeners
+			window.addEventListener('scroll', function(e){
+				var distanceY = window.pageYOffset || document.documentElement.scrollTop,
+					shrinkOn = 200,
+					article = document.querySelector("#article_contents");
+				if (distanceY > shrinkOn) {
+					article.className = "expanded";
+				} else {
+					if (article.className=="expanded") {
+						article.className = "unexpanded";
+					}
+				}
+			});
+
 			var previous;
+
+			//Functions:
+			//	things that trigger
 			function setContent( id ){
 				var content = document.getElementById(id);
 				if(previous){
@@ -40,6 +88,13 @@
 				}
 				content.style.display = 'block';
 				previous = content;
+			}
+
+			function setAll(source) {
+				checkboxes = document.querySelectorAll('#search_form input[type="checkbox"]');
+				for(var i=0, n=checkboxes.length;i<n;i++){
+		  			checkboxes[i].checked = source.checked;
+				}
 			}
 		</script>
 	</body>

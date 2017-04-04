@@ -1,20 +1,19 @@
-from engine.article import Article, Base
-from engine import filters
-from engine.logger import Logger
-from engine.watcher import Watcher
+from package.article import Base
+from package import filters
+from package.logger import Logger
+from package.watcher import Watcher
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from configparser import ConfigParser, ExtendedInterpolation
 from types import SimpleNamespace
-import threading
 
 from datetime import datetime
-import os, time
+import os
 
-DEBUG = False
+DEBUG = True
 
-class NewsAnno:
+class Monitor:
 	def __init__( self, *args, **kwargs ):
 		self.settings = kwargs['settings']
 		self.sessionmaker = kwargs['sessionmaker']
@@ -22,7 +21,7 @@ class NewsAnno:
 		self.log = Logger.load(self.settings.log)
 		self.watchers = []
 
-		self.log.debug('------- NewsAnno -------',echo=DEBUG)
+		self.log.debug('------- Monitor -------',echo=DEBUG)
 		self.log.debug('date: ' + datetime.now().strftime('%d/%m/%Y %I:%M:%S') + '\n',echo=DEBUG)
 		self.init_watchers()
 
@@ -37,8 +36,8 @@ class NewsAnno:
 					watcher.debug = DEBUG
 					self.watchers.append( watcher )
 			else:
-				self.log.debug('no filter for: ' + source)
-		self.log.debug( str(len(self.watchers)) + ' watchers created')
+				self.log.debug('no filter for: ' + source,echo=DEBUG)
+		self.log.debug( str(len(self.watchers)) + ' watchers created',echo=DEBUG)
 
 	def run( self ):
 		self.log.debug('running . . .',echo=DEBUG)
@@ -46,14 +45,14 @@ class NewsAnno:
 			while True:
 				for watcher in self.watchers:
 					watcher.update()
-					time.sleep(5)
 		except KeyboardInterrupt:
 			self.log.notify('shutting down',echo=DEBUG)
+
 
 if __name__=='__main__':
 	# create a config parser and find newsanno.conf in local dir
 	config = ConfigParser(interpolation=ExtendedInterpolation())
-	config.read('newsanno.conf')
+	config.read('config/newsbin.conf')
 
 	# unwrap settings into a namespace for ease of use
 	settings = SimpleNamespace(**config['settings'])
@@ -72,5 +71,5 @@ if __name__=='__main__':
 
 	DEBUG = True
 
-	newsanno = NewsAnno(settings=settings,sources=sources, sessionmaker=sessionmaker(bind=engine))
+	newsanno = Monitor(settings=settings,sources=sources, sessionmaker=sessionmaker(bind=engine))
 	newsanno.run()
