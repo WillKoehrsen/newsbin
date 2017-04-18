@@ -1,25 +1,13 @@
-(2017-04-04 06:16:48) DEBUG: ------- Monitor -------
-(2017-04-04 06:16:48) DEBUG: date: 04/04/2017 06:16:48
+(2017-04-11 06:29:51) DEBUG: ------- Monitor -------
+(2017-04-11 06:29:51) DEBUG: date: 11/04/2017 06:29:51
 
-(2017-04-04 06:16:48) DEBUG: creating watchers for: cnbc
-(2017-04-04 06:16:48) DEBUG: creating watchers for: foxnews
-(2017-04-04 06:16:48) DEBUG: creating watchers for: reuters
-(2017-04-04 06:16:48) DEBUG: creating watchers for: nytimes
-(2017-04-04 06:16:48) DEBUG: creating watchers for: cnn
-(2017-04-04 06:16:48) DEBUG: creating watchers for: washingtonpost
-(2017-04-04 06:16:48) DEBUG: 109 watchers created
-(2017-04-04 06:16:48) DEBUG: running . . .
-(2017-04-04 06:16:48) DEBUG: checking: http://www.cnbc.com/id/100003114/device/rss/rss.html
-(2017-04-04 06:16:48) DEBUG: updating:
-(2017-04-04 06:18:02) DEBUG: 	already found: 0 added: 29 unparseable: 1
-(2017-04-04 06:18:02) DEBUG: checking: http://www.cnbc.com/id/100727362/device/rss/rss.html
-(2017-04-04 06:18:02) DEBUG: updating:
-(2017-04-04 06:18:33) DEBUG: 	already found: 18 added: 11 unparseable: 1
-(2017-04-04 06:18:33) DEBUG: checking: http://www.cnbc.com/id/15837362/device/rss/rss.html
-(2017-04-04 06:18:33) DEBUG: updating:
-(2017-04-04 06:19:08) DEBUG: 	already found: 16 added: 14 unparseable: 0
-(2017-04-04 06:19:08) DEBUG: checking: http://www.cnbc.com/id/19832390/device/rss/rss.html
-(2017-04-04 06:19:08) DEBUG: updating:
-(2017-04-04 06:20:21) DEBUG: 	already found: 2 added: 28 unparseable: 0
-(2017-04-04 06:20:21) DEBUG: checking: http://www.cnbc.com/id/19794221/device/rss/rss.html
-(2017-04-04 06:20:21) DEBUG: updating:
+(2017-04-11 06:29:51) DEBUG: creating watchers for: washingtonpost
+(2017-04-11 06:29:51) DEBUG: creating watchers for: cnn
+(2017-04-11 06:29:51) DEBUG: creating watchers for: foxnews
+(2017-04-11 06:29:51) DEBUG: creating watchers for: nytimes
+(2017-04-11 06:29:51) DEBUG: creating watchers for: cnbc
+(2017-04-11 06:29:51) DEBUG: creating watchers for: reuters
+(2017-04-11 06:29:51) DEBUG: 109 watchers created
+(2017-04-11 06:29:51) DEBUG: running . . .
+(2017-04-11 06:29:51) DEBUG: checking: http://feeds.washingtonpost.com/rss/rss_election-2012
+(2017-04-11 06:29:51) DEBUG: updating:

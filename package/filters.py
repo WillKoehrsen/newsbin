@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from dateutil.parser import parse
 import requests
-from package import utilities, annotation
+from package import utilities
 
 class Filter:
 	source_name = ''
@@ -21,19 +21,8 @@ class Filter:
 			matches = soup.select( selector )
 			if matches:
 				for match in matches:
-					result['content'] += ' ' + unidecode( match.text )
+					result['content'] += '{}\n\n'.format( unidecode( match.text ) )
 				break
-
-		people = annotation.get_mentions( result['content'] )
-		for item in people:
-			match = regex.compile( '(?<!value=\".*?)' + regex.escape(item) + '(?!\">|</span>)' )
-			replacement = '<span class=\"summarize\" value=\"{}\">{}</span>'.format(people[item]['clean'],item)
-			result['content'] = regex.sub( match, replacement, result['content'] )
-			for alias in people[item]['aliases']:
-				replacement = '<span class=\"summarize\" value=\"{}\">{}</span>'.format(people[item]['clean'],alias)
-				result['content'] = regex.sub( match, replacement, result['content'] )
-
-		# 'https://en.wikipedia.org/wiki/{}'.format( self.name.replace(' ','_') )
 
 		for selector in self.author_selectors:
 			matches = soup.select( selector )

@@ -1,4 +1,4 @@
-from package.article import Base
+from package.models import Base
 from package import filters
 from package.logger import Logger
 from package.watcher import Watcher

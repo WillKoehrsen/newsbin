@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>newsanno</title>
+		<title>newsbin</title>
 		<link rel="stylesheet" type="text/css" href="/static/css/index.css">
 	</head>
 	<body>
@@ -62,8 +62,11 @@
 
 		<script>
 			//Globals:
-			//	aka- we always want to do this stuff and set these
-			//	variables/listeners
+
+			// we add an event listener to watch the scroll event
+			// and calculate the distance from the top. If the distance
+			// is greater than shrinkOn, we change the style of the
+			// article box so that it fills the whole screen on the y-axis.
 			window.addEventListener('scroll', function(e){
 				var distanceY = window.pageYOffset || document.documentElement.scrollTop,
 					shrinkOn = 200,
@@ -77,25 +80,77 @@
 				}
 			});
 
-			var previous;
-
-			//Functions:
-			//	things that trigger
-			function setContent( id ){
-				var content = document.getElementById(id);
-				if(previous){
-					previous.style.display = 'none';
-				}
-				content.style.display = 'block';
-				previous = content;
+			var annotations = document.getElementsByTagName('x-annotate');
+			for(var i = 0; i < annotations.length; i++){
+				annotations[i].addEventListener( 'click', showSummary );
 			}
 
-			function setAll(source) {
+
+			// -----------------------------------------------------------------
+
+			// -----------------------------------------------------------------
+			// this is the last article that we made visible
+			// we keep it around so that we can hide it again
+			var previous_article;
+			var previous_summary;
+
+			//Functions:
+
+			// setContent
+			//		When a title is selected, setContent hides the previous_article
+			//		article and displays the new one. They're all present in
+			//		the page at all times, though.
+			function setContent( id ){
+				var content = document.getElementById(id);
+				if(previous_article){
+					previous_article.style.display = 'none';
+				}
+				content.style.display = 'block';
+				previous_article = content;
+			}
+
+			// setAll
+			//		When the 'all' checkbox is selected, this function updates all
+			//		the other checkboxes.
+			function setAll( source ){
 				checkboxes = document.querySelectorAll('#search_form input[type="checkbox"]');
 				for(var i=0, n=checkboxes.length;i<n;i++){
 		  			checkboxes[i].checked = source.checked;
 				}
 			}
+
+			// showSummary
+			//		When a summarize element is clicked (a detected name)
+			//		we open a popup with the info for that person.
+			function showSummary( event ){
+				var caller = this;
+				var name = caller.getAttribute('name');
+				var url = '/summarize?name=' + name;
+				var request = new XMLHttpRequest();
+
+				var new_summary = document.createElement('div');
+				new_summary.className = 'summary';
+				new_summary.innerHTML = '<div class="loader"></div>'
+				caller.parentNode.insertBefore( new_summary, caller );
+
+				if(previous_summary){
+					previous_summary.parentNode.removeChild( previous_summary );
+				}
+				previous_summary = new_summary;
+
+				request.onreadystatechange = function() {
+					if (request.readyState == 4 && request.status == 200){
+						new_summary.innerHTML = request.responseText;
+					}
+				}
+				request.open("GET", url, true); // true for asynchronous
+				request.send(null);
+			}
+
+			function remove( element ){
+				element.parentNode.removeChild(element);
+			}
+
 		</script>
 	</body>
 </html>

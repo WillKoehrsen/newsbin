@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from package.article import Article
+from package.models import Article
 from package import annotation
 from sqlalchemy import exists
 from package import utilities
@@ -37,6 +37,7 @@ class Watcher:
 							self.database.add(article)
 							self.database.commit()
 							new_cnt += 1
+
 						else:
 							ignored_cnt += 1
 					else:
