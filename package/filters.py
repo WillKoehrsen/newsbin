@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from dateutil.parser import parse
 import requests
-from package import utilities
 
 class Filter:
 	source_name = ''
@@ -148,6 +147,12 @@ def lookup( clsname ):
 	for child in Filter.__subclasses__():
 		if child.source_name == clsname:
 			return child()
+
+def exists( clsname ):
+	for child in Filter.__subclasses__():
+		if child.source_name == clsname:
+			return True
+	return False
 
 if __name__=='__main__':
 	response = requests.get( 'http://www.cnbc.com/2017/03/22/trump-sees-obamacare-replacement-passing-house-vote-needs-to-happen.html' )
