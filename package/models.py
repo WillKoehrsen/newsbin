@@ -18,6 +18,7 @@ class Article(Base):
 	source = Column(String(10), nullable=True)
 
 	content = Column(Text, nullable=True)
+	people = Column(Text, nullable=True)
 	title = Column(String(250), nullable=True)
 	author = Column(String(250), nullable=True)
 	publish_date = Column(DateTime(timezone=True), nullable=True)
@@ -29,6 +30,12 @@ class Article(Base):
 	def update( self, *args, **kwargs ):
 		for key, value in kwargs.items():
 			setattr(self, key, value)
+
+	def set_people( self, names ):
+		self.people = ';'.join(names)
+
+	def get_people( self ):
+		return self.people.split(';')
 
 class Annotation(Base):
 	__tablename__ = 'annotations'

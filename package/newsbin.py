@@ -59,27 +59,25 @@ class Fetcher(manager.Manager):
 		super(Fetcher, self).__init__( *args, **kwargs, callback=self.__operation )
 
 	def __operation( self, item, session ):
-			try:
-
-				response = requests.get( item.link, verify=False )
-				content = item.filter.process( response.text )
-				item.update( **content )
-
-				people = self.__find_people( content['content'] )
-				self.passback( *people )
-
-				if item.title and item.content:
-					try:
-						session.add(item)
-						session.commit()
-					except:
-						session.rollback()
-						raise
+		try:
+			response = requests.get( item.link, verify=False )
+			content = item.filter.process( response.text )
+			item.update( **content )
+			people = self.__find_people( content['content'] )
+			item.set_people( people )
+			self.passback( *people )
+			if item.title and item.content:
+				try:
+					session.add(item)
+					session.commit()
+				except:
+					session.rollback()
+					raise
 
 		except IntegrityError as e:
 			pass
 		except Exception as e:
-			print('[Fetcher.__operation failure] type: {}'.format(type(e)))
+			print('[fetcher.__operation failure] type: {} - {}'.format(type(e),str(e)))
 
 	def __clean( self, name ):
 		name = regex.sub( '\'s', '', name )
@@ -88,7 +86,7 @@ class Fetcher(manager.Manager):
 
 	def __find_people( self, content ):
 		article = self.nlp( content )
-		people = [ self.__clean( entity.text ) for entity in article.ents if entity.label_ in defaults.entities ]
+		people = [ self.__clean( entity.text ) for entity in article.ents if entity.label_=='PERSON' ]
 		return [ p for p in people if p ]
 
 class Watcher(manager.Manager):

@@ -15,64 +15,49 @@ import sys, os
 
 import importlib.util
 
-def random_article( num ):
+def get_articles():
 	db_engine = create_engine('sqlite:///{}'.format(defaults.database))
 	Session = sessionmaker(bind=db_engine)
 	session = Session()
 
-	for _ in range(num):
-		query = session.query(models.Article)
-		rowCount = int(query.count())
-		article = query.offset(int(rowCount*random.random())).first()
-		yield article
+	articles = session.query(models.Article).all()
+	return articles
 
-def dump( count ):
-	with open('dump.py','w') as out:
-		for _type in defaults.entity_ex:
-			out.write('# {}:{}\n'.format(_type,defaults.entity_ex[_type]))
+def get_dataset():
+	articles = get_articles()
+	dataset = []
 
-	lines = []
-	for article in random_article(int(count)):
-		lines += [ '(\'{}\',\n [])'.format( l.replace('\"','\\\"').replace('\'','\\\'').strip().rstrip('\\') ) for l in article.content.split('\n') if l ]
+	for article in articles:
+		line = article.content
+		entities = []
 
-	data_set = 'DATA_SET=[\n {}\n]'.format(',\n '.join(line for line in lines))
-	with open('dump.py','a') as out:
-		out.write(data_set)
+		people = set(article.get_people())
+		for person in ( p for p in people if p ):
+			for match in regex.finditer(regex.escape(person),line):
+				entity = ( match.start(0), match.end(0), 'PERSON')
+				entities.append(entity)
 
-def train( target ):
-	directory = os.path.dirname(os.path.abspath(target))
-	sys.path.insert(1, directory)
-	import dump
+		dataset.append([(line,entities)])
 
+	return dataset
+
+
+def train():
 	nlp = spacy.load('en')
+	master_set = get_dataset()
 
 	for _ in range(defaults.cycles):
 		print('shuffling data-')
-		random.shuffle(dump.DATA_SET)
-		for raw_text, entity_offsets in dump.DATA_SET:
+		random.shuffle(dataset)
+		for raw_text, entity_offsets in dataset:
 			doc = nlp.make_doc(raw_text)
 			gold = GoldParse(doc, entities=entity_offsets)
 			nlp.tagger(doc)
 			loss = nlp.entity.update(doc, gold)
 	print(' - done')
 	nlp.end_training()
-	nlp.save_to_directory(os.path.join(defaults.location,'/data'))
-
-def parse( content ):
-	nlp = spacy.load('en')
-	chunked = nlp( content )
-	people = [ entity for entity in chunked.ents if entity.label_ in defaults.entities ]
-	print('LINE: {}'.format(content))
-	for p in people:
-		print('	{}'.format(p))
-
-OPS = {
-	'--dump':dump,
-	'--train':train,
-	'--parse':parse,
-}
+	print(os.path.join(defaults.location,'data/'))
+	#nlp.save_to_directory(os.path.join(defaults.location,'data/'))
 
 if __name__=='__main__':
-	if len(sys.argv)==3:
-		command, target = sys.argv[1:]
-		OPS[command]( target )
+	train()
