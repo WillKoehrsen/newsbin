@@ -5,7 +5,6 @@ import sys
 # GLOBALS
 location = os.path.dirname(os.path.abspath(sys.argv[0]))
 database = os.path.join( location, 'newsbin.db' )
-cycles = 20
 
 # ------------------------------------------------------------------------------
 # DATA

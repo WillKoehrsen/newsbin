@@ -17,17 +17,22 @@ from sqlalchemy.exc import IntegrityError
 
 # ------------------------------------------------------------------------------
 # LOCALS
-import defaults
-import filters
-import models
-import manager
+try:
+	import defaults
+	import filters
+	import models
+	import manager
+except:
+	from package import defaults
+	from package import filters
+	from package import models
+	from package import manager
+
 
 # ------------------------------------------------------------------------------
 # HOUSEKEEPING
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
-sys.path.insert(1, defaults.location)
 
 # ------------------------------------------------------------------------------
 disambiguation = regex.compile('refer[s]?\s+to|stand\s+for\:')

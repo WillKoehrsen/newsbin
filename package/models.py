@@ -3,9 +3,12 @@ from sqlalchemy.ext.declarative import declarative_base
 
 # ------------------------------------------------------------------------------
 # LOCALS
-import defaults
-import filters
-
+try:
+	import defaults
+	import filters
+except:
+	from package import defaults
+	from package import filters
 # ------------------------------------------------------------------------------
 # HOUSEKEEPING
 Base = declarative_base()

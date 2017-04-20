@@ -51,13 +51,6 @@
 		</div>
 
 		<div id="article_contents" class="unexpanded">
-			{% for article in articles %}
-				<div class="content" id={{article.id}}>
-					{{article.source|upper}}: {{ article.publish_date }}<br/>
-					<a href="{{article.url}}" target="_blank">original</a><br/>
-					{{ article.content|safe }}
-				</div>
-			{% endfor %}
 		<div>
 
 		<script>
@@ -80,10 +73,12 @@
 				}
 			});
 
+			/*
 			var annotations = document.getElementsByTagName('x-annotate');
 			for(var i = 0; i < annotations.length; i++){
 				annotations[i].addEventListener( 'click', showSummary );
 			}
+			*/
 
 
 			// -----------------------------------------------------------------
@@ -101,12 +96,12 @@
 			//		article and displays the new one. They're all present in
 			//		the page at all times, though.
 			function setContent( id ){
-				var content = document.getElementById(id);
+			/*	var content = document.getElementById(id);
 				if(previous_article){
 					previous_article.style.display = 'none';
 				}
 				content.style.display = 'block';
-				previous_article = content;
+				previous_article = content; */
 			}
 
 			// setAll
@@ -123,7 +118,7 @@
 			//		When a summarize element is clicked (a detected name)
 			//		we open a popup with the info for that person.
 			function showSummary( event ){
-				var caller = this;
+/*				var caller = this;
 				var name = caller.getAttribute('name');
 				var url = '/summarize?name=' + name;
 				var request = new XMLHttpRequest();
@@ -148,7 +143,7 @@
 			}
 
 			function remove( element ){
-				element.parentNode.removeChild(element);
+				element.parentNode.removeChild(element); */
 			}
 
 		</script>

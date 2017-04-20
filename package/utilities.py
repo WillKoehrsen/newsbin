@@ -1,3 +1,5 @@
+sys.path.insert(1, os.path.dirname(os.path.abspath(sys.argv[0])))
+
 from package.models import Base, Engine, Annotation
 
 from sqlalchemy import create_engine, exists

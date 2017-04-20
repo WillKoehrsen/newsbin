@@ -143,6 +143,9 @@ class FoxNews( Filter ):
 def all():
 	return [ child.source_name for child in Filter.__subclasses__() if child.source_name ]
 
+def string():
+	return '|'.join([ child.source_name for child in Filter.__subclasses__() if child.source_name ])
+
 def lookup( clsname ):
 	for child in Filter.__subclasses__():
 		if child.source_name == clsname:
