@@ -26,10 +26,22 @@ function Article( settings ) {
 		this.people = defaults.people;
 		this.source = defaults.source;
 		this.id = defaults.id;
+
+		// utility
+		this.request_url = '/article/';
 	}
 
 	this.request = function (){
-		console.log('request using id to fetch: title,content,people,author,publish_date');
+		var request = new XMLHttpRequest();
+
+		request.onreadystatechange = function() {
+			if (request.readyState == 4 && request.status == 200){
+				console.log( request.responseText );
+			}
+		}
+
+		request.open("GET", this.request_url, true); // true for asynchronous
+		request.send(null);
 	}
 
 	this.submit = function (){

@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
+import json
+
 # ------------------------------------------------------------------------------
 # LOCALS
 try:
@@ -39,6 +41,10 @@ class Article(Base):
 
 	def get_people( self ):
 		return self.people.split(';')
+
+	def as_json( self ):
+		variables = { key:value for key,value in vars(self).items() if not key.startswith('_') }
+		return json.dumps( variables )
 
 class Annotation(Base):
 	__tablename__ = 'annotations'

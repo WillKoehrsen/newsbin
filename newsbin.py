@@ -3,6 +3,7 @@ from flask import Flask, request, render_template
 import regex
 import atexit
 import os
+import json
 
 from configparser import ConfigParser, ExtendedInterpolation
 from types import SimpleNamespace
@@ -71,14 +72,14 @@ def index():
 
 @app.route('/article', methods=['GET'])
 def article():
-	pass
-#	{% for article in articles %}
-#		<div class="content" id={{article.id}}>
-#			{{article.source|upper}}: {{ article.publish_date }}<br/>
-#			<a href="{{article.url}}" target="_blank">original</a><br/>
-#			{{ article.content|safe }}
-#		</div>
-#	{% endfor %}
+	pk = request.values.get( 'id', -1 )
+	people = request.values.get( 'people', None )
+	if pk >= 0:
+		article = Article.query.get(pk)
+		article = article.as_json()
+		return article
+	else:
+		return 'not found'
 
 @app.route('/annotation', methods=['GET'])
 def annotation():
