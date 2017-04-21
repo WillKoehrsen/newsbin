@@ -53,6 +53,7 @@
 		<div id="article_contents" class="unexpanded">
 		<div>
 
+		<script src="/static/js/newsbin.js"></script>
 		<script>
 			//Globals:
 
@@ -96,6 +97,8 @@
 			//		article and displays the new one. They're all present in
 			//		the page at all times, though.
 			function setContent( id ){
+				var article = new Article({ id:id })
+				article.request();
 			/*	var content = document.getElementById(id);
 				if(previous_article){
 					previous_article.style.display = 'none';

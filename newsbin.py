@@ -48,7 +48,7 @@ def setup( application=None ):
 
 	if not engine:
 		engine = Engine( database=settings.database, sessionmaker=Session )
-		engine.start
+		engine.start()
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -64,7 +64,7 @@ def index():
 		articles = session.query(Article).filter(Article.source.in_(sources)).order_by(Article.publish_date.asc()).limit(number).all()
 
 	pattern = regex.compile( search )
-	articles = [ a for a in articles if pattern.search(article.title) or pattern.search(article.content) ]
+	articles = [ a for a in articles if pattern.search(a.title) or pattern.search(a.content) ]
 	all_checked = bool( sources in all_sources )
 
 	return render_template('index.html', all_sources=all_sources, results=number,search=search, checked=sources, all_checked=all_checked, articles=articles)

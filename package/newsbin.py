@@ -128,15 +128,15 @@ class Engine:
 
 		# if no sessionmaker is given, create one and
 		# init the database location
+		bkup_engine = create_engine(self.database)
+
 		if not self.sessionmaker:
-			db_engine = create_engine('sqlite:///' + self.database)
-
 			# get the sessionmaker
-			self.sessionmaker = sessionmaker(bind=db_engine)
+			self.sessionmaker = sessionmaker(bind=bkup_engine)
 
-			# if the database specified by config doesn't exist, create it.
-			if not os.path.isfile( self.database ):
-				models.Base.metadata.create_all(db_engine)
+		# if the database specified by config doesn't exist, create it.
+		if not os.path.isfile( self.database ):
+			models.Base.metadata.create_all(bkup_engine)
 
 		if not self.sources:
 			self.sources = defaults.sources
