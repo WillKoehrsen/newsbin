@@ -34,7 +34,76 @@
 	width:30px;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Add/Remove Buttons */
 
+x-remove {
+	margin-left: 3px;
+	cursor:pointer;
+	color:red;
+}
+
+/* -------------------------------------------------------------------------- */
+
+#article_contents {
+	width:49%;
+	position:fixed;
+	right:8px;
+	overflow-y: scroll;
+	border: 1px solid black;
+}
+
+#article_contents>#header {
+	padding:10px;
+	border: 1px solid grey;
+}
+
+#article_contents>#header>#title {
+	font-size:1.25em;
+}
+
+#article_contents>#header>#author {
+
+}
+
+#article_contents>#header>#publish_date {
+
+}
+
+#article_contents>#content {
+	padding:10px;
+}
+
+#article_contents>#people {
+	padding: 7px;
+	border:1px solid grey;
+}
+
+#article_contents>#people>.name {
+	padding:2px;
+	border:1px solid lightgrey;
+	display:inline-block;
+	margin: 1px;
+}
+
+#article_contents>#footer {
+	padding: 10px;
+}
+
+#article_contents>#footer>#id {
+
+}
+
+#article_contents>#footer>#source {
+
+}
+
+#article_contents>#footer>#link {
+
+}
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 
 
 
@@ -53,14 +122,6 @@
 	background-color:lightgrey;
 }
 
-#article_contents {
-	width:49%;
-	position:fixed;
-	right:8px;
-	overflow-y: scroll;
-	border: 1px solid black;
-}
-
 .unexpanded {
 	height:88vh;
 }
@@ -70,9 +131,6 @@
 	top:1px;
 }
 
-.content {
-	padding: 5px;
-}
 
 x-annotate {
 	position:relative;

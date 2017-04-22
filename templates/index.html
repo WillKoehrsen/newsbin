@@ -44,7 +44,7 @@
 
 		<div id="article_titles">
 			{% for article in articles %}
-				<div class="title" onclick="setContent( {{ article.id }} )">
+				<div class="title" onclick="fetch_article( {{ article.id }} )">
 					{{article.source}}: {{ article.title }}
 				</div>
 			{% endfor %}
@@ -84,27 +84,8 @@
 
 			// -----------------------------------------------------------------
 
-			// -----------------------------------------------------------------
-			// this is the last article that we made visible
-			// we keep it around so that we can hide it again
-			var previous_article;
-			var previous_summary;
-
-			//Functions:
-
-			// setContent
-			//		When a title is selected, setContent hides the previous_article
-			//		article and displays the new one. They're all present in
-			//		the page at all times, though.
-			function setContent( id ){
-				var article = new Article({ id:id })
-				article.request();
-			/*	var content = document.getElementById(id);
-				if(previous_article){
-					previous_article.style.display = 'none';
-				}
-				content.style.display = 'block';
-				previous_article = content; */
+			function fetch_article( id ){
+				var article = new Article( id );
 			}
 
 			// setAll

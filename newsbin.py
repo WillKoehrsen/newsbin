@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, make_response
 
 import regex
 import atexit
@@ -48,8 +48,9 @@ def setup( application=None ):
 			Base.metadata.create_all(db_engine)
 
 	if not engine:
-		engine = Engine( database=settings.database, sessionmaker=Session )
-		engine.start()
+		pass
+		#engine = Engine( database=settings.database, sessionmaker=Session )
+		#engine.start()
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -70,16 +71,14 @@ def index():
 
 	return render_template('index.html', all_sources=all_sources, results=number,search=search, checked=sources, all_checked=all_checked, articles=articles)
 
-@app.route('/article', methods=['GET'])
-def article():
-	pk = request.values.get( 'id', -1 )
-	people = request.values.get( 'people', None )
-	if pk >= 0:
-		article = Article.query.get(pk)
-		article = article.as_json()
-		return article
-	else:
-		return 'not found'
+@app.route('/articles', methods=['GET','POST'])
+def articles():
+	data = json.loads(request.values.get('data',None))
+	if 'id' in data:
+		article = session.query(Article).get( data['id'] )
+		data = article.serialize()
+		return make_response(data)
+
 
 @app.route('/annotation', methods=['GET'])
 def annotation():

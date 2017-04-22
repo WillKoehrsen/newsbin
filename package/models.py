@@ -42,9 +42,18 @@ class Article(Base):
 	def get_people( self ):
 		return self.people.split(';')
 
-	def as_json( self ):
-		variables = { key:value for key,value in vars(self).items() if not key.startswith('_') }
+	def serialize( self ):
+		variables = { str(key):str(value) for key,value in vars( self ).items() if not key.startswith('_') }
+		variables['content'] = ''.join([ '<p>{}</p>\n'.format(p) for p in variables['content'].split('\n\n') if p ])
 		return json.dumps( variables )
+
+	def deserialize( self, variables ):
+		try:
+			variables = json.loads(variables)
+			for key,value in variables.items():
+				self.__setattr__( key, value )
+		except ValueError as e:
+			raise
 
 class Annotation(Base):
 	__tablename__ = 'annotations'

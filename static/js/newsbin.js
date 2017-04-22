@@ -5,208 +5,91 @@
 		Flask app in python) and the NEWSBIN.PY module.
 */
 
+function remove( element ) {
+	element.parentNode.removeChild( element );
+}
+
 // REMEMBER: make sure there is some visual representation of the currently selected title.
 
-function Article( settings ) {
+function Article( id ) {
 
 	// Initialization sets provided options to given values or defaults
-	this.init = function( args ){
-		var defaults = { id:-1, title:'Untitled', content:'t', people:'', author:'Unknown', source:'Unknown', publish_date:'Unknown' }
-		defaults = overwrite( defaults, args );
-
-		// header information
-		this.title = defaults.title;
-		this.author = defaults.author;
-		this.publish_date = defaults.publish_date;
-
-		// content
-		this.content = defaults.content;
-
-		// footer information
-		this.people = defaults.people;
-		this.source = defaults.source;
-		this.id = defaults.id;
-
-		// utility
-		this.request_url = '/article/';
+	this.init = function( pk ){
+		this.id = pk;
+		this.parent = 'article_contents';
+		this.refresh();
 	}
 
-	this.request = function (){
-		var request = new XMLHttpRequest();
+	this.refresh = function(){
+		this.loading();
+		var xhttp = new XMLHttpRequest();
+		var url = '/articles?data=' + encodeURIComponent(this.serialize());
+		article = this;
+	    xhttp.onreadystatechange = function(){
+	        if (this.readyState == 4 && this.status == 200) {
+	            article.deserialize( this.responseText );
+				article.fill();
+	       }
+	    };
 
-		request.onreadystatechange = function() {
-			if (request.readyState == 4 && request.status == 200){
-				console.log( request.responseText );
-			}
+	    xhttp.open("GET", url, true);
+	    xhttp.send();
+	}
+
+	this.deserialize = function( values ){
+		object = JSON.parse( values );
+		for( var attribute in object ){ if(typeof(this[attribute])!='function'){ this[attribute] = object[attribute]; } }
+	}
+
+	this.serialize = function(){
+		obj = {};
+		for( var attribute in this ){ if(typeof(this[attribute])!='function'){ obj[attribute] = this[attribute]; } }
+		return JSON.stringify(obj);
+	}
+
+	this.fill = function(){
+		block = document.getElementById( this.parent );
+		block.innerHTML = this.html();
+	}
+
+	this.loading = function(){
+		block = document.getElementById( this.parent );
+		block.innerHTML = '<div class="loader"></div>';
+	}
+
+	this.get_people = function(){
+		arr_list = this.people.split(';');
+		var str_list = '';
+		for( var i=0; i<arr_list.length; i++){
+			str_list += '<span class="name">' + arr_list[i] + '<x-remove onmousedown="remove( this.parentNode )">&minus;</x-remove></span>';
 		}
-
-		request.open("GET", this.request_url, true); // true for asynchronous
-		request.send(null);
+		return str_list;
 	}
 
-	this.submit = function (){
-		console.log('submit new list of people and this.content and update this.content with reply');
-	}
-
-	this.html = function (){
-
-		// ---------------------------------------------------------------------
-		// HEADER
-		// format the title and place inside a div
-		var title = createItem( 'span', 'title', this.title.trim() );
-		var author = createItem( 'span', 'author', this.author.trim() );
-		var publish_date = createItem( 'span', 'publish_date', this.publish_date.trim() );
-
-		var header = createSection( 'div', 'header', [ title, author, publish_date] );
-		// ---------------------------------------------------------------------
-
-		// ---------------------------------------------------------------------
-		// CONTENT
-		// format the content text into paragraphs
-
-		var blocks = this.content.split('\n\n');
-		for(var i = 0; i < blocks.length; i++){
-			blocks[i] = createItem( 'p', '', blocks[i].trim() );
-		}
-		// combine the paragraphs into a single div
-		var content = createSection( 'div', 'content', blocks );
-
-		// ---------------------------------------------------------------------
-
-		// ---------------------------------------------------------------------
-		// FOOTER
-		// split the people string and place each name in a span with a remove button
-		var blocks = []
-		if(this.people){
-			blocks = this.people.split(';');
-			for(var i = 0; i < blocks.length; i++){
-				blocks[i] = '<span class="annotation">' + blocks[i].trim() + '<x-remove onmousedown="removeCapture( this )">&minus;</x-remove></span>';
-			}
-		}
-
-			// combine the list of people into a single span
-		people = '<span class="people">' + people.join('') + '</span>';
-
-		var source = '<span class="source">' + this.source.trim() + '</span>';
-		var id = '<span class="id">' + this.id + '</span>';
-
-		var footer = '<div class="footer">' + people + source + id + '</div>'
-		// ---------------------------------------------------------------------
-
+	this.set_people = function(){
 
 	}
 
-	this.init( settings )
-}
-
-/*
-	FUNCTIONS
-*/
-function overwrite( a, b ){
-	if( a ){
-		if( b ){
-			for( var item in b ){
-				if(item){
-					a[item] = b[item];
-				}
-			}
-		}
-		return a;
+	this.html = function(){
+		var people = this.get_people();
+		html = 	'<div id="header">' +
+				'  <span id="title">' + this.title + '</span><br/>' +
+				'  <span id="author">AUTHOR: ' + this.author + '</span>' +
+				'  <span id="publish_date">PUBLISHED: ' + this.publish_date + '</span>' +
+				'</div>' +
+				'<div id="content">' +
+				   this.content +
+				'</div>' +
+				'<div id="people">' +
+				   people +
+				'</div>' +
+				'<div id="footer">' +
+				'  <span id="id">ID: ' + this.id + '</span>' +
+				'  <span id="source">SOURCE: ' + this.source + '</span>' +
+				'  <span id="link">ORIGINAL: <a href="' + this.link + '">link</a></span>' +
+				'</div>';
+		return html;
 	}
-}
 
-function createItem( type, classname, textcontent ){
-	var item = document.createElement(type);
-	if(classname){ item.setAttribute('class',classname); }
-	item.appendChild(document.createTextNode(textcontent));
-	return item
-}
-
-function createSection( type, classname, children ){
-	var item = document.createElement(type);
-	if(classname){ item.setAttribute('class',classname); }
-	for( var i=0; i < children.length; i++ ){
-		item.appendChild(children[i]);
-	}
-	return item
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var lastCapture = null;
-var plus = '&plus;';
-var minus = '&minus;';
-
-function getText( element ){
-	var newNode = element.cloneNode(true);
-	newNode.removeChild(newNode.lastChild)
-	return newNode.textContent;
-}
-
-function dumpLastCapture() {
-	if (lastCapture!=null && lastCapture.parentNode!=null){
-		var text = document.createTextNode( getText( lastCapture ) );
-		lastCapture.parentNode.replaceChild( text, lastCapture );
-	}
-}
-
-function addCapture() {
-	var text = getText(this.parentNode);
-	console.log( 'ADD: ' + text );
-}
-
-function removeCapture() {
-	//var text = getText(this.parentNode);
-	//console.log( 'REMOVE: ' + text );
-	if(this.parentNode != null && this.parentNode.parentNode!=null){
-		var parent = this.parentNode;
-		var gparent = parent.parentNode;
-		gparent.removeChild(parent);
-	}
-}
-
-function markNewCapture() {
-	if (typeof window.getSelection != "undefined") {
-		selection = window.getSelection()
-		if (selection.rangeCount > 0) {
-			var range = selection.getRangeAt(0);
-			if (!range.collapsed) {
-				var newNode = document.createElement("x-capture");
-				try {
-					range.surroundContents(newNode);
-					var newRange = document.createRange();
-					newRange.selectNodeContents(newNode);
-					selection.removeAllRanges();
-					selection.addRange(newRange);
-
-					var addButton = document.createElement("x-add");
-					addButton.innerHTML = plus;
-					addButton.onmousedown = addCapture;
-					newNode.appendChild(addButton)
-					return newNode
-				}
-				catch (err) {
-					return null
-				}
-			}
-		}
-	}
-	return null
-}
-
-function watch() {
-	dumpLastCapture();
-	var newCapture = markNewCapture();
-	lastCapture = newCapture;
+	this.init( id )
 }
