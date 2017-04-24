@@ -44,7 +44,6 @@ class Article(Base):
 
 	def serialize( self ):
 		variables = { str(key):str(value) for key,value in vars( self ).items() if not key.startswith('_') }
-		variables['content'] = ''.join([ '<p>{}</p>\n'.format(p) for p in variables['content'].split('\n\n') if p ])
 		return json.dumps( variables )
 
 	def deserialize( self, variables ):

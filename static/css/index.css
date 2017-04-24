@@ -43,6 +43,24 @@ x-remove {
 	color:red;
 }
 
+x-add {
+	height:15px;
+	width:15px;
+	text-align:center;
+	line-height:15px;
+	position:absolute;
+	margin-right: -15px;
+	margin-top: -15px;
+	cursor:pointer;
+	color:white;
+	border-radius:15px;
+	background-color: green;
+}
+
+x-capture {
+	position:relative;
+}
+
 /* -------------------------------------------------------------------------- */
 
 #article_contents {

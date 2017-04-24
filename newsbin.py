@@ -11,11 +11,12 @@ from types import SimpleNamespace
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from package import filters
+from package import filters, utilities
 from package.models import Article, Annotation, Base
 from package.newsbin import Engine
 
 session = None
+anno_session = None
 settings = None
 engine = None
 
@@ -42,6 +43,7 @@ def setup( application=None ):
 		db_engine = create_engine(settings.database)
 		Session = sessionmaker(bind=db_engine)
 		session = Session()
+		anno_session = Session()
 
 		# if the database specified by config doesn't exist, create it.
 		if not os.path.isfile( settings.database ):
@@ -73,11 +75,20 @@ def index():
 
 @app.route('/articles', methods=['GET','POST'])
 def articles():
-	data = json.loads(request.values.get('data',None))
-	if 'id' in data:
-		article = session.query(Article).get( data['id'] )
-		data = article.serialize()
-		return make_response(data)
+	pk = request.values.get('id',None)
+	people = request.values.get('people',None)
+	if pk:
+		article = session.query(Article).get( pk )
+		if people==None:
+			tmp = utilities.annotate( article )
+			data = tmp.serialize()
+			return make_response(data)
+		else:
+			article.set_people( people.split(';') )
+			tmp = utilities.annotate( article )
+			data = tmp.serialize()
+			session.commit()
+			return make_response(data)
 
 
 @app.route('/annotation', methods=['GET'])
