@@ -22,9 +22,9 @@ class Article(Base):
 	link = Column(String(250), nullable=True, unique=True)
 	source = Column(String(10), nullable=True)
 
-	content = Column(Text, nullable=True)
+	content = Column(Text, nullable=True, unique=True)
 	people = Column(Text, nullable=True)
-	title = Column(String(250), nullable=True)
+	title = Column(String(250), nullable=True, unique=True)
 	author = Column(String(250), nullable=True)
 	publish_date = Column(DateTime(timezone=True), nullable=True)
 
@@ -37,7 +37,7 @@ class Article(Base):
 			setattr(self, key, value)
 
 	def set_people( self, names ):
-		self.people = ';'.join(names)
+		self.people = ';'.join(set(names))
 
 	def get_people( self ):
 		return self.people.split(';')

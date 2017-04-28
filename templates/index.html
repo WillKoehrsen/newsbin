@@ -1,137 +1,94 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>newsbin</title>
-		<link rel="stylesheet" type="text/css" href="/static/css/index.css">
+		<link rel="stylesheet" type="text/css" href="/static/css/newsbin.css" />
 	</head>
 	<body>
 
-		<div id="sources_menu">
-			<form id="search_form" method="post">
-				<div id="sources">
-					{% if all_checked %}
-						<label><input type="checkbox" name="all" onClick="setAll(this)" value="True" checked /> all</label>
-					{% else %}
-						<label><input type="checkbox" name="all" onClick="setAll(this)" value="True" /> all</label>
-					{% endif %}
+		<form id="options-container">
 
-					{% for source in all_sources %}
-						{% if source in checked %}
-							<label><input type="checkbox" name="{{ source }}" value="True" checked /> {{ source }}</label>
-						{% else %}
-							<label><input type="checkbox" name="{{ source }}" value="True" /> {{ source }}</label>
-						{% endif %}
-					{% endfor %}
+			<!--
+			<div class="block">
+				<span>
+				</span>
+			</div>&nbsp;
+			-->
 
+			<div class="block">
+				<span>
+					<div id="sources">
+						Sources<br/>
+						<div id="choices" style="left:0;">
+							<input id="all" type="checkbox" name="all" value="true" /> All<br/>
+							<div><span>C</span></div>
+							<input class="all_dependent" type="checkbox" name="cnn" value="true" /> CNN<br/>
+							<input class="all_dependent" type="checkbox" name="cnbc" value="true" /> CNBC<br/>
+							<div><span>F</span></div>
+							<input class="all_dependent" type="checkbox" name="foxnews" value="true" /> Fox News<br/>
+							<div><span>N</span></div>
+							<input class="all_dependent" type="checkbox" name="nytimes" value="true" /> New York Times<br/>
+							<div><span>W</span></div>
+							<input class="all_dependent" type="checkbox" name="washingtonpost" value="true" /> Washington Post<br/>
+						</div>
+					</div>
+				</span>
+			</div>&nbsp;
+
+			<div class="block">
+				<span>
+					<div id="results">
+						Number of results (max 1000): <input id="count" type="number" name="results" min="1" max="1000" />
+					</div>
+				</span>
+			</div>&nbsp;
+
+			<div class="block">
+				<span>
+					<div id="searches">
+						<input id="search" type="text" name="search" placeholder="Search" />
+						&nbsp;<input id='regex' type="checkbox" name="regex" value="true" /> regex
+						&nbsp;<input id='plain' type="checkbox" name="plain" value="true" checked/> plain
+					</div>
+				</span>
+			</div>&nbsp;
+
+			<div class="block">
+				<span>
+					<div id="information">
+						<a href="/about">about</a> |
+						<a href="/log" target="_blank">log</a>
+					</div>
+				</span>
+			</div>&nbsp;
+
+			<div class="block">
+				<span>
+					<input id='submit' type="submit" value="Apply" />
+				</span>
+			</div>&nbsp;
+
+		</form>
+
+		<div id="container">
+
+			<div id="title-container">
+
+				{% for article in articles %}
+					<div class="title" onclick="fetch_article( {{ article.id }}, this )">
+						{{article.source}}: {{ article.title }}
+					</div>
+				{% endfor %}
+
+			</div>
+
+			<div id="article-container">
+				<div id="article">
 				</div>
-				<div id="options">
-					{% if results %}
-						<label>results: <input name="results" type="text" placeholder="100" value={{results}}></label>
-					{% else %}
-						<label>results: <input name="results" type="text" placeholder="100"></label>
-					{% endif %}
-				</div>
-				<div id="search">
-					{% if results %}
-						<label>search: <input name="search" type="text" placeholder="plain or regex" value={{search}}></label>
-					{% else %}
-						<label>search: <input name="search" type="text" placeholder="plain or regex"></label>
-					{% endif %}
-				</div>
-				<input type="submit" value="apply">
-			</form>
+			</div>
+
 		</div>
-
-		<div id="article_titles">
-			{% for article in articles %}
-				<div class="title" onclick="fetch_article( {{ article.id }} )">
-					{{article.source}}: {{ article.title }}
-				</div>
-			{% endfor %}
-		</div>
-
-		<div id="article_contents" class="unexpanded">
-		<div>
 
 		<script src="/static/js/newsbin.js"></script>
-		<script>
-			//Globals:
-			var current = null;
-
-			// we add an event listener to watch the scroll event
-			// and calculate the distance from the top. If the distance
-			// is greater than shrinkOn, we change the style of the
-			// article box so that it fills the whole screen on the y-axis.
-			window.addEventListener('scroll', function(e){
-				var distanceY = window.pageYOffset || document.documentElement.scrollTop,
-					shrinkOn = 200,
-					article = document.querySelector("#article_contents");
-				if (distanceY > shrinkOn) {
-					article.className = "expanded";
-				} else {
-					if (article.className=="expanded") {
-						article.className = "unexpanded";
-					}
-				}
-			});
-
-			/*
-			var annotations = document.getElementsByTagName('x-annotate');
-			for(var i = 0; i < annotations.length; i++){
-				annotations[i].addEventListener( 'click', showSummary );
-			}
-			*/
-
-
-			// -----------------------------------------------------------------
-
-			function fetch_article( id ){
-				var article = new Article( id );
-				current = article;
-			}
-
-			// setAll
-			//		When the 'all' checkbox is selected, this function updates all
-			//		the other checkboxes.
-			function setAll( source ){
-				checkboxes = document.querySelectorAll('#search_form input[type="checkbox"]');
-				for(var i=0, n=checkboxes.length;i<n;i++){
-		  			checkboxes[i].checked = source.checked;
-				}
-			}
-
-			// showSummary
-			//		When a summarize element is clicked (a detected name)
-			//		we open a popup with the info for that person.
-			function showSummary( event ){
-/*				var caller = this;
-				var name = caller.getAttribute('name');
-				var url = '/summarize?name=' + name;
-				var request = new XMLHttpRequest();
-
-				var new_summary = document.createElement('div');
-				new_summary.className = 'summary';
-				new_summary.innerHTML = '<div class="loader"></div>'
-				caller.parentNode.insertBefore( new_summary, caller );
-
-				if(previous_summary){
-					previous_summary.parentNode.removeChild( previous_summary );
-				}
-				previous_summary = new_summary;
-
-				request.onreadystatechange = function() {
-					if (request.readyState == 4 && request.status == 200){
-						new_summary.innerHTML = request.responseText;
-					}
-				}
-				request.open("GET", url, true); // true for asynchronous
-				request.send(null);
-			}
-
-			function remove( element ){
-				element.parentNode.removeChild(element); */
-			}
-
-		</script>
 	</body>
 </html>

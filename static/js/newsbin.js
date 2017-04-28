@@ -1,156 +1,72 @@
-/*
-	NEWSBIN.JS:
-		This is the javascript that handles the front end of the newsbin website,
-		The other parts of the newsbin system are the website itself (a minimalist
-		Flask app in python) and the NEWSBIN.PY module.
-*/
-
-// REMEMBER: make sure there is some visual representation of the currently selected title.
 // -----------------------------------------------------------------------------
-// GLOBALS
-var last_capture = null;
+// GLOBAL VARIABLES
+// -----------------------------------------------------------------------------
+var people = [];
+
 var plus = '&plus;';
 var minus = '&minus;';
 
-// -----------------------------------------------------------------------------
-// ARTICLE
-function Article( id ) {
-
-	// Initialization sets provided options to given values or defaults
-	this.init = function( pk ){
-		this.parent = 'article_contents';
-		this.id = pk
-		this.load( pk );
-	}
-
-	this.load = function( id ){
-		this.loading();
-		var xhttp = new XMLHttpRequest();
-		var url = '/articles?id=' + id;
-		article = this;
-	    xhttp.onreadystatechange = function(){
-	        if (this.readyState == 4 && this.status == 200) {
-	            article.deserialize( this.responseText );
-				article.fill();
-	       }
-	    };
-
-	    xhttp.open("GET", url, true);
-	    xhttp.send();
-	}
-
-	this.refresh = function(){
-		var content = document.getElementById(this.parent).querySelector('#content');
-		var xhttp = new XMLHttpRequest();
-		var url = '/articles?id=' + this.id + '&people=' + this.people.join(';');
-
-	    xhttp.onreadystatechange = function(){
-	        if (this.readyState == 4 && this.status == 200) {
-	            response = JSON.parse( this.responseText );
-				if( 'content' in response ){
-					content.innerHTML = response['content'];
-				}
-	       }
-	    };
-
-	    xhttp.open("GET", url, true);
-	    xhttp.send();
-	}
-
-	this.deserialize = function( values ){
-		object = JSON.parse( values );
-		for( var attribute in object ){ if(typeof(this[attribute])!='function'){ this[attribute] = object[attribute]; } }
-		if(this.people){
-			this.people = this.people.split(';');
-		}
-		else {
-			this.people = [];
-		}
-	}
-
-	this.fill = function(){
-		var block = document.getElementById( this.parent );
-		block.innerHTML = this.html();
-	}
-
-	this.loading = function(){
-		block = document.getElementById( this.parent );
-		block.innerHTML = '<div class="loader"></div>';
-	}
-
-	this.get_people = function(){
-		var str_list = '';
-		for( var i=0; i<this.people.length; i++){
-			str_list += '<span class="name">' + this.people[i] + '<x-remove onmousedown="current.remove( this.parentNode )">' + minus + '</x-remove></span>';
-		}
-		return str_list;
-	}
-
-	this.remove = function( element ) {
-		var name = get_text( element );
-		var index = this.people.indexOf(name);
-	    if (index > -1) {
-	       this.people.splice(index, 1);
-		   element.parentNode.removeChild( element );
-	    }
-		this.refresh();
-	}
-
-	this.add = function( element ) {
-		var name = get_text( element ).trim();
-		if (this.people.indexOf(name)<0){
-			this.people.push(name);
-			var people = document.querySelector("#article_contents>#people");
-			people.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="current.remove( this.parentNode )">' + minus + '</x-remove></span>';
-		}
-		this.refresh();
-	}
-
-	this.html = function(){
-		var people = this.get_people();
-		html = 	'<div id="header">' +
-				'  <span id="title">' + this.title + '</span><br/>' +
-				'  <span id="author">AUTHOR: ' + this.author + '</span>' +
-				'  <span id="publish_date">PUBLISHED: ' + this.publish_date + '</span>' +
-				'</div>' +
-				'<div id="content" onmouseup="watch()">' +
-				   this.content +
-				'</div>' +
-				'<div id="people">' +
-				   people +
-				'</div>' +
-				'<div id="footer">' +
-				'  <span id="id">ID: ' + this.id + '</span>' +
-				'  <span id="source">SOURCE: ' + this.source + '</span>' +
-				'  <span id="link">ORIGINAL: <a href="' + this.link + '">link</a></span>' +
-				'</div>';
-		return html;
-	}
-
-	this.init( id )
-}
+var article = document.getElementById('article');
+var article_start = parseInt(window.getComputedStyle(article).marginTop);
+var all = document.getElementById('all');
+var regex = document.getElementById('regex');
+var plain = document.getElementById('plain');
 
 // -----------------------------------------------------------------------------
-// Functions
-function get_text( element ){
-	var newNode = element.cloneNode(true);
-	newNode.removeChild(newNode.lastChild)
-	return newNode.textContent;
+// LISTENERS (EVENTS)
+// -----------------------------------------------------------------------------
+
+// event listener to move article into view on scroll
+window.addEventListener('scroll',recenter_article);
+
+// event listener to capture highlights in text
+document.getElementById('article').addEventListener('onmouseup',watch);
+
+// when the 'all' checkbox changes, update all source checkboxes
+all.addEventListener('change',function(){
+	var dependents = document.getElementsByClassName('all_dependent');
+	for( var i=0; i<dependents.length; i++ ){
+		dependents[i].checked = this.checked;
+	}
+});
+
+// on 'regex' checkbox change, set 'plain' to the opposite
+regex.addEventListener('change',function(){ plain.checked = !this.checked; });
+
+// on 'plain' checkbox change, set 'regex' to the opposite
+plain.addEventListener('change',function(){ regex.checked = !this.checked; });
+
+// -----------------------------------------------------------------------------
+// FUNCTIONS (MAIN)
+// -----------------------------------------------------------------------------
+
+// move the article display to stay in the viewport
+function recenter_article(){
+	var top = article.getBoundingClientRect().top;
+	var old_margin = parseInt(window.getComputedStyle(article).marginTop);
+	var new_margin = (-top)+old_margin;
+
+	if(new_margin<article_start){
+		article.style.marginTop = article_start + 'px';
+	} else {
+		article.style.marginTop = new_margin + 'px';
+	}
 }
 
+// fetches an article by id and fills '#article'
+function fetch_article( id, element ){
+	highlight_title( element );
+	load( id );
+}
+
+// watches for highlight events and captures the selection
 function watch() {
-	dump_capture( last_capture );
+	dump_capture( this.last_capture );
 	var new_capture = capture();
-	last_capture = new_capture;
+	this.last_capture = new_capture;
 }
 
-function dump_capture( element ) {
-	if (element!=null && element.parentNode!=null){
-		var text = document.createTextNode( get_text( element ) );
-		element.parentNode.replaceChild( text, element );
-	}
-}
-
+// captures highlighted text
 function capture() {
 	if (typeof window.getSelection != "undefined") {
 		selection = window.getSelection()
@@ -165,7 +81,7 @@ function capture() {
 					selection.removeAllRanges();
 					selection.addRange(newRange);
 
-					var add_button = create('<x-add onmousedown="current.add( this.parentNode )">'+ plus +'</x-add>');
+					var add_button = create_node('<x-add onmousedown="add_annotation( this.parentNode )">' + plus + '</x-add>');
 					newNode.appendChild(add_button);
 					return newNode
 				}
@@ -178,7 +94,107 @@ function capture() {
 	return null
 }
 
-function create( html ){
+function show_summary( element ){
+	var caller = element;
+	var name = caller.getAttribute('name');
+	var url = '/annotations?name=' + name;
+	var request = new XMLHttpRequest();
+
+	var new_summary = create_node('<div class="summary"><div class="loader"></div></div>');
+	caller.parentNode.insertBefore( new_summary, caller );
+
+	if(current_summary){
+		remove( current_summary );
+	}
+	current_summary = new_summary;
+
+	request.onreadystatechange = function() {
+		if (request.readyState == 4 && request.status == 200){
+			new_summary.innerHTML = request.responseText;
+		}
+	}
+	request.open("GET", url, true); // true for asynchronous
+	request.send(null);
+}
+
+function load( id ){
+	article.innerHTML = '<div class="loader"></div>';
+	var xhttp = new XMLHttpRequest();
+	var url = '/articles?id=' + id;
+	xhttp.onreadystatechange = function(){
+		if (this.readyState == 4 && this.status == 200) {
+			object = JSON.parse( this.responseText );
+			object.people = get_people( object.people );
+			article.innerHTML = build_html( object );
+	   }
+	};
+	xhttp.open("GET", url, true);
+	xhttp.send();
+}
+
+function build_html( object ){
+	html = 	'<div id="header">' +
+			'  <span id="title">' + object.title + '</span><br/>' +
+			'  <span id="author">AUTHOR: ' + object.author + '</span>' +
+			'  <span id="publish_date">PUBLISHED: ' + object.publish_date + '</span>' +
+			'</div>' +
+			'<div id="content" onmouseup="watch()">' +
+			   object.content +
+			'</div>' +
+			'<div id="people">' +
+			   object.people +
+			'</div>' +
+			'<div id="footer">' +
+			'  <span id="id">ID: ' + object.id + '</span>' +
+			'  <span id="source">SOURCE: ' + object.source + '</span>' +
+			'  <span id="link">ORIGINAL: <a href="' + object.link + '">link</a></span>' +
+			'</div>';
+	return html;
+}
+
+// convert a semi-colon delimited string of names into html
+function get_people( names ){
+	var str_list = '';
+	people = names.split(';');
+	for( var i=0; i<people.length; i++){
+		str_list += '<span class="name">' + people[i].trim() + '<x-remove onmousedown="remove_annotation( this.parentNode )">' + minus + '</x-remove></span>';
+	}
+	return str_list;
+}
+
+function add_annotation( element ){
+	var name = get_text( element );
+	if (people.indexOf(name)<0){
+		people.push(name);
+		var div = document.querySelector("#article>#people");
+		div.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_annotation( this.parentNode )">' + minus + '</x-remove></span>';
+		refresh();
+	}
+}
+
+function remove_annotation(){
+	console.log('remove annotation');
+}
+
+function refresh(){
+	console.log('refresh');
+}
+
+
+// -----------------------------------------------------------------------------
+// FUNCTIONS (UTILITIES)
+// -----------------------------------------------------------------------------
+
+// extract top-level text from node and replace node with text
+function dump_capture( element ) {
+	if (element!=null && element.parentNode!=null){
+		var text = document.createTextNode( get_text( element ) );
+		element.parentNode.replaceChild( text, element );
+	}
+}
+
+// create an object (or collection of objects) from an html string
+function create_node( html ){
 	var div = document.createElement('div');
 	div.innerHTML = html;
 	children = div.childNodes;
@@ -186,4 +202,23 @@ function create( html ){
 		return children;
 	}
 	return children[0];
+}
+
+// returns just text from an element
+function get_text( element ){
+	var newNode = element.cloneNode(true);
+	var children = newNode.children;
+	for(var i = 0; i<children.length; i++){
+		newNode.removeChild(children[i]);
+	}
+	return newNode.textContent.trim();
+}
+
+// moves 'highlighted' class from previous to current selection
+function highlight_title( element ){
+	element.classList.add('highlighted');
+	if( this.previous ){
+		this.previous.classList.remove('highlighted');
+	}
+	this.previous = element;
 }

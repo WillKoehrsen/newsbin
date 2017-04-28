@@ -22,11 +22,13 @@ try:
 	import filters
 	import models
 	import manager
+	import utilities
 except:
 	from package import defaults
 	from package import filters
 	from package import models
 	from package import manager
+	from package import utilities
 
 
 # ------------------------------------------------------------------------------
@@ -59,7 +61,7 @@ class Annotator(manager.Manager):
 
 class Fetcher(manager.Manager):
 	def __init__( self, *args, **kwargs ):
-		self.passback = kwargs.pop('passback')
+		self.passback = kwargs.pop('passback',None)
 		self.nlp = spacy.load('en')
 		super(Fetcher, self).__init__( *args, **kwargs, callback=self.__operation )
 
@@ -70,7 +72,7 @@ class Fetcher(manager.Manager):
 			item.update( **content )
 			people = self.__find_people( content['content'] )
 			item.set_people( people )
-			self.passback( *people )
+			if self.passback: self.passback( *people )
 			if item.title and item.content:
 				try:
 					session.add(item)
@@ -97,7 +99,7 @@ class Fetcher(manager.Manager):
 class Watcher(manager.Manager):
 	def __init__( self, *args, **kwargs ):
 		self.sources = kwargs.pop('sources')
-		self.passback = kwargs.pop('passback')
+		self.passback = kwargs.pop('passback',None)
 
 		super(Watcher, self).__init__( *args, **kwargs, callback=self.__operation )
 		feeds = [ ( filters.lookup( source ), feed ) for source in self.sources for feed in self.sources[source] if filters.exists( source )  ]
@@ -111,7 +113,7 @@ class Watcher(manager.Manager):
 			rss = feedparser.parse( feed )
 			for item in rss['items']:
 				article = models.Article( title=item['title'], link=item['link'], filter=site_filter, source=site_filter.source_name )
-				self.passback( article )
+				if self.passback: self.passback( article )
 
 		except Exception as e:
 			print('[watcher.__watch_feed failure] type: {}'.format(type(e)))
@@ -121,6 +123,10 @@ class Engine:
 		self.sessionmaker = kwargs.get('sessionmaker',None)
 		self.database = kwargs.get('database',None)
 		self.sources = kwargs.get('sources',None)
+
+		self.annotator = None
+		self.fetcher = None
+		self.watcher = None
 
 		# use the current directory + 'newsbin.db'
 		if not self.database:
@@ -175,12 +181,12 @@ class Engine:
 		# THREADS: 10 working queue
 
 	def start( self ):
-		self.annotator.start()
+		if self.annotator: self.annotator.start()
 		self.fetcher.start()
 		self.watcher.start()
 
 	def stop( self ):
-		self.annotator.stop()
+		if self.annotator: self.annotator.stop()
 		self.fetcher.stop()
 		self.watcher.stop()
 

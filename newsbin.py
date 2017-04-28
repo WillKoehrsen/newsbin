@@ -91,9 +91,29 @@ def articles():
 			return make_response(data)
 
 
-@app.route('/annotation', methods=['GET'])
-def annotation():
-	pass
+@app.route('/annotations', methods=['GET','POST'])
+def annotations():
+	name = request.values.get('name',None)
+	if name:
+		try:
+			annotation = session.query(Annotation).filter( Annotation.name==name ).first()
+			return make_response(annotation.summary)
+		except:
+			try:
+				annotation = utilities.summarize(name,session)
+				print('added: ' + name)
+				return make_response(annotation.summary)
+			except Exception as e:
+				return make_response('Annotation Not Found')
+
+@app.route('/about', methods=['GET'])
+def about():
+	return render_template('about.html')
+
+@app.route('/log', methods=['GET'])
+def log():
+	return render_template('about.html')
+
 
 
 if __name__ == "__main__":

@@ -123,10 +123,6 @@ x-capture {
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
-
-
-
-
 #article_titles {
 	width:50%;
 	float:left;
@@ -138,6 +134,10 @@ x-capture {
 	padding:2px;
 	cursor:pointer;
 	background-color:lightgrey;
+}
+
+.highlighted {
+	background-color:yellow;
 }
 
 .unexpanded {
