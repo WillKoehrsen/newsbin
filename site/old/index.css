@@ -1,0 +1,192 @@
+#sources_menu {
+	width:100%;
+	height:10vh;
+}
+
+#sources {
+	background-color: lightgrey;
+	padding:5px;
+}
+
+#sources label {
+}
+
+#sources input {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  margin:0;
+  vertical-align: bottom;
+  position: relative;
+  top: -1px;
+  *overflow: hidden;
+}
+
+#search {
+	display:inline-block;
+}
+
+#options {
+	display:inline-block;
+}
+
+#options input[name=results] {
+	width:30px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Add/Remove Buttons */
+
+x-remove {
+	margin-left: 3px;
+	cursor:pointer;
+	color:red;
+}
+
+x-add {
+	height:15px;
+	width:15px;
+	text-align:center;
+	line-height:15px;
+	position:absolute;
+	margin-right: -15px;
+	margin-top: -15px;
+	cursor:pointer;
+	color:white;
+	border-radius:15px;
+	background-color: green;
+}
+
+x-capture {
+	position:relative;
+}
+
+/* -------------------------------------------------------------------------- */
+
+#article_contents {
+	width:49%;
+	position:fixed;
+	right:8px;
+	overflow-y: scroll;
+	border: 1px solid black;
+}
+
+#article_contents>#header {
+	padding:10px;
+	border: 1px solid grey;
+}
+
+#article_contents>#header>#title {
+	font-size:1.25em;
+}
+
+#article_contents>#header>#author {
+
+}
+
+#article_contents>#header>#publish_date {
+
+}
+
+#article_contents>#content {
+	padding:10px;
+}
+
+#article_contents>#people {
+	padding: 7px;
+	border:1px solid grey;
+}
+
+#article_contents>#people>.name {
+	padding:2px;
+	border:1px solid lightgrey;
+	display:inline-block;
+	margin: 1px;
+}
+
+#article_contents>#footer {
+	padding: 10px;
+}
+
+#article_contents>#footer>#id {
+
+}
+
+#article_contents>#footer>#source {
+
+}
+
+#article_contents>#footer>#link {
+
+}
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+
+#article_titles {
+	width:50%;
+	float:left;
+}
+
+.title {
+	border: 1px solid black;
+	margin-bottom:2px;
+	padding:2px;
+	cursor:pointer;
+	background-color:lightgrey;
+}
+
+.highlighted {
+	background-color:yellow;
+}
+
+.unexpanded {
+	height:88vh;
+}
+
+.expanded {
+	height:99vh;
+	top:1px;
+}
+
+
+x-annotate {
+	position:relative;
+	background-color: lightgrey;
+	cursor:pointer;
+}
+
+x-annotate:hover {
+}
+
+.summary_error {
+	text-align:center;
+	width:100%;
+	font-size:1.25em;
+}
+
+.summary {
+	cursor:default;
+	background-color:white;
+	height:200px;
+	padding:5px;
+	overflow-y: scroll;
+	border:1px solid black;
+}
+
+.loader {
+	margin-left:auto;
+	margin-right:auto;
+	vertical-align: middle;
+	border: 5px solid #f3f3f3; /* Light grey */
+	border-top: 5px solid #3498db; /* Blue */
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}

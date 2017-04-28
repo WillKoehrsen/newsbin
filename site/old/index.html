@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+	<head>
+		<title>newsbin</title>
+		<link rel="stylesheet" type="text/css" href="/static/css/index.css">
+	</head>
+	<body>
+
+		<div id="sources_menu">
+			<form id="search_form" method="post">
+				<div id="sources">
+					{% if all_checked %}
+						<label><input type="checkbox" name="all" onClick="set_all(this)" value="True" checked /> all</label>
+					{% else %}
+						<label><input type="checkbox" name="all" onClick="set_all(this)" value="True" /> all</label>
+					{% endif %}
+
+					{% for source in all_sources %}
+						{% if source in checked %}
+							<label><input type="checkbox" name="{{ source }}" value="True" checked /> {{ source }}</label>
+						{% else %}
+							<label><input type="checkbox" name="{{ source }}" value="True" /> {{ source }}</label>
+						{% endif %}
+					{% endfor %}
+
+				</div>
+				<div id="options">
+					{% if results %}
+						<label>results: <input name="results" type="text" placeholder="100" value={{results}}></label>
+					{% else %}
+						<label>results: <input name="results" type="text" placeholder="100"></label>
+					{% endif %}
+				</div>
+				<div id="search">
+					{% if results %}
+						<label>search: <input name="search" type="text" placeholder="plain or regex" value={{search}}></label>
+					{% else %}
+						<label>search: <input name="search" type="text" placeholder="plain or regex"></label>
+					{% endif %}
+				</div>
+				<input type="submit" value="apply">
+			</form>
+		</div>
+
+		<div id="article_titles">
+			{% for article in articles %}
+				<div class="title" onclick="fetch_article( {{ article.id }}, this )">
+					{{article.source}}: {{ article.title }}
+				</div>
+			{% endfor %}
+		</div>
+
+		<div id="article_contents" class="unexpanded">
+		<div>
+
+		<script src="/static/js/newsbin.js"></script>
+		<script>
+			// -----------------------------------------------------------------
+			//GLOBALS:
+			var current = null;
+			var current_summary = null;
+			var current_title = null;
+
+			// -----------------------------------------------------------------
+			// EVENTS
+
+			// we add an event listener to watch the scroll event
+			// and calculate the distance from the top. If the distance
+			// is greater than shrinkOn, we change the style of the
+			// article box so that it fills the whole screen on the y-axis.
+			window.addEventListener('scroll', function(e){
+				var distanceY = window.pageYOffset || document.documentElement.scrollTop,
+					shrinkOn = 200,
+					article = document.querySelector("#article_contents");
+				if (distanceY > shrinkOn) {
+					article.className = "expanded";
+				} else {
+					if (article.className=="expanded") {
+						article.className = "unexpanded";
+					}
+				}
+			});
+
+
+			// -----------------------------------------------------------------
+			// FUNCTIONS
+
+			// fetch_article
+			//		Create a new 'current' article with the given id
+			function fetch_article( id, element ){
+				element.classList.add('highlighted');
+				if(current_title){ current_title.classList.remove('highlighted'); }
+				current_title = element;
+				console.log( element );
+
+				var article = new Article( id );
+				current = article;
+			}
+
+			// set_all
+			//		When the 'all' checkbox is selected, this function updates all
+			//		the other checkboxes.
+			function set_all( source ){
+				checkboxes = document.querySelectorAll('#search_form input[type="checkbox"]');
+				for(var i=0, n=checkboxes.length;i<n;i++){
+		  			checkboxes[i].checked = source.checked;
+				}
+			}
+
+			// show_summary
+			//		When an annotation is clicked we open a popup
+			//		with the info for that person.
+			function show_summary( element ){
+				var caller = element;
+				var name = caller.getAttribute('name');
+				var url = '/annotations?name=' + name;
+				var request = new XMLHttpRequest();
+
+				var new_summary = create('<div class="summary"><div class="loader"></div></div>');
+				caller.parentNode.insertBefore( new_summary, caller );
+
+				if(current_summary){
+					remove( current_summary );
+				}
+				current_summary = new_summary;
+
+				request.onreadystatechange = function() {
+					if (request.readyState == 4 && request.status == 200){
+						new_summary.innerHTML = request.responseText;
+					}
+				}
+				request.open("GET", url, true); // true for asynchronous
+				request.send(null);
+			}
+
+		</script>
+	</body>
+</html>
