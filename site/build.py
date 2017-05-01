@@ -1,31 +1,31 @@
 import os
+import pprint
 
-LOCATION = os.path.dirname( os.path.abspath(__file__) )
-def expand( local ):
-	return os.path.join( LOCATION, local )
+targets = (
+	'static/js/newsbin.min.js',
+	'static/css/newsbin.min.css'
+)
 
-targets = {
-	'static/js/newsbin.min.js':(
-			'static/js/base/extend.js',
-			'static/js/base/interface.js',
-			'static/js/base/newsbin.js'
-	),
-	'static/css/newsbin.min.css':(
-			'static/css/base/about.css',
-			'static/css/base/newsbin.css',
-	)
-}
+here = os.path.dirname( os.path.abspath(__file__) )
 
-def dump( bases ):
+def build( target ):
+	target = os.path.join( here, target )
+	location = os.path.dirname(target)
+	config = '.'.join(target.split('.')[:-1]) + '.conf'
+
+	bases = []
+	with open(config) as conf:
+		bases = [ os.path.normpath( os.path.join( location, b.strip() ) ) for b in conf.readlines() if b ]
+
+	content = []
 	for base in bases:
-		with open(base) as f:
-			for line in f:
-				yield line
+		with open(base,'r') as f:
+			content.extend( [ l.strip() for l in f if l.strip() ] )
 
-def build( target, bases ):
-	with open(target,'w') as target:
-		for line in dump( bases ):
-			target.write(line)
+	with open(target,'w') as f:
+		for line in content:
+			f.write(line+'\n')
 
-for target,bases in targets.items():
-	build( target, bases )
+if __name__=='__main__':
+	for target in targets:
+		build( target )
