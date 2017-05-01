@@ -1,5 +1,11 @@
 import os
-import pprint
+
+# ------------------------------------------------------------------------------
+# BUILD
+# 		This is sort of a poor-man's minifier. I'm not so much interested in
+#		optimizing my css/js as I am in combining them in a particular order
+#		so that they can be sent in one request, but kept organized during
+#		development.
 
 targets = (
 	'static/js/newsbin.min.js',
