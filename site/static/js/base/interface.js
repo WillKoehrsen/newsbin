@@ -64,6 +64,3 @@ var network = {
 	}
 
 }
-
-network.register('http://www.google.com', test)
-network.get('http://www.google.com');
