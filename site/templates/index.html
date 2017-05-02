@@ -20,16 +20,16 @@
 					<div id="sources">
 						Sources<br/>
 						<div id="choices" style="left:0;">
-							<input id="all" type="checkbox" name="all" value="true" /> All<br/>
+							<input id="all_check" type="checkbox" name="all" include="source_check" value="true" /> All<br/>
 							<div><span>C</span></div>
-							<input class="all_dependent" type="checkbox" name="cnn" value="true" /> CNN<br/>
-							<input class="all_dependent" type="checkbox" name="cnbc" value="true" /> CNBC<br/>
+							<input class="source_check" type="checkbox" name="cnn" value="true" /> CNN<br/>
+							<input class="source_check" type="checkbox" name="cnbc" value="true" /> CNBC<br/>
 							<div><span>F</span></div>
-							<input class="all_dependent" type="checkbox" name="foxnews" value="true" /> Fox News<br/>
+							<input class="source_check" type="checkbox" name="foxnews" value="true" /> Fox News<br/>
 							<div><span>N</span></div>
-							<input class="all_dependent" type="checkbox" name="nytimes" value="true" /> New York Times<br/>
+							<input class="source_check" type="checkbox" name="nytimes" value="true" /> New York Times<br/>
 							<div><span>W</span></div>
-							<input class="all_dependent" type="checkbox" name="washingtonpost" value="true" /> Washington Post<br/>
+							<input class="source_check" type="checkbox" name="washingtonpost" value="true" /> Washington Post<br/>
 						</div>
 					</div>
 				</span>
@@ -47,8 +47,8 @@
 				<span>
 					<div id="searches">
 						<input id="search" type="text" name="search" placeholder="Search" />
-						&nbsp;<input id='regex' type="checkbox" name="regex" value="true" /> regex
-						&nbsp;<input id='plain' type="checkbox" name="plain" value="true" checked/> plain
+						&nbsp;<input class="regex_check" id="reg_check" exclude="regex_check" type="checkbox" name="regex" value="true" /> regex
+						&nbsp;<input class="regex_check" id="pla_check" exclude="regex_check" type="checkbox" name="plain" value="true" checked/> plain
 					</div>
 				</span>
 			</div>&nbsp;
@@ -75,7 +75,7 @@
 			<div id="title-container">
 
 				{% for article in articles %}
-					<div class="title" onclick="fetch_article( {{ article.id }}, this )">
+					<div class="title" pk="{{ article.id }}">
 						{{article.source}}: {{ article.title }}
 					</div>
 				{% endfor %}
@@ -84,6 +84,20 @@
 
 			<div id="article-container">
 				<div id="article">
+					<div id="header">
+						<span id="title"></span><br/>
+						<span id="author"></span>
+						<span id="publish_date"></span>
+					</div>
+					<div id="content">
+					</div>
+					<div id="people">
+					</div>
+					<div id="footer">
+						<span class="footer_items" id="id"></span>
+						<span class="footer_items" id="source"></span>
+						<span class="footer_items" id="link"></span>
+					</div>
 				</div>
 			</div>
 

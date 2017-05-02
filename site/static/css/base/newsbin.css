@@ -184,7 +184,6 @@ body {
 }
 
 #article>#header>#author {
-
 }
 
 #article>#header>#publish_date {
@@ -259,9 +258,9 @@ x-add {
 	margin-right: -15px;
 	margin-top: -15px;
 	cursor:pointer;
-	color:white;
+	color:green;
 	border-radius:15px;
-	background-color: green;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 x-capture {

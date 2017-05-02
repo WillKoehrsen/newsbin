@@ -1,9 +1,6 @@
 // -----------------------------------------------------------------------------
 // GLOBAL VARIABLES
 // -----------------------------------------------------------------------------
-var people = [];
-
-var plus = '&plus;';
 var minus = '&minus;';
 
 var article = document.getElementById('article');
@@ -12,165 +9,211 @@ var all = document.getElementById('all');
 var regex = document.getElementById('regex');
 var plain = document.getElementById('plain');
 
+layout = {
+	// top DOM elements
+	all_check: document.querySelector('#all_check'),
+	reg_check: document.querySelector('#reg_check'),
+	pla_check: document.querySelector('#pla_check'),
+
+	// right-side DOM elements
+	article: document.querySelector('#article'),
+	title: document.querySelector('#title'),
+	author: document.querySelector('#author'),
+	publish_date: document.querySelector('#publish_date'),
+	content: document.querySelector('#content'),
+	people: document.querySelector('#people'),
+	id: document.querySelector('#id'),
+	source: document.querySelector('#source'),
+	link: document.querySelector('#link'),
+
+	// left-side DOM elements
+	titles: document.querySelectorAll('.title'),
+
+	// a global to track the last highlighted text
+	last_capture:null,
+
+	// a global to track the last highlighted title
+	last_title:null,
+}
+
+// -----------------------------------------------------------------------------
+// RESPONSE HANDLERS
+function load_handler( response ){
+	var people_html = '';
+	people = response.people.split(';');
+	for( var i=0; i<people.length; i++){
+		people_html += '<span class="name">' + people[i].trim() + '<x-remove onmousedown="remove_handler( this.parentNode )">&minus;</x-remove></span>';
+	}
+	layout.title.innerHTML = response.title;
+	layout.author.innerHTML = 'AUTHOR: ' + response.author;
+	layout.publish_date.innerHTML = 'PUBLISHED: ' + response.publish_date;
+	layout.content.innerHTML = response.content;
+	layout.people.innerHTML = people_html;
+	layout.id.innerHTML = 'ID: ' + response.id;
+	layout.source.innerHTML = 'SOURCE: ' + response.source;
+	layout.link.innerHTML = 'ORIGINAL: <a href="' + response.link + '">link</a>';
+}
+
+function refresh_handler( response ){
+	layout.content.innerHTML = response.content;
+	layout.people.innerHTML = get_people( response.people );
+}
+
+function scroll_handler(){
+	var top = layout.article.getBoundingClientRect().top;
+	var old_margin = parseInt(window.getComputedStyle(layout.article).marginTop);
+	var new_margin = (-top)+old_margin;
+
+	if(new_margin<article_start){
+		layout.article.style.marginTop = article_start + 'px';
+	} else {
+		layout.article.style.marginTop = new_margin + 'px';
+	}
+}
+
+function select_handler() {
+	var last = layout.last_capture;
+	if (last!=null && last.parentNode!=null){
+		var text = get_text( last );
+		last.parentNode.replaceChild( text, last );
+	}
+
+	if( typeof(window.getSelection) != "undefined" ){
+		var selection = window.getSelection();
+		var range = selection.getRangeAt(0);
+
+		if( selection.rangeCount > 0 && !range.collapsed ) {
+			var new_capture = document.createElement("x-capture");
+
+			console.log(typeof(selection),typeof(range));
+			range.surroundContents(new_capture);
+
+			var new_range = document.createRange();
+			new_range.selectNodeContents(new_capture);
+			selection.removeAllRanges();
+			selection.addRange(new_range);
+
+			var add_button = create_node('<x-add onmousedown="add_handler( this.parentNode )">&plus;</x-add>');
+			new_capture.appendChild(add_button);
+			layout.last_capture = new_capture;
+		}
+	}
+}
+
+function check_handler(){
+	var include = this.getAttribute('include');
+	var exclude = this.getAttribute('exclude');
+
+	if(include){
+		var targets = document.getElementsByClassName(include);
+		for( var i = 0; i < targets.length; i++ ){
+			targets[i].checked = this.checked;
+		}
+	}
+
+	if(exclude){
+		var targets = document.getElementsByClassName(exclude);
+		for( var i = 0; i < targets.length; i++ ){
+			if(targets[i]!=this){
+				targets[i].checked = !this.checked;
+			}
+		}
+	}
+
+}
+
+function add_handler( element ){
+	console.log( element );
+	//var name = get_text( element );
+	//if (people.indexOf(name)<0){
+	//	people.push(name);
+	//	var div = document.querySelector("#article>#people");
+	//	div.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_annotation( this.parentNode )">' + minus + '</x-remove></span>';
+	//	refresh();
+	//}
+}
+
+function remove_handler(){
+	console.log('REMOVE');
+}
+
+// -----------------------------------------------------------------------------
+// REQUESTORS
+function load_requestor(){
+	var pk = this.getAttribute('pk');
+	network.get('articles', { id:pk })
+
+
+	if(layout.last_title){
+		layout.last_title.classList.remove('highlighted');
+	}
+	this.classList.add('highlighted');
+	layout.last_title = this;
+}
+
+function refresh_requestor(){
+	var pk = this.getAttribute('pk');
+	network.get('refresh', { id:pk })
+}
+
 // -----------------------------------------------------------------------------
 // LISTENERS (EVENTS)
-// -----------------------------------------------------------------------------
+window.addEventListener('scroll',scroll_handler);
+layout.content.addEventListener('mouseup',select_handler);
 
-// event listener to move article into view on scroll
-window.addEventListener('scroll',recenter_article);
+layout.all_check.addEventListener('change',check_handler);
+layout.reg_check.addEventListener('change',check_handler);
+layout.pla_check.addEventListener('change',check_handler);
 
-// event listener to capture highlights in text
-document.getElementById('article').addEventListener('onmouseup',watch);
 
-// when the 'all' checkbox changes, update all source checkboxes
-all.addEventListener('change',function(){
-	var dependents = document.getElementsByClassName('all_dependent');
-	for( var i=0; i<dependents.length; i++ ){
-		dependents[i].checked = this.checked;
-	}
-});
+for( var i = 0; i < layout.titles.length; i++ ){
+	layout.titles[i].addEventListener('click',load_requestor);
+}
 
-// on 'regex' checkbox change, set 'plain' to the opposite
-regex.addEventListener('change',function(){ plain.checked = !this.checked; });
 
-// on 'plain' checkbox change, set 'regex' to the opposite
-plain.addEventListener('change',function(){ regex.checked = !this.checked; });
+
+
+
+
+
 
 // -----------------------------------------------------------------------------
 // FUNCTIONS (MAIN)
 // -----------------------------------------------------------------------------
 
-// move the article display to stay in the viewport
-function recenter_article(){
-	var top = article.getBoundingClientRect().top;
-	var old_margin = parseInt(window.getComputedStyle(article).marginTop);
-	var new_margin = (-top)+old_margin;
-
-	if(new_margin<article_start){
-		article.style.marginTop = article_start + 'px';
-	} else {
-		article.style.marginTop = new_margin + 'px';
-	}
-}
-
-// fetches an article by id and fills '#article'
-function fetch_article( id, element ){
-	highlight_title( element );
-	load( id );
-}
-
-// watches for highlight events and captures the selection
-function watch() {
-	dump_capture( this.last_capture );
-	var new_capture = capture();
-	this.last_capture = new_capture;
-}
-
-// captures highlighted text
-function capture() {
-	if (typeof window.getSelection != "undefined") {
-		selection = window.getSelection()
-		if (selection.rangeCount > 0) {
-			var range = selection.getRangeAt(0);
-			if (!range.collapsed) {
-				var newNode = document.createElement("x-capture");
-				try {
-					range.surroundContents(newNode);
-					var newRange = document.createRange();
-					newRange.selectNodeContents(newNode);
-					selection.removeAllRanges();
-					selection.addRange(newRange);
-
-					var add_button = create_node('<x-add onmousedown="add_annotation( this.parentNode )">' + plus + '</x-add>');
-					newNode.appendChild(add_button);
-					return newNode
-				}
-				catch (err) {
-					return null
-				}
-			}
-		}
-	}
-	return null
-}
-
-function show_summary( element ){
-	var caller = element;
-	var name = caller.getAttribute('name');
-	var url = '/annotations?name=' + name;
-	var request = new XMLHttpRequest();
-
-	var new_summary = create_node('<div class="summary"><div class="loader"></div></div>');
-	caller.parentNode.insertBefore( new_summary, caller );
-
-	if(current_summary){
-		remove( current_summary );
-	}
-	current_summary = new_summary;
-
-	request.onreadystatechange = function() {
-		if (request.readyState == 4 && request.status == 200){
-			new_summary.innerHTML = request.responseText;
-		}
-	}
-	request.open("GET", url, true); // true for asynchronous
-	request.send(null);
-}
-
-function load( id ){
-	article.innerHTML = '<div class="loader"></div>';
-	var xhttp = new XMLHttpRequest();
-	var url = '/articles?id=' + id;
-	xhttp.onreadystatechange = function(){
-		if (this.readyState == 4 && this.status == 200) {
-			object = JSON.parse( this.responseText );
-			object.people = get_people( object.people );
-			article.innerHTML = build_html( object );
-	   }
-	};
-	xhttp.open("GET", url, true);
-	xhttp.send();
-}
-
-function build_html( object ){
-	html = 	'<div id="header">' +
-			'  <span id="title">' + object.title + '</span><br/>' +
-			'  <span id="author">AUTHOR: ' + object.author + '</span>' +
-			'  <span id="publish_date">PUBLISHED: ' + object.publish_date + '</span>' +
-			'</div>' +
-			'<div id="content" onmouseup="watch()">' +
-			   object.content +
-			'</div>' +
-			'<div id="people">' +
-			   object.people +
-			'</div>' +
-			'<div id="footer">' +
-			'  <span id="id">ID: ' + object.id + '</span>' +
-			'  <span id="source">SOURCE: ' + object.source + '</span>' +
-			'  <span id="link">ORIGINAL: <a href="' + object.link + '">link</a></span>' +
-			'</div>';
-	return html;
-}
-
-// convert a semi-colon delimited string of names into html
-function get_people( names ){
-	var str_list = '';
-	people = names.split(';');
-	for( var i=0; i<people.length; i++){
-		str_list += '<span class="name">' + people[i].trim() + '<x-remove onmousedown="remove_annotation( this.parentNode )">' + minus + '</x-remove></span>';
-	}
-	return str_list;
-}
-
-function add_annotation( element ){
-	var name = get_text( element );
-	if (people.indexOf(name)<0){
-		people.push(name);
-		var div = document.querySelector("#article>#people");
-		div.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_annotation( this.parentNode )">' + minus + '</x-remove></span>';
-		refresh();
-	}
-}
+//function show_summary( element ){
+//	var caller = element;
+//	var name = caller.getAttribute('name');
+//	var url = '/annotations?name=' + name;
+//	var request = new XMLHttpRequest();
+//
+//	var new_summary = create_node('<div class="summary"><div class="loader"></div></div>');
+//	caller.parentNode.insertBefore( new_summary, caller );
+//
+//	if(current_summary){
+//		remove( current_summary );
+//	}
+//	current_summary = new_summary;
+//
+//	request.onreadystatechange = function() {
+//		if (request.readyState == 4 && request.status == 200){
+//			new_summary.innerHTML = request.responseText;
+//		}
+//	}
+//	request.open("GET", url, true); // true for asynchronous
+//	request.send(null);
+//}
+//
+//
+//function add_annotation( element ){
+//	var name = get_text( element );
+//	if (people.indexOf(name)<0){
+//		people.push(name);
+//		var div = document.querySelector("#article>#people");
+//		div.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_annotation( this.parentNode )">' + minus + '</x-remove></span>';
+//		refresh();
+//	}
+//}
 
 function remove_annotation(){
 	console.log('remove annotation');
@@ -185,14 +228,6 @@ function refresh(){
 // FUNCTIONS (UTILITIES)
 // -----------------------------------------------------------------------------
 
-// extract top-level text from node and replace node with text
-function dump_capture( element ) {
-	if (element!=null && element.parentNode!=null){
-		var text = document.createTextNode( get_text( element ) );
-		element.parentNode.replaceChild( text, element );
-	}
-}
-
 // create an object (or collection of objects) from an html string
 function create_node( html ){
 	var div = document.createElement('div');
@@ -206,19 +241,13 @@ function create_node( html ){
 
 // returns just text from an element
 function get_text( element ){
-	var newNode = element.cloneNode(true);
-	var children = newNode.children;
-	for(var i = 0; i<children.length; i++){
-		newNode.removeChild(children[i]);
+	var result = '';
+	var children = element.childNodes;
+	for( var i = 0; i < children.length; i++ ){
+		if(children[i].nodeType==3){
+			result += children[i].textContent;
+		}
 	}
-	return newNode.textContent.trim();
-}
-
-// moves 'highlighted' class from previous to current selection
-function highlight_title( element ){
-	element.classList.add('highlighted');
-	if( this.previous ){
-		this.previous.classList.remove('highlighted');
-	}
-	this.previous = element;
+	var node = document.createTextNode(result.trim());
+	return node;
 }

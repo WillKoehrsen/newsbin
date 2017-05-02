@@ -5,7 +5,7 @@ import os
 import json
 
 from package import filters, utilities
-from package import Article, Annotation
+from package import models, session
 
 app = Flask(__name__)
 
@@ -18,9 +18,9 @@ def index():
 	number = int( request.values.get( 'results', 100 ) )
 
 	if sort_descending_date:
-		articles = session.query(Article).filter(Article.source.in_(sources)).order_by(Article.publish_date.desc()).limit(number).all()
+		articles = session.query( models.Article ).filter( models.Article.source.in_(sources)).order_by( models.Article.publish_date.desc()).limit(number).all()
 	else:
-		articles = session.query(Article).filter(Article.source.in_(sources)).order_by(Article.publish_date.asc()).limit(number).all()
+		articles = session.query( models.Article ).filter( models.Article.source.in_(sources)).order_by( models.Article.publish_date.asc()).limit(number).all()
 
 	pattern = regex.compile( search )
 	articles = [ a for a in articles if pattern.search(a.title) or pattern.search(a.content) ]
@@ -28,22 +28,29 @@ def index():
 
 	return render_template('index.html', all_sources=all_sources, results=number,search=search, checked=sources, all_checked=all_checked, articles=articles)
 
-@app.route('/articles', methods=['GET','POST'])
+@app.route('/articles', methods=['GET'])
 def articles():
 	pk = request.values.get('id',None)
-	people = request.values.get('people',None)
 	if pk:
-		article = session.query(Article).get( pk )
-		if people==None:
-			tmp = utilities.annotate( article )
-			data = tmp.serialize()
-			return make_response(data)
-		else:
-			article.set_people( people.split(';') )
-			tmp = utilities.annotate( article )
-			data = tmp.serialize()
-			session.commit()
-			return make_response(data)
+		article = session.query( models.Article ).get( pk )
+		tmp = utilities.annotate( article )
+		data = tmp.serialize()
+		return make_response(data)
+	else:
+		print('ARTICLES: NO PK')
+
+@app.route('/refresh', methods=['POST'])
+def refresh():
+	people = request.values.get('people',None)
+	if people:
+		article = session.query( models.Article ).get( pk )
+		article.set_people( people.split(';') )
+		tmp = utilities.annotate( article )
+		data = tmp.serialize()
+		session.commit()
+		return make_response(data)
+	else:
+		print('REFRESH: NO PEOPLE')
 
 
 @app.route('/annotations', methods=['GET','POST'])
@@ -51,7 +58,7 @@ def annotations():
 	name = request.values.get('name',None)
 	if name:
 		try:
-			annotation = session.query(Annotation).filter( Annotation.name==name ).first()
+			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
 			return make_response(annotation.summary)
 		except:
 			try:

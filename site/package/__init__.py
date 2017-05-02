@@ -14,7 +14,7 @@ root = os.path.dirname( os.path.dirname( os.path.dirname( __file__ ) ) )
 sys.path.insert( 1, root )
 
 # import everything from shared
-from shared import Annotation, Article
+from shared import models, filters
 
 # load the config file from root/config
 config = ConfigParser( interpolation=ExtendedInterpolation() )

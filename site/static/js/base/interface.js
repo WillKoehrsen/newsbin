@@ -3,10 +3,14 @@
 
 // build a url from a given base and arguments
 function url( base, obj ){
-	result = [];
-	for( var key in obj ){ result.push( key+'='+obj[key].replace(' ','%20') ); }
-	if( result.length > 0 ){ result.unshift('?'); }
-	return base + result.join('&');
+	var result = [];
+	for( var key in obj ){
+		if( typeof(obj[key])!='function' ){
+			result.push( key+'='+obj[key] );
+		}
+	}
+	var result_str = base.prependif('/') + result.join('&').prependif('?');
+	return result_str.replace(' ','%20');
 }
 
 // -----------------------------------------------------------------------------
@@ -64,3 +68,6 @@ var network = {
 	}
 
 }
+
+//network.register('articles', test);
+//network.post('articles', { id:1 })

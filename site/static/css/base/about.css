@@ -1,19 +1,19 @@
-#content {
+body>#content {
 	width:980px;
 	padding:10px;
 	margin: 10px auto 10px auto;
 }
 
-#content>p {
+body>#content>p {
 	font-size:1.1em;
 }
 
-#back_link{
+body>#content>#back_link{
 	text-decoration:none;
 	color:black;
 }
 
-#back {
+body>#content>#back_link>#back {
 	width:100%;
 	height:30px;
 	line-height:30px;
@@ -25,18 +25,18 @@
 	transition:color 0.2s, border 0.2s;
 }
 
-#back:hover {
+body>#content>#back_link>#back:hover {
 	color:black;
 	border:1px solid grey;
 }
 
-#tagline {
+body>#content>#back_link>#tagline {
 	color:lightgrey;
 	width:100%;
 	text-align:center;
 }
 
-.footer_block {
+body>#content>#footer>#footer_block {
 	width:100%;
 	font-size:1.2em;
 
@@ -45,7 +45,7 @@
 	align-items: center;
 }
 
-.footer_block img {
+body>#content>#footer>#footer_block img {
 	height:100px;
 	width:auto;
 }
