@@ -52,6 +52,8 @@ function load_handler( response ){
 	layout.id.innerHTML = 'ID: ' + response.id;
 	layout.source.innerHTML = 'SOURCE: ' + response.source;
 	layout.link.innerHTML = 'ORIGINAL: <a href="' + response.link + '">link</a>';
+
+	
 }
 
 function refresh_handler( response ){
