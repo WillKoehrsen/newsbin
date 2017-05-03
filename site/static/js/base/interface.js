@@ -59,8 +59,13 @@ var network = {
 	},
 
 	receive: function(){
-		var response = JSON.parse(this.responseText);
-		this.callback(response);
+		try{
+			var response = JSON.parse(this.responseText);
+			this.callback(response);
+		} catch (error){
+			console.log('ERROR:',error);
+			console.log('RESPONSE:',this.responseText);
+		}
 	},
 
 	error: function(){

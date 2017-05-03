@@ -23,12 +23,15 @@ def multi_replace( content, lookups ):
 	return content
 
 def annotate( article):
-	article = copy.deepcopy(article)
-	content = article.content
-	names = sorted( set( article.get_people() ), key=lambda x: len(x), reverse=True )
-	replacements = { name.lower():'<x-annotate onclick="show_summary(this);" name="{0}">{0}</x-annotate>'.format(name) for name in names }
-	content = multi_replace( content, replacements )
-	article.content = ''.join([ '<p>{}</p>\n'.format(p) for p in content.split('\n\n') if p ])
+	if article.people:
+		article = copy.deepcopy(article)
+		content = article.content
+		names = sorted( set( article.get_people() ), key=lambda x: len(x), reverse=True )
+		replacements = { name.lower():'<x-annotate onclick="summary_requestor(this);" name="{0}">{0}</x-annotate>'.format(name) for name in names }
+		content = multi_replace( content, replacements )
+		article.content = content
+
+	article.content = ''.join([ '<p>{}</p>\n'.format(p) for p in article.content.split('\n\n') if p ])
 	return article
 
 def summarize( name, session ):

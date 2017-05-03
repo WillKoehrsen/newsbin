@@ -9,6 +9,12 @@ var all = document.getElementById('all');
 var regex = document.getElementById('regex');
 var plain = document.getElementById('plain');
 
+globals = {
+	people: null,
+	pk: null,
+	summary: null,
+}
+
 layout = {
 	// top DOM elements
 	all_check: document.querySelector('#all_check'),
@@ -39,11 +45,17 @@ layout = {
 // -----------------------------------------------------------------------------
 // RESPONSE HANDLERS
 function load_handler( response ){
+
+	// build the html for the people list at the bottom
+	// of the article
 	var people_html = '';
-	people = response.people.split(';');
-	for( var i=0; i<people.length; i++){
-		people_html += '<span class="name">' + people[i].trim() + '<x-remove onmousedown="remove_handler( this.parentNode )">&minus;</x-remove></span>';
+	globals.people = response.people.split(';').filter(function(entry) { return entry.trim() != ''; });
+	for( var i=0; i<globals.people.length; i++){
+		people_html += '<span class="name">' + globals.people[i].trim() + '<x-remove onmousedown="remove_handler( this.parentNode )">&minus;</x-remove></span>';
 	}
+
+	// fill all the parts of the article with the
+	// appropriate values
 	layout.title.innerHTML = response.title;
 	layout.author.innerHTML = 'AUTHOR: ' + response.author;
 	layout.publish_date.innerHTML = 'PUBLISHED: ' + response.publish_date;
@@ -52,20 +64,17 @@ function load_handler( response ){
 	layout.id.innerHTML = 'ID: ' + response.id;
 	layout.source.innerHTML = 'SOURCE: ' + response.source;
 	layout.link.innerHTML = 'ORIGINAL: <a href="' + response.link + '">link</a>';
-
-<<<<<<< HEAD
-	
-=======
-	var content_p = layout.content.getElementsByTagName('p');
-	for( var i = 0; i < content_p.length; i++ ){
-		content_p[i].addEventListener('mouseup',select_handler);
-	}
->>>>>>> eca696d240732ffdacc3b7b8eff3dd479fe0b3c4
 }
 
 function refresh_handler( response ){
+	var people_html = '';
+
+	globals.people = response.people.split(';').filter(function(entry) { return entry.trim() != ''; });
+	for( var i=0; i<globals.people.length; i++){
+		people_html += '<span class="name">' + globals.people[i].trim() + '<x-remove onmousedown="remove_handler( this.parentNode )">&minus;</x-remove></span>';
+	}
+
 	layout.content.innerHTML = response.content;
-	layout.people.innerHTML = get_people( response.people );
 }
 
 function scroll_handler(){
@@ -83,8 +92,18 @@ function scroll_handler(){
 function select_handler() {
 	var last = layout.last_capture;
 	if (last!=null && last.parentNode!=null){
-		var text = get_text( last );
-		last.parentNode.replaceChild( text, last );
+		var children = last.childNodes;
+		var nodes = [];
+		for(var i = 0; i < children.length; i++){
+			var node = children[i];
+			if(node.nodeName!='X-ADD'){
+				nodes.push(node);
+			}
+		}
+		for(var i = 0; i < nodes.length; i++){
+			last.parentNode.insertBefore( nodes[i], last );
+		}
+		last.parentNode.removeChild( last );
 	}
 
 	if( typeof(window.getSelection) != "undefined" ){
@@ -94,17 +113,19 @@ function select_handler() {
 		if( selection.rangeCount > 0 && !range.collapsed ) {
 			var new_capture = document.createElement("x-capture");
 
-			console.log(typeof(selection),typeof(range));
-			range.surroundContents(new_capture);
+			try {
+				range.surroundContents(new_capture);
+				var new_range = document.createRange();
+				new_range.selectNodeContents(new_capture);
+				selection.removeAllRanges();
+				selection.addRange(new_range);
 
-			var new_range = document.createRange();
-			new_range.selectNodeContents(new_capture);
-			selection.removeAllRanges();
-			selection.addRange(new_range);
+				var add_button = create_node('<x-add onmousedown="add_handler( this.parentNode )">&plus;</x-add>');
+				new_capture.appendChild(add_button);
+				layout.last_capture = new_capture;
+			} catch ( error ){
 
-			var add_button = create_node('<x-add onmousedown="add_handler( this.parentNode )">&plus;</x-add>');
-			new_capture.appendChild(add_button);
-			layout.last_capture = new_capture;
+			}
 		}
 	}
 }
@@ -132,26 +153,39 @@ function check_handler(){
 }
 
 function add_handler( element ){
-	console.log( element );
-	//var name = get_text( element );
-	//if (people.indexOf(name)<0){
-	//	people.push(name);
-	//	var div = document.querySelector("#article>#people");
-	//	div.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_annotation( this.parentNode )">' + minus + '</x-remove></span>';
-	//	refresh();
-	//}
+	if(globals.people!=null){
+		var name = get_text( element );
+		if (globals.people.indexOf(name)<0){
+			globals.people.push(name);
+			layout.people.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_handler( this.parentNode )">&minus;</x-remove></span>';
+			refresh_requestor();
+		}
+	}
 }
 
-function remove_handler(){
-	console.log('REMOVE');
+function remove_handler( element ){
+	if(globals.people!=null){
+		var name = get_text( element );
+		var index = globals.people.indexOf(name);
+		if( index >= 0 ){
+			globals.people.splice( index, 1 );
+			element.parentNode.removeChild( element );
+			refresh_requestor();
+		}
+	}
+}
+
+function summary_handler( element ){
+	//console.log(element);
 }
 
 // -----------------------------------------------------------------------------
 // REQUESTORS
 function load_requestor(){
 	var pk = this.getAttribute('pk');
-	network.get('articles', { id:pk })
+	network.get('articles', { id:pk });
 
+	globals.pk = pk;
 
 	if(layout.last_title){
 		layout.last_title.classList.remove('highlighted');
@@ -161,97 +195,83 @@ function load_requestor(){
 }
 
 function refresh_requestor(){
-	var pk = this.getAttribute('pk');
-	network.get('refresh', { id:pk })
+	if(globals.pk!=null){
+		var people_str = globals.people.join(';');
+		network.post('refresh', { pk:globals.pk, people:people_str })
+	}
+}
+
+function summary_requestor( element ){
+	//console.log(element);
+	//var name = element.getAttribute('name');
+
+	//var summary = create_node('<div class="summary"><div class="loader"></div></div>');
+	//element.parentNode.insertBefore( new_summary, element );
+
+	//if(globals.summary!=null){
+	//	globals.summary.parentNode.removeChild( globals.summary );
+	//}
+
+	//globals.summary = summary;
+	//network.get('annotations',{ name:name }
 }
 
 // -----------------------------------------------------------------------------
 // LISTENERS (EVENTS)
 window.addEventListener('scroll',scroll_handler);
+
 layout.all_check.addEventListener('change',check_handler);
 layout.reg_check.addEventListener('change',check_handler);
 layout.pla_check.addEventListener('change',check_handler);
+
+layout.content.addEventListener('mouseup',select_handler);
 
 for( var i = 0; i < layout.titles.length; i++ ){
 	layout.titles[i].addEventListener('click',load_requestor);
 }
 
-
-
-
-
-
 // -----------------------------------------------------------------------------
 // FUNCTIONS (MAIN)
 // -----------------------------------------------------------------------------
 
-//function show_summary( element ){
-//	var caller = element;
-//	var name = caller.getAttribute('name');
-//	var url = '/annotations?name=' + name;
-//	var request = new XMLHttpRequest();
-//
-//	var new_summary = create_node('<div class="summary"><div class="loader"></div></div>');
-//	caller.parentNode.insertBefore( new_summary, caller );
-//
-//	if(current_summary){
-//		remove( current_summary );
-//	}
-//	current_summary = new_summary;
-//
-//	request.onreadystatechange = function() {
-//		if (request.readyState == 4 && request.status == 200){
-//			new_summary.innerHTML = request.responseText;
-//		}
-//	}
-//	request.open("GET", url, true); // true for asynchronous
-//	request.send(null);
-//}
-//
-//
-//function add_annotation( element ){
-//	var name = get_text( element );
-//	if (people.indexOf(name)<0){
-//		people.push(name);
-//		var div = document.querySelector("#article>#people");
-//		div.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_annotation( this.parentNode )">' + minus + '</x-remove></span>';
-//		refresh();
-//	}
-//}
+// create the string for x-add elements
+function create_add( value ){
 
-function remove_annotation(){
-	console.log('remove annotation');
 }
 
-function refresh(){
-	console.log('refresh');
+// create the string for x-remove elements
+function create_remove( value ){
+
 }
-
-
-// -----------------------------------------------------------------------------
-// FUNCTIONS (UTILITIES)
-// -----------------------------------------------------------------------------
 
 // create an object (or collection of objects) from an html string
 function create_node( html ){
 	var div = document.createElement('div');
 	div.innerHTML = html;
 	children = div.childNodes;
-	if(children.length!=1){
-		return children;
-	}
 	return children[0];
+}
+
+function create_nodes( html ){
+	var div = document.createElement('div');
+	div.innerHTML = html;
+	children = div.childNodes;
+	return children;
 }
 
 // returns just text from an element
 function get_text( element ){
-	var result = '';
+	var node = element.cloneNode();
+	node = remove_add( node );
+	return node.textContent;
+}
+
+function remove_add( element ){
 	var children = element.childNodes;
-	for( var i = 0; i < children.length; i++ ){
-		if(children[i].nodeType==3){
-			result += children[i].textContent;
+	for(var i = 0; i < children.length; i++){
+		if(children[i]=='X-ADD'){
+			element.removeChild( children[i] );
 		}
 	}
-	var node = document.createTextNode(result.trim());
-	return node;
+	return element;
 }

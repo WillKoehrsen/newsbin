@@ -256,13 +256,19 @@ x-add {
 	line-height:15px;
 	position:absolute;
 	margin-right: -15px;
-	margin-top: -15px;
+	top: -15px;
 	cursor:pointer;
 	color:green;
 	border-radius:15px;
+	background-color: white;
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 x-capture {
 	position:relative;
+}
+
+x-annotate {
+	background-color: #fff2cc;
+	cursor:pointer;
 }

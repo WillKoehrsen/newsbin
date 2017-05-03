@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, make_response
+from flask import Flask, request, render_template, make_response, abort
 
 import regex
 import os
@@ -41,17 +41,18 @@ def articles():
 
 @app.route('/refresh', methods=['POST'])
 def refresh():
-	people = request.values.get('people',None)
-	if people:
+	try:
+		pk = request.values.get('pk')
+		people = request.values.get('people')
+
 		article = session.query( models.Article ).get( pk )
 		article.set_people( people.split(';') )
 		tmp = utilities.annotate( article )
 		data = tmp.serialize()
 		session.commit()
 		return make_response(data)
-	else:
-		print('REFRESH: NO PEOPLE')
-
+	except:
+		return abort(404)
 
 @app.route('/annotations', methods=['GET','POST'])
 def annotations():
