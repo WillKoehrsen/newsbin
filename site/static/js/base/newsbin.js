@@ -53,7 +53,14 @@ function load_handler( response ){
 	layout.source.innerHTML = 'SOURCE: ' + response.source;
 	layout.link.innerHTML = 'ORIGINAL: <a href="' + response.link + '">link</a>';
 
+<<<<<<< HEAD
 	
+=======
+	var content_p = layout.content.getElementsByTagName('p');
+	for( var i = 0; i < content_p.length; i++ ){
+		content_p[i].addEventListener('mouseup',select_handler);
+	}
+>>>>>>> eca696d240732ffdacc3b7b8eff3dd479fe0b3c4
 }
 
 function refresh_handler( response ){
@@ -161,18 +168,13 @@ function refresh_requestor(){
 // -----------------------------------------------------------------------------
 // LISTENERS (EVENTS)
 window.addEventListener('scroll',scroll_handler);
-layout.content.addEventListener('mouseup',select_handler);
-
 layout.all_check.addEventListener('change',check_handler);
 layout.reg_check.addEventListener('change',check_handler);
 layout.pla_check.addEventListener('change',check_handler);
 
-
 for( var i = 0; i < layout.titles.length; i++ ){
 	layout.titles[i].addEventListener('click',load_requestor);
 }
-
-
 
 
 
