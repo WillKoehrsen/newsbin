@@ -12,10 +12,15 @@ app = Flask(__name__)
 @app.route('/', methods=['GET','POST'])
 def index():
 	all_sources = sorted(filters.all())
-	sources = request.values.get( 'sources', filters.string() ).split('|')
 	search = request.values.get( 'search', '' )
 	sort_descending_date = request.values.get( 'sort_descending_date', True )
-	number = int( request.values.get( 'results', 100 ) )
+	sources = request.values if request.values else { key:'' for key in all_sources }
+
+	results = request.values.get( 'results', 100 )
+	if not results:
+		number = 100
+	else:
+		number = int(results)
 
 	if sort_descending_date:
 		articles = session.query( models.Article ).filter( models.Article.source.in_(sources)).order_by( models.Article.publish_date.desc()).limit(number).all()
@@ -24,9 +29,9 @@ def index():
 
 	pattern = regex.compile( search )
 	articles = [ a for a in articles if pattern.search(a.title) or pattern.search(a.content) ]
-	all_checked = bool( sources in all_sources )
+	all_checked = bool( request.values.get('all',False) )
 
-	return render_template('index.html', all_sources=all_sources, results=number,search=search, checked=sources, all_checked=all_checked, articles=articles)
+	return render_template('index.html', all_sources=all_sources, results=number,search=search, all_checked=all_checked, articles=articles)
 
 @app.route('/articles', methods=['GET'])
 def articles():
@@ -60,14 +65,16 @@ def annotations():
 	if name:
 		try:
 			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
-			return make_response(annotation.summary)
+			data = annotation.serialize()
+			return make_response(data)
 		except:
 			try:
 				annotation = utilities.summarize(name,session)
-				print('added: ' + name)
-				return make_response(annotation.summary)
+				data = annotation.serialize()
+				return make_response(data)
 			except Exception as e:
-				return make_response('Annotation Not Found')
+				pass
+	return abort(404)
 
 @app.route('/about', methods=['GET'])
 def about():

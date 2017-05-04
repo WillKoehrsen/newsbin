@@ -2,7 +2,8 @@
 <html>
 	<head>
 		<title>newsbin</title>
-		<link rel="stylesheet" type="text/css" href="/static/css/newsbin.min.css" />
+		<!-- <link rel="stylesheet" type="text/css" href="/static/css/newsbin.min.css" /> -->
+		<link rel="stylesheet" type="text/css" href="/static/css/base/newsbin.css" />
 	</head>
 	<body>
 
@@ -20,16 +21,18 @@
 					<div id="sources">
 						Sources<br/>
 						<div id="choices" style="left:0;">
-							<input id="all_check" type="checkbox" name="all" include="source_check" value="true" /> All<br/>
+							<input id="all_check" type="checkbox" name="all" include="source_check" /> All<br/>
 							<div><span>C</span></div>
-							<input class="source_check" type="checkbox" name="cnn" value="true" /> CNN<br/>
-							<input class="source_check" type="checkbox" name="cnbc" value="true" /> CNBC<br/>
+							<input class="source_check" type="checkbox" name="cnn" /> CNN<br/>
+							<input class="source_check" type="checkbox" name="cnbc" /> CNBC<br/>
 							<div><span>F</span></div>
-							<input class="source_check" type="checkbox" name="foxnews" value="true" /> Fox News<br/>
+							<input class="source_check" type="checkbox" name="foxnews" /> Fox News<br/>
 							<div><span>N</span></div>
-							<input class="source_check" type="checkbox" name="nytimes" value="true" /> New York Times<br/>
+							<input class="source_check" type="checkbox" name="nytimes" /> New York Times<br/>
+							<div><span>R</span></div>
+							<input class="source_check" type="checkbox" name="reuters" /> Reuters<br/>
 							<div><span>W</span></div>
-							<input class="source_check" type="checkbox" name="washingtonpost" value="true" /> Washington Post<br/>
+							<input class="source_check" type="checkbox" name="washingtonpost" /> Washington Post<br/>
 						</div>
 					</div>
 				</span>
@@ -38,7 +41,7 @@
 			<div class="block">
 				<span>
 					<div id="results">
-						Number of results (max 1000): <input id="count" type="number" name="results" min="1" max="1000" />
+						Number of results (max 1000): <input id="count" type="number" name="results" min="1" max="1000" value="100" />
 					</div>
 				</span>
 			</div>&nbsp;
@@ -59,6 +62,12 @@
 						<a href="/about">about</a> |
 						<a href="/log" target="_blank">log</a>
 					</div>
+				</span>
+			</div>&nbsp;
+
+			<div class="block" id="message_window">
+				<span id="notification">
+					
 				</span>
 			</div>&nbsp;
 
@@ -103,6 +112,10 @@
 
 		</div>
 
-		<script src="/static/js/newsbin.min.js"></script>
+		<!-- <script src="/static/js/newsbin.min.js"></script> -->
+		<script src="/static/js/base/extend.js"></script>
+		<script src="/static/js/base/interface.js"></script>
+		<script src="/static/js/base/newsbin.js"></script>
+		<script src="/static/js/base/register.js"></script>
 	</body>
 </html>

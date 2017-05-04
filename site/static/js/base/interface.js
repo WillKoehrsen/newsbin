@@ -20,17 +20,20 @@ var network = {
 	// and then sending and receiving JSON data
 
 	points:{},
+	timeout:2000,
 
 	get: function( endpoint, args ){
 		if(endpoint in network.points){
 			var handle = new XMLHttpRequest();
 			var path = url( endpoint, args );
 
+			handle.open("GET", path, true);
+
 			handle.callback = network.points[endpoint];
 			handle.onload = this.receive;
 			handle.onerror = this.error;
 
-			handle.open("GET", path, true);
+			handle.timeout = this.timeout;
 			handle.send();
 		}
 	},
@@ -50,6 +53,7 @@ var network = {
 			handle.onerror = this.error;
 
 			handle.open("POST", path, true);
+			handle.timeout = this.timeout;
 			handle.send(form);
 		}
 	},
@@ -59,12 +63,16 @@ var network = {
 	},
 
 	receive: function(){
-		try{
-			var response = JSON.parse(this.responseText);
-			this.callback(response);
-		} catch (error){
-			console.log('ERROR:',error);
-			console.log('RESPONSE:',this.responseText);
+		if(this.status==200){
+			try{
+				var response = JSON.parse(this.responseText);
+				this.callback(response);
+			} catch (error){
+				console.log('ERROR:',error);
+				console.log('RESPONSE:',this.responseText);
+			}
+		} else {
+			this.callback({ summary:'Annotation Not Found' });
 		}
 	},
 

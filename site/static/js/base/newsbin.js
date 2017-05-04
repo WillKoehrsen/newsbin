@@ -1,25 +1,16 @@
 // -----------------------------------------------------------------------------
-// GLOBAL VARIABLES
+// LAYOUT ELEMENTS
 // -----------------------------------------------------------------------------
-var minus = '&minus;';
 
-var article = document.getElementById('article');
-var article_start = parseInt(window.getComputedStyle(article).marginTop);
-var all = document.getElementById('all');
-var regex = document.getElementById('regex');
-var plain = document.getElementById('plain');
+var example_summary = window.document.createElement('div');
 
-globals = {
-	people: null,
-	pk: null,
-	summary: null,
-}
 
 layout = {
 	// top DOM elements
 	all_check: document.querySelector('#all_check'),
 	reg_check: document.querySelector('#reg_check'),
 	pla_check: document.querySelector('#pla_check'),
+	sources: document.querySelector('#sources'),
 
 	// right-side DOM elements
 	article: document.querySelector('#article'),
@@ -34,16 +25,34 @@ layout = {
 
 	// left-side DOM elements
 	titles: document.querySelectorAll('.title'),
-
-	// a global to track the last highlighted text
-	last_capture:null,
-
-	// a global to track the last highlighted title
-	last_title:null,
 }
 
 // -----------------------------------------------------------------------------
-// RESPONSE HANDLERS
+// GLOBAL VARIABLES
+// -----------------------------------------------------------------------------
+globals = {
+	// a list of names for the current article
+	people: null,
+
+	// primary key of current article
+	pk: null,
+
+	// a summary of the current selection (annotation)
+	summary: null,
+
+	// a global to track the last highlighted text
+	capture:null,
+
+	// a global to track the last highlighted title
+	title:null,
+
+	// article starting position
+	start: parseInt(window.getComputedStyle(layout.article).marginTop),
+}
+
+// -----------------------------------------------------------------------------
+// HANDLERS: either response or to events
+// -----------------------------------------------------------------------------
 function load_handler( response ){
 
 	// build the html for the people list at the bottom
@@ -51,7 +60,7 @@ function load_handler( response ){
 	var people_html = '';
 	globals.people = response.people.split(';').filter(function(entry) { return entry.trim() != ''; });
 	for( var i=0; i<globals.people.length; i++){
-		people_html += '<span class="name">' + globals.people[i].trim() + '<x-remove onmousedown="remove_handler( this.parentNode )">&minus;</x-remove></span>';
+		people_html += '<span class="name">' + globals.people[i].trim() + '<x-remove onmousedown="remove_handler( this )">&minus;</x-remove></span>';
 	}
 
 	// fill all the parts of the article with the
@@ -71,7 +80,7 @@ function refresh_handler( response ){
 
 	globals.people = response.people.split(';').filter(function(entry) { return entry.trim() != ''; });
 	for( var i=0; i<globals.people.length; i++){
-		people_html += '<span class="name">' + globals.people[i].trim() + '<x-remove onmousedown="remove_handler( this.parentNode )">&minus;</x-remove></span>';
+		people_html += '<span class="name">' + globals.people[i].trim() + '<x-remove onmousedown="remove_handler( this )">&minus;</x-remove></span>';
 	}
 
 	layout.content.innerHTML = response.content;
@@ -82,52 +91,30 @@ function scroll_handler(){
 	var old_margin = parseInt(window.getComputedStyle(layout.article).marginTop);
 	var new_margin = (-top)+old_margin;
 
-	if(new_margin<article_start){
-		layout.article.style.marginTop = article_start + 'px';
+	if(new_margin<globals.start){
+		layout.article.style.marginTop = globals.start + 'px';
 	} else {
 		layout.article.style.marginTop = new_margin + 'px';
 	}
 }
 
-function select_handler() {
-	var last = layout.last_capture;
-	if (last!=null && last.parentNode!=null){
-		var children = last.childNodes;
-		var nodes = [];
-		for(var i = 0; i < children.length; i++){
-			var node = children[i];
-			if(node.nodeName!='X-ADD'){
-				nodes.push(node);
-			}
-		}
-		for(var i = 0; i < nodes.length; i++){
-			last.parentNode.insertBefore( nodes[i], last );
-		}
-		last.parentNode.removeChild( last );
-	}
-
+function select_handler( _event ) {
 	if( typeof(window.getSelection) != "undefined" ){
 		var selection = window.getSelection();
 		var range = selection.getRangeAt(0);
 
 		if( selection.rangeCount > 0 && !range.collapsed ) {
-			var new_capture = document.createElement("x-capture");
-
-			try {
-				range.surroundContents(new_capture);
-				var new_range = document.createRange();
-				new_range.selectNodeContents(new_capture);
-				selection.removeAllRanges();
-				selection.addRange(new_range);
-
-				var add_button = create_node('<x-add onmousedown="add_handler( this.parentNode )">&plus;</x-add>');
-				new_capture.appendChild(add_button);
-				layout.last_capture = new_capture;
-			} catch ( error ){
-
+			var text = range.toString();
+			if(text.length<50){
+				var notice = document.getElementById('notification');
+				notice.innerHTML='Add "' + text + '" as an annotation? <span onClick="add_handler(\'' + text + '\');clear_notification();">Yes</span> <span onClick="clear_notification();">No</span>';
 			}
 		}
 	}
+}
+
+function clear_notification(){
+	document.getElementById('notification').innerHTML = '';
 }
 
 function check_handler(){
@@ -152,12 +139,11 @@ function check_handler(){
 
 }
 
-function add_handler( element ){
+function add_handler( name ){
 	if(globals.people!=null){
-		var name = get_text( element );
 		if (globals.people.indexOf(name)<0){
 			globals.people.push(name);
-			layout.people.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_handler( this.parentNode )">&minus;</x-remove></span>';
+			layout.people.innerHTML += '<span class="name">' + name + '<x-remove onmousedown="remove_handler( this )">&minus;</x-remove></span>';
 			refresh_requestor();
 		}
 	}
@@ -165,33 +151,42 @@ function add_handler( element ){
 
 function remove_handler( element ){
 	if(globals.people!=null){
-		var name = get_text( element );
-		var index = globals.people.indexOf(name);
-		if( index >= 0 ){
-			globals.people.splice( index, 1 );
-			element.parentNode.removeChild( element );
-			refresh_requestor();
+		var parent = element.parentNode;
+		var gparent = parent.parentNode;
+
+		if(parent!=null&&gparent!=null){
+			parent.removeChild(element);
+			var name = parent.textContent;
+
+			gparent.removeChild(parent);
+
+			var index = globals.people.indexOf(name);
+			if( index >= 0 ){
+				globals.people.splice( index, 1 );
+				refresh_requestor();
+			}
 		}
 	}
 }
 
-function summary_handler( element ){
-	//console.log(element);
+function summary_handler( response ){
+	globals.summary.innerHTML = response.summary;
 }
 
 // -----------------------------------------------------------------------------
-// REQUESTORS
+// REQUESTORS: of endpoints
+// -----------------------------------------------------------------------------
 function load_requestor(){
 	var pk = this.getAttribute('pk');
 	network.get('articles', { id:pk });
 
 	globals.pk = pk;
 
-	if(layout.last_title){
-		layout.last_title.classList.remove('highlighted');
+	if(globals.title){
+		globals.title.classList.remove('highlighted');
 	}
 	this.classList.add('highlighted');
-	layout.last_title = this;
+	globals.title = this;
 }
 
 function refresh_requestor(){
@@ -202,22 +197,23 @@ function refresh_requestor(){
 }
 
 function summary_requestor( element ){
-	//console.log(element);
-	//var name = element.getAttribute('name');
+	var name = element.getAttribute('name');
 
-	//var summary = create_node('<div class="summary"><div class="loader"></div></div>');
-	//element.parentNode.insertBefore( new_summary, element );
+	var summary = document.createElement('div');
+	summary.className = 'summary';
+	summary.innerHTML = '<div class="loader"></div>';
 
-	//if(globals.summary!=null){
-	//	globals.summary.parentNode.removeChild( globals.summary );
-	//}
-
-	//globals.summary = summary;
-	//network.get('annotations',{ name:name }
+	element.attach_front( summary );
+	if(globals.summary!=null){
+		globals.summary.delete();
+	}
+	globals.summary = summary;
+	network.get('annotations',{ name:name })
 }
 
 // -----------------------------------------------------------------------------
-// LISTENERS (EVENTS)
+// LISTENER DECLARATIONS
+// -----------------------------------------------------------------------------
 window.addEventListener('scroll',scroll_handler);
 
 layout.all_check.addEventListener('change',check_handler);
@@ -226,52 +222,7 @@ layout.pla_check.addEventListener('change',check_handler);
 
 layout.content.addEventListener('mouseup',select_handler);
 
+
 for( var i = 0; i < layout.titles.length; i++ ){
 	layout.titles[i].addEventListener('click',load_requestor);
-}
-
-// -----------------------------------------------------------------------------
-// FUNCTIONS (MAIN)
-// -----------------------------------------------------------------------------
-
-// create the string for x-add elements
-function create_add( value ){
-
-}
-
-// create the string for x-remove elements
-function create_remove( value ){
-
-}
-
-// create an object (or collection of objects) from an html string
-function create_node( html ){
-	var div = document.createElement('div');
-	div.innerHTML = html;
-	children = div.childNodes;
-	return children[0];
-}
-
-function create_nodes( html ){
-	var div = document.createElement('div');
-	div.innerHTML = html;
-	children = div.childNodes;
-	return children;
-}
-
-// returns just text from an element
-function get_text( element ){
-	var node = element.cloneNode();
-	node = remove_add( node );
-	return node.textContent;
-}
-
-function remove_add( element ){
-	var children = element.childNodes;
-	for(var i = 0; i < children.length; i++){
-		if(children[i]=='X-ADD'){
-			element.removeChild( children[i] );
-		}
-	}
-	return element;
 }

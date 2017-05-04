@@ -22,7 +22,6 @@ body {
 }
 
 .block {
-	border:1px solid black;
 	display:inline-block;
 	height:40px;
 	padding:5px;
@@ -30,6 +29,10 @@ body {
 
 	display:flex;
 	align-items:center;
+
+	flex-shrink:0;
+
+	color:black;
 }
 
 .block>span {
@@ -38,15 +41,28 @@ body {
 	display:block;
 }
 
+#message_window {
+	border:1px solid grey;
+	flex-grow:1;
+}
+
+#notification span {
+	background-color:white;
+	border:1px solid black;
+	padding:2px;
+	cursor:pointer;
+}
+
 #sources {
 	position:relative;
 	background-color:white;
+	color:black;
 	cursor:pointer;
 	padding:3px;
 	width:100px;
 	text-align:center;
 	border:1px solid black;
-	color:black;
+	border-radius:1px;
 }
 
 #sources:hover #choices {
@@ -54,20 +70,21 @@ body {
 }
 
 #sources:hover {
-	border-bottom:1px solid white;
 }
 
 #sources>#choices {
 	padding:5px;
 	margin-top:4px;
 	margin-left:-1px;
-	width:150px;
+	width:200px;
 	display:none;
 	position:absolute;
 	z-index:1;
 	background-color:white;
+	color:black;
 	text-align:left;
 	border:1px solid black;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 #sources>#choices>div {
@@ -88,11 +105,15 @@ body {
 #results>#count {
 	padding:3px;
 	border:1px solid black;
+	background-color: lightgrey;
+	margin-left: 2px;
 }
 
 #searches>#search {
 	padding:3px;
 	border:1px solid black;
+	background-color: lightgrey;
+	margin-left: 2px;
 }
 
 #information>a {
@@ -101,9 +122,12 @@ body {
 
 #submit {
 	padding:5px;
-	background-color:white;
-	border:1px solid grey;
+	border:1px solid black;
 	cursor:pointer;
+	background-color: white;
+}
+#submit:hover {
+
 }
 
 /* -------------------------------------------------------------------------- */
@@ -119,8 +143,8 @@ body {
 	margin:0px;
 
 	position:relative;
-	height:2000px;
 	border:1px solid black;
+	background-color:white;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -130,8 +154,6 @@ body {
 	width:50%;
 	padding:10px;
 	display:inline-block;
-
-	background-color:#dddddd;
 }
 
 .title {
@@ -140,6 +162,7 @@ body {
 	padding:5px;
 	cursor:pointer;
 	background-color:white;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .highlighted {
@@ -154,7 +177,6 @@ body {
 	padding:10px;
 	display:inline-block;
 
-	background-color:#bfbfbf;
 	border-left:1px solid black;
 	text-align:center;
 }
@@ -171,12 +193,33 @@ body {
 
 	text-align:left;
 	background-color:white;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 	border:1px solid black;
+	position:relative;
+}
+
+#message_box {
+	max-height:0px;
+	transition:max-height 0.5s;
+	position:absolute;
+	width:calc(100% - 20px);
+	overflow:hidden;
+}
+
+#message_box:hover {
+	max-height:100px;
+}
+
+#message {
+	width:90%;
+	background-color:white;
+	margin: 0px auto 0px auto;
 }
 
 #article>#header {
 	padding:10px;
-	border: 1px solid grey;
+	background-color: yellow;
+	border:1px solid black;
 }
 
 #article>#header>#title {
@@ -249,21 +292,6 @@ x-remove {
 	color:red;
 }
 
-x-add {
-	height:15px;
-	width:15px;
-	text-align:center;
-	line-height:15px;
-	position:absolute;
-	margin-right: -15px;
-	top: -15px;
-	cursor:pointer;
-	color:green;
-	border-radius:15px;
-	background-color: white;
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-}
-
 x-capture {
 	position:relative;
 }
@@ -271,4 +299,12 @@ x-capture {
 x-annotate {
 	background-color: #fff2cc;
 	cursor:pointer;
+}
+
+div .summary {
+	max-height:100px;
+	padding:10px;
+	border: 1px solid black;
+	box-shadow: inset 1px 1px 5px rgba(0, 0, 0, 0.25);
+	overflow-y:scroll;
 }
