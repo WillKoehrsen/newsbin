@@ -6,18 +6,17 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/base/newsbin.css" />
 	</head>
 	<body>
+		<div id="container">
+			<form id="options">
 
-		<form id="options-container">
+				<!--
+				<div class="block">
+					<span>
+					</span>
+				</div>&nbsp;
+				-->
 
-			<!--
-			<div class="block">
-				<span>
-				</span>
-			</div>&nbsp;
-			-->
-
-			<div class="block">
-				<span>
+				<div class="block">
 					<div id="sources">
 						Sources<br/>
 						<div id="choices" style="left:0;">
@@ -35,80 +34,69 @@
 							<input class="source_check" type="checkbox" name="washingtonpost" /> Washington Post<br/>
 						</div>
 					</div>
-				</span>
-			</div>&nbsp;
+				</div>
 
-			<div class="block">
-				<span>
+				<div class="block" style="flex:2;">
 					<div id="results">
-						Number of results (max 1000): <input id="count" type="number" name="results" min="1" max="1000" value="100" />
+						Number (max 1000): <input id="count" type="number" name="results" min="1" max="1000" value="100" />
 					</div>
-				</span>
-			</div>&nbsp;
+				</div>
 
-			<div class="block">
-				<span>
+				<div class="block" style="flex:3;">
 					<div id="searches">
 						<input id="search" type="text" name="search" placeholder="Search" />
 						&nbsp;<input class="regex_check" id="reg_check" exclude="regex_check" type="checkbox" name="regex" value="true" /> regex
 						&nbsp;<input class="regex_check" id="pla_check" exclude="regex_check" type="checkbox" name="plain" value="true" checked/> plain
 					</div>
-				</span>
-			</div>&nbsp;
+				</div>
 
-			<div class="block">
-				<span>
+				<div class="block">
 					<div id="information">
 						<a href="/about">about</a> |
 						<a href="/log" target="_blank">log</a>
 					</div>
-				</span>
-			</div>&nbsp;
+				</div>
 
-			<div class="block" id="message_window">
-				<span id="notification">
-					
-				</span>
-			</div>&nbsp;
-
-			<div class="block">
-				<span>
+				<div class="block">
 					<input id='submit' type="submit" value="Apply" />
-				</span>
-			</div>&nbsp;
+				</div>
 
-		</form>
+			</form>
 
-		<div id="container">
 
-			<div id="title-container">
-
+			<div id="bottom-container">
 				{% for article in articles %}
 					<div class="title" pk="{{ article.id }}">
 						{{article.source}}: {{ article.title }}
 					</div>
 				{% endfor %}
-
 			</div>
+		</div>
 
-			<div id="article-container">
-				<div id="article">
-					<div id="header">
-						<span id="title"></span><br/>
-						<span id="author"></span>
-						<span id="publish_date"></span>
-					</div>
-					<div id="content">
-					</div>
-					<div id="people">
-					</div>
-					<div id="footer">
-						<span class="footer_items" id="id"></span>
-						<span class="footer_items" id="source"></span>
-						<span class="footer_items" id="link"></span>
-					</div>
+		<!-- modal window to display articles -->
+		<div id="blackscreen">
+
+			<div id="notification"></div>
+
+			<div id="article">
+				<div id="close">&times;</div>
+				<div id="header">
+					<span id="title"></span><br/>
+					<span id="author"></span>
+					<span id="publish_date"></span>
+				</div>
+				<div id="content">
+				</div>
+				<div id="people">
+				</div>
+				<div id="footer">
+					<span class="footer_items" id="id"></span>
+					<span class="footer_items" id="source"></span>
+					<span class="footer_items" id="link"></span>
 				</div>
 			</div>
+
+			<div id="annotation"></div>
 
 		</div>
 

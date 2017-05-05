@@ -6,12 +6,19 @@ body {
 	padding-bottom: 0px;
 	margin-top: 0px;
 	margin-bottom: 0px;
+	position: relative;
+}
+
+#container {
+	max-width:1000px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 /* -------------------------------------------------------------------------- */
 /* OPTIONS BAR */
 /* -------------------------------------------------------------------------- */
-#options-container {
+#options {
 	width:100%;
 
 	background-color:white;
@@ -22,35 +29,17 @@ body {
 }
 
 .block {
-	display:inline-block;
 	height:40px;
 	padding:5px;
 	margin:0px;
 
 	display:flex;
 	align-items:center;
+	justify-content: center;
 
-	flex-shrink:0;
+	flex:1;
 
 	color:black;
-}
-
-.block>span {
-	vertical-align:middle;
-	line-height:1em;
-	display:block;
-}
-
-#message_window {
-	border:1px solid grey;
-	flex-grow:1;
-}
-
-#notification span {
-	background-color:white;
-	border:1px solid black;
-	padding:2px;
-	cursor:pointer;
 }
 
 #sources {
@@ -107,6 +96,7 @@ body {
 	border:1px solid black;
 	background-color: lightgrey;
 	margin-left: 2px;
+	max-width:50px;
 }
 
 #searches>#search {
@@ -136,33 +126,29 @@ body {
 /* -------------------------------------------------------------------------- */
 /* BOTTOM CONTAINER */
 /* -------------------------------------------------------------------------- */
-#container {
+#bottom-container {
 	display: -webkit-flex;
 	display: flex;
 	padding:0px;
 	margin:0px;
 
+	flex-direction: column;
+	padding:5px;
+
 	position:relative;
-	border:1px solid black;
+	border:1px solid lightgrey;
 	background-color:white;
 }
 
 /* -------------------------------------------------------------------------- */
-/* TITLES (LEFT SIDE) */
+/* TITLES */
 /* -------------------------------------------------------------------------- */
-#title-container {
-	width:50%;
-	padding:10px;
-	display:inline-block;
-}
-
 .title {
 	border: 1px solid black;
 	margin-bottom:2px;
 	padding:5px;
 	cursor:pointer;
 	background-color:white;
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .highlighted {
@@ -170,50 +156,85 @@ body {
 }
 
 /* -------------------------------------------------------------------------- */
-/* ARTICLE CONTENT (RIGHT SIDE) */
+/* ARTICLE CONTENT MODAL*/
 /* -------------------------------------------------------------------------- */
-#article-container {
-	width:50%;
-	padding:10px;
-	display:inline-block;
-
-	border-left:1px solid black;
-	text-align:center;
-}
-
 #article {
-	max-height:calc(100vh - 20px);
-	max-width:100%;
+	max-height:90%;
+	max-width:980px;
 	padding:10px;
 	overflow-y:scroll;
 
-	margin-top:0px;
-	transition: margin-top 1s;
-
+	flex-grow:2;
 
 	text-align:left;
 	background-color:white;
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 	border:1px solid black;
-	position:relative;
+	position: relative;
 }
 
-#message_box {
-	max-height:0px;
-	transition:max-height 0.5s;
-	position:absolute;
-	width:calc(100% - 20px);
-	overflow:hidden;
+.expanded {
+	display:flex !important;
+	position:fixed;
+
+	align-items:center;
+	justify-content: center;
 }
 
-#message_box:hover {
-	max-height:100px;
+#blackscreen {
+	display:none;
+	height:100%;
+	width:100%;
+	top:0;
+	left:0;
+	text-align: center;
+
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
-#message {
-	width:90%;
-	background-color:white;
-	margin: 0px auto 0px auto;
+#notification {
+	visibility: hidden;
+	background-color: white;
+	width:300px;
+	max-height:100%;
+	padding:10px;
+	margin-right: 20px;
+	z-index: 2;
+}
+
+#notification>span {
+	border:1px solid grey;
+	cursor:pointer;
+	display:inline-block;
+	padding:3px;
+	text-align: center;
+}
+
+#annotation {
+	visibility: hidden;
+	background-color: white;
+	width:300px;
+	max-height:90%;
+	padding:10px;
+	margin-left: 20px;
+	z-index: 2;
+	text-align: left;
+	overflow-y: scroll;
+}
+
+#close {
+	position:fixed;
+	height:20px;
+	width:20px;
+	text-align:center;
+	line-height:20px;
+	padding-right: 1px;
+	top:15px;
+	right:15px;
+	border-radius: 20px;
+	cursor:pointer;
+	background-color: white;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 #article>#header {
@@ -290,10 +311,6 @@ x-remove {
 	margin-left: 3px;
 	cursor:pointer;
 	color:red;
-}
-
-x-capture {
-	position:relative;
 }
 
 x-annotate {

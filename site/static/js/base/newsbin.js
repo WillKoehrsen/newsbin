@@ -2,9 +2,6 @@
 // LAYOUT ELEMENTS
 // -----------------------------------------------------------------------------
 
-var example_summary = window.document.createElement('div');
-
-
 layout = {
 	// top DOM elements
 	all_check: document.querySelector('#all_check'),
@@ -12,7 +9,12 @@ layout = {
 	pla_check: document.querySelector('#pla_check'),
 	sources: document.querySelector('#sources'),
 
-	// right-side DOM elements
+	// article DOM elements
+	blackscreen: document.querySelector('#blackscreen'),
+	notification: document.querySelector('#notification'),
+	annotation: document.querySelector('#annotation'),
+
+
 	article: document.querySelector('#article'),
 	title: document.querySelector('#title'),
 	author: document.querySelector('#author'),
@@ -73,6 +75,8 @@ function load_handler( response ){
 	layout.id.innerHTML = 'ID: ' + response.id;
 	layout.source.innerHTML = 'SOURCE: ' + response.source;
 	layout.link.innerHTML = 'ORIGINAL: <a href="' + response.link + '">link</a>';
+
+	layout.blackscreen.classList.add('expanded');
 }
 
 function refresh_handler( response ){
@@ -106,15 +110,16 @@ function select_handler( _event ) {
 		if( selection.rangeCount > 0 && !range.collapsed ) {
 			var text = range.toString();
 			if(text.length<50){
-				var notice = document.getElementById('notification');
-				notice.innerHTML='Add "' + text + '" as an annotation? <span onClick="add_handler(\'' + text + '\');clear_notification();">Yes</span> <span onClick="clear_notification();">No</span>';
+				layout.notification.innerHTML='Add "' + text + '" as an annotation?<br/><span onClick="add_handler(\'' + text + '\');clear_notification();">Yes</span> <span onClick="clear_notification();">No</span>';
+				layout.notification.style.visibility = 'visible';
 			}
 		}
 	}
 }
 
 function clear_notification(){
-	document.getElementById('notification').innerHTML = '';
+	layout.notification.innerHTML = '';
+	layout.notification.style.visibility = 'hidden';
 }
 
 function check_handler(){
@@ -170,7 +175,7 @@ function remove_handler( element ){
 }
 
 function summary_handler( response ){
-	globals.summary.innerHTML = response.summary;
+	layout.annotation.innerHTML = response.summary;
 }
 
 // -----------------------------------------------------------------------------
@@ -199,22 +204,15 @@ function refresh_requestor(){
 function summary_requestor( element ){
 	var name = element.getAttribute('name');
 
-	var summary = document.createElement('div');
-	summary.className = 'summary';
-	summary.innerHTML = '<div class="loader"></div>';
-
-	element.attach_front( summary );
-	if(globals.summary!=null){
-		globals.summary.delete();
-	}
-	globals.summary = summary;
+	layout.annotation.innerHTML = '<div class="loader"></div>';
+	layout.annotation.style.visibility = 'visible';
 	network.get('annotations',{ name:name })
 }
 
 // -----------------------------------------------------------------------------
 // LISTENER DECLARATIONS
 // -----------------------------------------------------------------------------
-window.addEventListener('scroll',scroll_handler);
+//window.addEventListener('scroll',scroll_handler);
 
 layout.all_check.addEventListener('change',check_handler);
 layout.reg_check.addEventListener('change',check_handler);
@@ -222,6 +220,9 @@ layout.pla_check.addEventListener('change',check_handler);
 
 layout.content.addEventListener('mouseup',select_handler);
 
+document.getElementById('close').addEventListener('click',function(){
+		layout.blackscreen.classList.remove('expanded');
+});
 
 for( var i = 0; i < layout.titles.length; i++ ){
 	layout.titles[i].addEventListener('click',load_requestor);
