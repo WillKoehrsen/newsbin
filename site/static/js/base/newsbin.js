@@ -176,6 +176,7 @@ function remove_handler( element ){
 
 function summary_handler( response ){
 	layout.annotation.innerHTML = response.summary;
+	globals.annotation_open = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -212,7 +213,11 @@ function summary_requestor( element ){
 // -----------------------------------------------------------------------------
 // LISTENER DECLARATIONS
 // -----------------------------------------------------------------------------
-//window.addEventListener('scroll',scroll_handler);
+//window.addEventListener('click',function ( e ){
+//	if(e.target!=layout.annotation && layout.annotation.style.visibility == 'visible'){
+//		console.log('hide layout');
+//	}
+//});
 
 layout.all_check.addEventListener('change',check_handler);
 layout.reg_check.addEventListener('change',check_handler);
@@ -222,6 +227,10 @@ layout.content.addEventListener('mouseup',select_handler);
 
 document.getElementById('close').addEventListener('click',function(){
 		layout.blackscreen.classList.remove('expanded');
+		layout.annotation.style.visibility = 'hidden';
+		layout.annotation.innerHTML = '';
+		layout.notification.style.visibility = 'hidden';
+		layout.notification.innerHTML = '';
 });
 
 for( var i = 0; i < layout.titles.length; i++ ){
