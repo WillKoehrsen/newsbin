@@ -20,7 +20,7 @@ var network = {
 	// and then sending and receiving JSON data
 
 	points:{},
-	timeout:2000,
+	timeout:20000,
 
 	get: function( endpoint, args ){
 		if(endpoint in network.points){
@@ -34,6 +34,7 @@ var network = {
 			handle.onerror = this.error;
 
 			handle.timeout = this.timeout;
+			handle.ontimeout = this.error;
 			handle.send();
 		}
 	},
@@ -48,12 +49,14 @@ var network = {
 				form.append(key,args[key]);
 			}
 
+			handle.open("POST", path, true);
+
 			handle.callback = network.points[endpoint];
 			handle.onload = this.receive;
 			handle.onerror = this.error;
 
-			handle.open("POST", path, true);
 			handle.timeout = this.timeout;
+			handle.ontimeout = this.error;
 			handle.send(form);
 		}
 	},

@@ -20,33 +20,47 @@
 					<div id="sources">
 						Sources<br/>
 						<div id="choices" style="left:0;">
-							<input id="all_check" type="checkbox" name="all" include="source_check" /> All<br/>
+							{% if requested_all %}<input id="all_check" type="checkbox" name="all" include="source_check" checked/> All<br/>
+							{% else %}<input id="all_check" type="checkbox" name="all" include="source_check" /> All<br/>{% endif %}
 							<div><span>C</span></div>
-							<input class="source_check" type="checkbox" name="cnn" /> CNN<br/>
-							<input class="source_check" type="checkbox" name="cnbc" /> CNBC<br/>
+							{% if 'cnn' in sources %}<input class="source_check" type="checkbox" name="cnn" checked/> CNN<br/>
+							{% else %}<input class="source_check" type="checkbox" name="cnn" /> CNN<br/>{% endif %}
+							{% if 'cnbc' in sources %}<input class="source_check" type="checkbox" name="cnbc" checked/> CNBC<br/>
+							{% else %}<input class="source_check" type="checkbox" name="cnbc" /> CNBC<br/>{% endif %}
 							<div><span>F</span></div>
-							<input class="source_check" type="checkbox" name="foxnews" /> Fox News<br/>
+							{% if 'foxnews' in sources %}<input class="source_check" type="checkbox" name="foxnews" checked/> Fox News<br/>
+							{% else %}<input class="source_check" type="checkbox" name="foxnews" /> Fox News<br/>{% endif %}
 							<div><span>N</span></div>
-							<input class="source_check" type="checkbox" name="nytimes" /> New York Times<br/>
+							{% if 'nytimes' in sources %}<input class="source_check" type="checkbox" name="nytimes" checked/> New York Times<br/>
+							{% else %}<input class="source_check" type="checkbox" name="nytimes" /> New York Times<br/>{% endif %}
 							<div><span>R</span></div>
-							<input class="source_check" type="checkbox" name="reuters" /> Reuters<br/>
+							{% if 'reuters' in sources %}<input class="source_check" type="checkbox" name="reuters" checked/> Reuters<br/>
+							{% else %}<input class="source_check" type="checkbox" name="reuters" /> Reuters<br/>{% endif %}
 							<div><span>W</span></div>
-							<input class="source_check" type="checkbox" name="washingtonpost" /> Washington Post<br/>
+							{% if 'washingtonpost' in sources %}<input class="source_check" type="checkbox" name="washingtonpost" checked/> Washington Post<br/>
+							{% else %}<input class="source_check" type="checkbox" name="washingtonpost" /> Washington Post<br/>{% endif %}
 						</div>
 					</div>
 				</div>
 
 				<div class="block" style="flex:2;">
 					<div id="results">
-						Number (max 1000): <input id="count" type="number" name="results" min="1" max="1000" value="100" />
+						{% if results %}Number (max 1000): <input id="count" type="number" name="results" min="1" max="1000" value="{{ results }}" />
+						{% else %}Number (max 1000): <input id="count" type="number" name="results" min="1" max="1000" value="100" />{% endif %}
 					</div>
 				</div>
 
 				<div class="block" style="flex:3;">
 					<div id="searches">
-						<input id="search" type="text" name="search" placeholder="Search" />
-						&nbsp;<input class="regex_check" id="reg_check" exclude="regex_check" type="checkbox" name="regex" value="true" /> regex
-						&nbsp;<input class="regex_check" id="pla_check" exclude="regex_check" type="checkbox" name="plain" value="true" checked/> plain
+						{% if search %}<input id="search" type="text" name="search" placeholder="Search" value="{{ search }}" />
+						{% else %}<input id="search" type="text" name="search" placeholder="Search" />{% endif %}
+						{% if regex %}
+						&nbsp;<input class="regex_check" id="reg_check" exclude="regex_check" type="checkbox" name="regex" checked/> regex
+						&nbsp;<input class="regex_check" id="pla_check" exclude="regex_check" type="checkbox" name="plain"/> plain
+						{% else %}
+						&nbsp;<input class="regex_check" id="reg_check" exclude="regex_check" type="checkbox" name="regex"/> regex
+						&nbsp;<input class="regex_check" id="pla_check" exclude="regex_check" type="checkbox" name="plain" checked/> plain
+						{% endif %}
 					</div>
 				</div>
 

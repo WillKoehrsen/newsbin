@@ -13,8 +13,11 @@ app = Flask(__name__)
 def index():
 	all_sources = sorted(filters.all())
 	search = request.values.get( 'search', '' )
+	use_regex = request.values.get( 'regex', False )
 	sort_descending_date = request.values.get( 'sort_descending_date', True )
-	sources = request.values if request.values else { key:'' for key in all_sources }
+	sources = { key:value for key,value in request.values.items() if key in all_sources }
+	if not sources:
+		sources = { key:'' for key in all_sources }
 
 	results = request.values.get( 'results', 100 )
 	if not results:
@@ -27,11 +30,15 @@ def index():
 	else:
 		articles = session.query( models.Article ).filter( models.Article.source.in_(sources)).order_by( models.Article.publish_date.asc()).limit(number).all()
 
-	pattern = regex.compile( search )
-	articles = [ a for a in articles if pattern.search(a.title) or pattern.search(a.content) ]
-	all_checked = bool( request.values.get('all',False) )
+	if use_regex:
+		pattern = regex.compile( search )
+		articles = [ a for a in articles if pattern.search(a.title) or pattern.search(a.content) ]
+	else:
+		articles = [ a for a in articles if search in a.title or search in a.content ]
 
-	return render_template('index.html', all_sources=all_sources, results=number,search=search, all_checked=all_checked, articles=articles)
+	requested_all = sorted(list(sources.keys())) == sorted(all_sources)
+
+	return render_template('index.html', all_sources=all_sources, requested_all=requested_all, results=number, search=search, sources=sources, articles=articles, regex=use_regex)
 
 @app.route('/articles', methods=['GET'])
 def articles():
@@ -70,8 +77,9 @@ def annotations():
 		except:
 			try:
 				annotation = utilities.summarize(name,session)
-				data = annotation.serialize()
-				return make_response(data)
+				if annotation.name:
+					data = annotation.serialize()
+					return make_response(data)
 			except Exception as e:
 				pass
 	return abort(404)
