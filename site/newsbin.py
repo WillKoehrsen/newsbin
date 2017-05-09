@@ -61,6 +61,7 @@ def refresh():
 		article.set_people( people.split(';') )
 		tmp = utilities.annotate( article )
 		data = tmp.serialize()
+		
 		session.commit()
 		return make_response(data)
 	except:
