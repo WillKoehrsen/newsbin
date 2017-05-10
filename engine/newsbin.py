@@ -116,6 +116,8 @@ class Watcher(manager.Manager):
 
 class Engine:
 	def __init__( self, *args, **kwargs ):
+		print('Starting engine:')
+
 		self.sessionmaker = session_generator
 		self.sources = defaults.sources
 
@@ -134,6 +136,7 @@ class Engine:
 		#		is unique (not in database)
 		#		has a valid wikipedia page.
 		# it gets pushed to the database.
+		print('	starting Annotator')
 		self.annotator = Annotator(
 			sessionmaker=self.sessionmaker
 			)
@@ -143,6 +146,7 @@ class Engine:
 		# and update given article objects (from watcher).
 		# on success, it pushes articles to the database and
 		# passes the article content to passback (self.annotator ^)
+		print('	starting Fetcher')
 		self.fetcher = Fetcher(
 			passback=self.annotator.add,
 			sessionmaker=self.sessionmaker
@@ -152,6 +156,7 @@ class Engine:
 		# the watcher tracks all of the feeds in sources,
 		# assembles preliminary article objects, and gives them
 		# to passback (self.fetcher ^)
+		print('	starting Watcher')
 		self.watcher = Watcher(
 			passback=self.fetcher.add,
 			sessionmaker=self.sessionmaker,
@@ -175,6 +180,8 @@ class Engine:
 if __name__=='__main__':
 	log = logging.getLogger("newsbin.engine")
 	log.setLevel(logging.ERROR)
+
+	print('init log')
 
 	# create the logging file handler
 	fh = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_engine.log' ) )
