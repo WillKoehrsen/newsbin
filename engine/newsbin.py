@@ -8,9 +8,6 @@ import wikipedia
 import feedparser
 import logging
 
-# TODO: try to make script exit cleanly on interrupt (i.e., engine.stop())
-from signal import signal, SIGBREAK, SIGINT, SIGTERM
-
 from wikipedia.exceptions import DisambiguationError, PageError
 from sqlalchemy import exists
 from sqlalchemy.exc import IntegrityError
