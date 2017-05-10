@@ -2,6 +2,9 @@
 import sys
 import os
 
+# running under debug/production
+production = os.environ.get('PRODUCTION',False)
+
 # for config management
 from configparser import ConfigParser, ExtendedInterpolation
 
@@ -23,8 +26,16 @@ from shared import filters
 # load the config file from root/config
 config = ConfigParser( interpolation=ExtendedInterpolation() )
 config.read( os.path.join( root, 'config/newsbin.conf' ) )
-settings = SimpleNamespace( **config['settings'] )
 
-# attach to the database specified in the config file
-db_engine = create_engine( config['settings']['database'] )
+if production:
+    settings = SimpleNamespace( **config['production'] )
+
+    # attach to the database specified in the config file
+    db_engine = create_engine( config['production']['database'] )
+else:
+    settings = SimpleNamespace( **config['settings'] )
+
+    # attach to the database specified in the config file
+    db_engine = create_engine( config['settings']['database'] )
+
 session_generator = sessionmaker(bind=db_engine)
