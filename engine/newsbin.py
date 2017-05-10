@@ -58,8 +58,9 @@ class Annotator(manager.Manager):
 class Fetcher(manager.Manager):
 	def __init__( self, *args, **kwargs ):
 		self.passback = kwargs.pop('passback',None)
-		print('		loading en')
+		print('		loading "en"')
 		self.nlp = spacy.load('en')
+		print('		"en" loaded')
 		super(Fetcher, self).__init__( *args, **kwargs, callback=self.__operation )
 
 	def __operation( self, item, session ):
