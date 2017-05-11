@@ -1,4 +1,3 @@
-import spacy
 import regex
 import requests
 import queue
@@ -80,8 +79,9 @@ class Fetcher(manager.Manager):
 					raise
 
 		except IntegrityError as e:
-			pass
+			print(e)
 		except Exception as e:
+			print('{} exception while fetching article'.format(type(e)))
 			log.exception('{} exception while fetching article'.format(type(e)))
 
 	def __clean( self, name ):
@@ -116,6 +116,7 @@ class Watcher(manager.Manager):
 				if self.passback: self.passback( article )
 
 		except Exception as e:
+			print('{} exception while parsing feed'.format(type(e)))
 			log.exception('{} exception while parsing feed'.format(type(e)))
 
 class Engine:
@@ -170,6 +171,7 @@ class Engine:
 		# THREADS: 10 working queue
 
 	def start( self ):
+		print("Newsbin Engine Starting")
 		log.info("Newsbin Engine Starting")
 		#self.annotator.start()
 		self.fetcher.start()
