@@ -157,7 +157,7 @@ class Engine:
 		print('	starting Fetcher')
 		self.fetcher = Fetcher(
 			#passback=self.annotator.add,
-			workers=1,
+			workers=10,
 			sessionmaker=self.sessionmaker
 			)
 		# THREADS: 10 working queue
