@@ -16,7 +16,7 @@ class Article(Base):
 
 	content = Column(Text, nullable=True, unique=True)
 	people = Column(Text, nullable=True)
-	title = Column(String(250), nullable=True, unique=True)
+	title = Column(String(250), unique=True)
 	author = Column(String(250), nullable=True)
 	publish_date = Column(DateTime(timezone=True), nullable=True)
 

@@ -65,6 +65,8 @@ class Fetcher(manager.Manager):
 			content = item.filter.process( response.text )
 			item.update( **content )
 
+			print(item.title)
+
 			# --------------removed spaCy and entity recognition--------------
 			#people = self.__find_people( content['content'] )
 			#item.set_people( people )
@@ -79,7 +81,8 @@ class Fetcher(manager.Manager):
 					raise
 
 		except IntegrityError as e:
-			print(e)
+			pass
+			#print(e)
 		except Exception as e:
 			print('{} exception while fetching article'.format(type(e)))
 			log.exception('{} exception while fetching article'.format(type(e)))
