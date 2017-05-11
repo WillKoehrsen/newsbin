@@ -65,7 +65,7 @@ class Fetcher(manager.Manager):
 			content = item.filter.process( response.text )
 			item.update( **content )
 
-			print(item.title)
+			print('working: ' + item.title)
 
 			# --------------removed spaCy and entity recognition--------------
 			#people = self.__find_people( content['content'] )
@@ -157,6 +157,7 @@ class Engine:
 		print('	starting Fetcher')
 		self.fetcher = Fetcher(
 			#passback=self.annotator.add,
+			workers=1,
 			sessionmaker=self.sessionmaker
 			)
 		# THREADS: 10 working queue
