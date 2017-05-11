@@ -152,7 +152,7 @@ class Engine:
 		# passes the article content to passback (self.annotator ^)
 		print('	starting Fetcher')
 		self.fetcher = Fetcher(
-			passback=self.annotator.add,
+			#passback=self.annotator.add,
 			sessionmaker=self.sessionmaker
 			)
 		# THREADS: 10 working queue
