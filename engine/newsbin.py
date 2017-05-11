@@ -58,9 +58,6 @@ class Annotator(manager.Manager):
 class Fetcher(manager.Manager):
 	def __init__( self, *args, **kwargs ):
 		self.passback = kwargs.pop('passback',None)
-		print('		loading "en"')
-		self.nlp = spacy.load('en')
-		print('		"en" loaded')
 		super(Fetcher, self).__init__( *args, **kwargs, callback=self.__operation )
 
 	def __operation( self, item, session ):
@@ -68,9 +65,12 @@ class Fetcher(manager.Manager):
 			response = requests.get( item.link, verify=False )
 			content = item.filter.process( response.text )
 			item.update( **content )
-			people = self.__find_people( content['content'] )
-			item.set_people( people )
-			if self.passback: self.passback( *people )
+
+			# --------------removed spaCy and entity recognition--------------
+			#people = self.__find_people( content['content'] )
+			#item.set_people( people )
+			#if self.passback: self.passback( *people )
+
 			if item.title and item.content:
 				try:
 					session.add(item)
@@ -90,9 +90,11 @@ class Fetcher(manager.Manager):
 		return name.strip(' ,.?\"\'()!-\{\}[]<>\n|\\/')
 
 	def __find_people( self, content ):
-		article = self.nlp( content )
-		people = [ self.__clean( entity.text ) for entity in article.ents if entity.label_=='PERSON' ]
-		return [ p for p in people if p ]
+		# --------------removed spaCy and entity recognition--------------
+		#article = self.nlp( content )
+		#people = [ self.__clean( entity.text ) for entity in article.ents if entity.label_=='PERSON' ]
+		#return [ p for p in people if p ]
+		return None
 
 class Watcher(manager.Manager):
 	def __init__( self, *args, **kwargs ):
@@ -118,7 +120,7 @@ class Watcher(manager.Manager):
 
 class Engine:
 	def __init__( self, *args, **kwargs ):
-		print('Starting engine:')
+		print('init engine:')
 
 		self.sessionmaker = session_generator
 		self.sources = defaults.sources
@@ -138,10 +140,10 @@ class Engine:
 		#		is unique (not in database)
 		#		has a valid wikipedia page.
 		# it gets pushed to the database.
-		print('	starting Annotator')
-		self.annotator = Annotator(
-			sessionmaker=self.sessionmaker
-			)
+		#print('	starting Annotator')
+		#self.annotator = Annotator(
+		#	sessionmaker=self.sessionmaker
+		#	)
 		# THREADS: 10 working queue
 
 		# the fetcher tries to parse content from sites
@@ -169,21 +171,19 @@ class Engine:
 
 	def start( self ):
 		log.info("Newsbin Engine Starting")
-		self.annotator.start()
+		#self.annotator.start()
 		self.fetcher.start()
 		self.watcher.start()
 
 	def stop( self ):
 		log.info("Newsbin Engine Stopping")
-		self.annotator.stop()
+		#self.annotator.stop()
 		self.fetcher.stop()
 		self.watcher.stop()
 
 if __name__=='__main__':
 	log = logging.getLogger("newsbin.engine")
 	log.setLevel(logging.ERROR)
-
-	print('init log')
 
 	# create the logging file handler
 	fh = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_engine.log' ) )
