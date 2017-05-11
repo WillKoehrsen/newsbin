@@ -64,9 +64,6 @@ class Fetcher(manager.Manager):
 			response = requests.get( item.link, verify=False )
 			content = item.filter.process( response.text )
 			item.update( **content )
-
-			print('working: ' + item.title)
-
 			# --------------removed spaCy and entity recognition--------------
 			#people = self.__find_people( content['content'] )
 			#item.set_people( people )
@@ -82,7 +79,6 @@ class Fetcher(manager.Manager):
 
 		except IntegrityError as e:
 			pass
-			#print(e)
 		except Exception as e:
 			print('{} exception while fetching article'.format(type(e)))
 			log.exception('{} exception while fetching article'.format(type(e)))
@@ -157,7 +153,7 @@ class Engine:
 		print('	starting Fetcher')
 		self.fetcher = Fetcher(
 			#passback=self.annotator.add,
-			workers=10,
+			#workers=10,
 			sessionmaker=self.sessionmaker
 			)
 		# THREADS: 10 working queue
