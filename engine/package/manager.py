@@ -14,6 +14,7 @@ class Manager(Queue):
 		self.sessionmaker = kwargs.pop('sessionmaker')
 		self.running = False
 		self.workers = []
+		self.name = self.__class__.__name__
 
 		callback = kwargs.pop('callback',None)
 		if callback: self.__operation = callback
@@ -36,17 +37,21 @@ class Manager(Queue):
 				thread = threading.Thread(target=self.__worker, args=(session,))
 				self.workers.append( thread )
 				thread.start()
+			print('{} started {} workers'.format(self.name,len(self.workers)))
 
 	def stop( self ):
 		"""Stop the workers."""
+		print('{} stopping'.format(self.name))
 		if self.running:
 			self.looping = False
 			self.running = False
+			self.__clear()
 			for worker in self.workers:
 				self.put( None )
 			for worker in self.workers:
 				worker.join()
 			del self.workers[:]
+			print('{} stopped all workers'.format(self.name))
 
 	def __worker( self, session ):
 		"""Pulls items off the queue and passes to the callback."""
@@ -59,6 +64,12 @@ class Manager(Queue):
 					self.put( item )
 			else:
 				break
+
+	def __clear( self ):
+		with self.mutex:
+			self.queue.clear()
+			self.all_tasks_done.notify_all()
+			self.unfinished_tasks = 0
 
 	def __operation( self, item, session ):
 		"""A stub callback function."""

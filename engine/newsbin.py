@@ -6,6 +6,8 @@ import os
 import wikipedia
 import feedparser
 import logging
+import signal
+import sys
 
 from wikipedia.exceptions import DisambiguationError, PageError
 from sqlalchemy import exists
@@ -25,6 +27,7 @@ from package import settings
 # ------------------------------------------------------------------------------
 # GLOBALS
 log = None
+engine = None
 
 # ------------------------------------------------------------------------------
 # HOUSEKEEPING
@@ -125,7 +128,6 @@ class Engine:
 		self.sessionmaker = session_generator
 		self.sources = defaults.sources
 
-		self.annotator = None
 		self.fetcher = None
 		self.watcher = None
 
@@ -133,27 +135,11 @@ class Engine:
 		if not os.path.isfile( settings.database ):
 			models.Base.metadata.create_all(db_engine)
 
-
-		# the annotator accepts raw text from the fetcher
-		# and parses out entity names to create annotations.
-		# If the annotation:
-		#		is unique (not in database)
-		#		has a valid wikipedia page.
-		# it gets pushed to the database.
-		#print('	starting Annotator')
-		#self.annotator = Annotator(
-		#	sessionmaker=self.sessionmaker
-		#	)
-		# THREADS: 10 working queue
-
 		# the fetcher tries to parse content from sites
 		# and update given article objects (from watcher).
-		# on success, it pushes articles to the database and
-		# passes the article content to passback (self.annotator ^)
-		print('	starting Fetcher')
+		print('starting Fetcher')
+		log.info('starting Fetcher')
 		self.fetcher = Fetcher(
-			#passback=self.annotator.add,
-			#workers=10,
 			sessionmaker=self.sessionmaker
 			)
 		# THREADS: 10 working queue
@@ -161,7 +147,8 @@ class Engine:
 		# the watcher tracks all of the feeds in sources,
 		# assembles preliminary article objects, and gives them
 		# to passback (self.fetcher ^)
-		print('	starting Watcher')
+		print('starting Watcher')
+		log.info('starting Watcher')
 		self.watcher = Watcher(
 			passback=self.fetcher.add,
 			sessionmaker=self.sessionmaker,
@@ -171,7 +158,6 @@ class Engine:
 		# THREADS: 10 working queue
 
 	def start( self ):
-		print("Newsbin Engine Starting")
 		log.info("Newsbin Engine Starting")
 		#self.annotator.start()
 		self.fetcher.start()
@@ -183,9 +169,12 @@ class Engine:
 		self.fetcher.stop()
 		self.watcher.stop()
 
+def shutdown( signal, frame ):
+	engine.stop()
+
 if __name__=='__main__':
 	log = logging.getLogger("newsbin.engine")
-	log.setLevel(logging.ERROR)
+	log.setLevel(logging.DEBUG)
 
 	# create the logging file handler
 	fh = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_engine.log' ) )
@@ -194,6 +183,9 @@ if __name__=='__main__':
 
 	# add handler to log object
 	log.addHandler(fh)
+
+	# register the shutdown handler
+	signal.signal(signal.SIGINT, shutdown)
 
 	engine = Engine()
 	engine.start()
