@@ -81,8 +81,6 @@ class Manager(Queue):
 	def __clear( self ):
 		with self.mutex:
 			self.queue.clear()
-			self.all_tasks_done.notify_all()
-			self.unfinished_tasks = 0
 
 	def __operation( self, item, session ):
 		"""A stub callback function."""
