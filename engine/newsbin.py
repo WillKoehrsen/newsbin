@@ -138,6 +138,12 @@ def shutdown( signal, frame ):
 	engine.stop()
 
 if __name__=='__main__':
+	if '-v' in sys.argv:
+		verbose = True
+	else:
+		verbose = False
+
+
 	log = logging.getLogger("newsbin.engine")
 	log.setLevel(logging.DEBUG)
 
@@ -154,7 +160,8 @@ if __name__=='__main__':
 
 	# add handlers to log object
 	log.addHandler(file_h)
-	log.addHandler(console_h)
+	if verbose:
+		log.addHandler(console_h)
 
 	# register the shutdown signal
 	signal.signal(signal.SIGINT, shutdown)
