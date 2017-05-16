@@ -35,42 +35,19 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 # ------------------------------------------------------------------------------
-disambiguation = regex.compile('refer[s]?\s+to|stand\s+for\:')
-
-class Annotator(manager.Manager):
-	def __init__( self, *args, **kwargs ):
-		super(Annotator, self).__init__( *args, **kwargs, callback=self.__operation )
-
-	def __operation( self, name, session ):
-		try:
-			summary = wikipedia.summary(name)
-			if summary:
-				annotation = models.Annotation(name=name,summary=summary)
-				try:
-					session.add(annotation)
-					session.commit()
-				except:
-					session.rollback()
-					raise
-		except (DisambiguationError, IntegrityError, PageError) as e:
-			pass
-		except Exception as e:
-			log.exception('{} exception while processing annotation'.format(type(e)))
 
 class Fetcher(manager.Manager):
 	def __init__( self, *args, **kwargs ):
 		self.passback = kwargs.pop('passback',None)
 		super(Fetcher, self).__init__( *args, **kwargs, callback=self.__operation )
 
+		log.info('Fetcher initialized')
+
 	def __operation( self, item, session ):
 		try:
 			response = requests.get( item.link, verify=False )
 			content = item.filter.process( response.text )
 			item.update( **content )
-			# --------------removed spaCy and entity recognition--------------
-			#people = self.__find_people( content['content'] )
-			#item.set_people( people )
-			#if self.passback: self.passback( *people )
 
 			if item.title and item.content:
 				try:
@@ -82,21 +59,10 @@ class Fetcher(manager.Manager):
 
 		except IntegrityError as e:
 			pass
+		except ConnectionError as e:
+			log.warning('Connection reset (ConnectionError) while fetching article: {}'.format(item.link))
 		except Exception as e:
-			print('{} exception while fetching article'.format(type(e)))
 			log.exception('{} exception while fetching article'.format(type(e)))
-
-	def __clean( self, name ):
-		name = regex.sub( '\'s', '', name )
-		name = max( regex.split('\"|\(|\)|\,|\;',name), key=len )
-		return name.strip(' ,.?\"\'()!-\{\}[]<>\n|\\/')
-
-	def __find_people( self, content ):
-		# --------------removed spaCy and entity recognition--------------
-		#article = self.nlp( content )
-		#people = [ self.__clean( entity.text ) for entity in article.ents if entity.label_=='PERSON' ]
-		#return [ p for p in people if p ]
-		return None
 
 class Watcher(manager.Manager):
 	def __init__( self, *args, **kwargs ):
@@ -106,6 +72,8 @@ class Watcher(manager.Manager):
 		super(Watcher, self).__init__( *args, **kwargs, callback=self.__operation )
 		feeds = [ ( filters.lookup( source ), feed ) for source in self.sources for feed in self.sources[source] if filters.exists( source )  ]
 		self.add(*feeds)
+
+		log.info('Watcher initialized')
 
 	def __operation( self, block, session ):
 		site_filter = block[0]
@@ -118,7 +86,6 @@ class Watcher(manager.Manager):
 				if self.passback: self.passback( article )
 
 		except Exception as e:
-			print('{} exception while parsing feed'.format(type(e)))
 			log.exception('{} exception while parsing feed'.format(type(e)))
 
 class Engine:
@@ -137,8 +104,7 @@ class Engine:
 
 		# the fetcher tries to parse content from sites
 		# and update given article objects (from watcher).
-		print('starting Fetcher')
-		log.info('starting Fetcher')
+		log.info('Starting Fetcher')
 		self.fetcher = Fetcher(
 			sessionmaker=self.sessionmaker
 			)
@@ -147,8 +113,7 @@ class Engine:
 		# the watcher tracks all of the feeds in sources,
 		# assembles preliminary article objects, and gives them
 		# to passback (self.fetcher ^)
-		print('starting Watcher')
-		log.info('starting Watcher')
+		log.info('Starting Watcher')
 		self.watcher = Watcher(
 			passback=self.fetcher.add,
 			sessionmaker=self.sessionmaker,
@@ -176,15 +141,22 @@ if __name__=='__main__':
 	log = logging.getLogger("newsbin.engine")
 	log.setLevel(logging.DEBUG)
 
-	# create the logging file handler
-	fh = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_engine.log' ) )
-	formatter = logging.Formatter('[%(asctime)s] %(levelname)s:  %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
-	fh.setFormatter(formatter)
+	# format messages for log
+	_format = logging.Formatter('[%(asctime)s] %(levelname)s:  %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
 
-	# add handler to log object
-	log.addHandler(fh)
+	# create the file logging handler
+	file_h = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_engine.log' ) )
+	file_h.setFormatter(_format)
 
-	# register the shutdown handler
+	# create the console logging handler
+	console_h = logging.StreamHandler()
+	console_h.setFormatter(_format)
+
+	# add handlers to log object
+	log.addHandler(file_h)
+	log.addHandler(console_h)
+
+	# register the shutdown signal
 	signal.signal(signal.SIGINT, shutdown)
 
 	engine = Engine()

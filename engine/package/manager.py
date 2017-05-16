@@ -1,5 +1,8 @@
 from queue import Queue
 import threading
+import logging
+
+log = logging.getLogger("newsbin.engine")
 
 class Manager(Queue):
 	"""Add worker threads to the standard queue.Queue class.
@@ -37,21 +40,31 @@ class Manager(Queue):
 				thread = threading.Thread(target=self.__worker, args=(session,))
 				self.workers.append( thread )
 				thread.start()
-			print('{} started {} workers'.format(self.name,len(self.workers)))
+			log.info('{} has started {} workers'.format(self.name,len(self.workers)))
 
 	def stop( self ):
 		"""Stop the workers."""
-		print('{} stopping'.format(self.name))
 		if self.running:
+			log.info('{} is stopping'.format(self.name))
+
 			self.looping = False
 			self.running = False
 			self.__clear()
+
+			wcount = len(self.workers)
+
+			# stop all workers and wait for threads
+			# to end before deleting them.
 			for worker in self.workers:
 				self.put( None )
 			for worker in self.workers:
 				worker.join()
 			del self.workers[:]
-			print('{} stopped all workers'.format(self.name))
+
+			log.info('{} has stopped {} workers'.format(self.name,wcount))
+
+		else:
+			log.info('{} is not running'.format(self.name))
 
 	def __worker( self, session ):
 		"""Pulls items off the queue and passes to the callback."""
