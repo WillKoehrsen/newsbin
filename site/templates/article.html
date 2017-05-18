@@ -6,7 +6,11 @@
 	</head>
 	<body>
 		<div id="container">
-			<div id="article">
+			<form id="article" method="POST">
+
+				<input id="people_input" type="hidden" name="people">
+				<input type="hidden" name="id" value="{{ article.id }}">
+
 				<div id="header">
 					<h1>{{ article.title }}</h1>
 					<span id="author">AUTHOR: {% if article.author %}{{ article.author }}{% else %}None{% endif %}</span>
@@ -15,15 +19,15 @@
 				<div id="content">
 					{{article.content|safe}}
 				</div>
-				<div id="people">
-				</div>
+
+				<div id="people"></div>
 				<div id="footer">
 					<span>ID: {{ article.id }}</span>
 					<span>SOURCE: {{ article.source }}</span>
 					<span>ORIGINAL: <a href="{{ article.link }}" target="_blank">link</a></span>
 				</div>
 			</div>
-		</div>
+		</form>
 
 		<div id="blackscreen">
 			<div id="summary-close">close</div>
@@ -46,6 +50,11 @@
 			}
 
 			var pk = "{{ article.id }}";
+			var scroll_bottom = "{{ scroll_bottom }}";
+
+			if(scroll_bottom){
+				document.body.scrollTop = document.body.scrollHeight;
+			}
 
 			var pcontainer = document.getElementById('people');
 			for(var i = 0; i < people.length; i++){
@@ -54,45 +63,25 @@
 
 			document.getElementById('content').addEventListener('mouseup',select_handler);
 
-			function post(path, params, method) {
-				method = method || "post";
 
-				var form = document.createElement("form");
-				form.setAttribute("method", method);
-				form.setAttribute("action", path);
 
-				for(var key in params) {
-					if(params.hasOwnProperty(key)) {
-						var hiddenField = document.createElement("input");
-						hiddenField.setAttribute("type", "hidden");
-						hiddenField.setAttribute("name", key);
-						hiddenField.setAttribute("value", params[key]);
-
-						form.appendChild(hiddenField);
-					 }
-				}
-
-				document.body.appendChild(form);
-				form.submit();
-			}
-
+			// -----------------------------------------------------------------
+			// FUNCTIONS
 			function remove_handler( element ){
-				if(people!=null){
-					var parent = element.parentNode;
-					var gparent = parent.parentNode;
+				var parent = element.parentNode;
+				var gparent = parent.parentNode;
 
-					if(parent!=null&&gparent!=null){
-						parent.removeChild(element);
-						var name = parent.textContent;
-
-						gparent.removeChild(parent);
-
-						var index = people.indexOf(name);
-						if( index >= 0 ){
-							people.splice( index, 1 );
-							var tmp = people.join(';');
-							post('/article', {id:pk,people:tmp});
-						}
+				if(parent!=null&&gparent!=null){
+					parent.removeChild(element);
+					var name = parent.textContent;
+					var input = document.getElementById('people_input');
+					var article = document.getElementById('article');
+					var index = people.indexOf(name);
+					if( index >= 0 ){
+						people.splice( index, 1 );
+						var tmp = people.join(';');
+						input.value = tmp;
+						article.submit();
 					}
 				}
 			}
@@ -108,7 +97,8 @@
 							if(confirm('Do you want to add "' + text + '" as an annotation?')){
 								people.push(text);
 								tmp = people.join(';');
-								post('/article', {id:pk,people:tmp});
+								document.getElementById('people_input').value = tmp;
+								document.getElementById('article').submit();
 							}
 						}
 					}
@@ -118,7 +108,7 @@
 			function summary_requestor( element ){
 				var name = element.getAttribute('name');
 
-				
+
 
 				document.getElementById('blackscreen').style.display = "flex";
 			}

@@ -54,14 +54,15 @@ def article():
 	elif request.method == 'POST':
 		pk = request.form.get('id',None)
 		people = request.form.get('people','')
+		people = [ name for name in people.split(';') if name ]
 		try:
 			article = session.query( models.Article ).get( pk )
 
-			article.set_people( sorted(people.split(';')) )
+			article.set_people( sorted(people) )
 			article = utilities.annotate( article )
 
 			session.commit()
-			return render_template('article.html', article=article)
+			return render_template('article.html', article=article, scroll_bottom=True)
 		except Exception as e:
 			print(e)
 			return abort(404)
