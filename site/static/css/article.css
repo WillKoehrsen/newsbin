@@ -1,25 +1,7 @@
-
-body {
-	position:relative;
-}
-
 /* -------------------------------------------------------------------------- */
-/* ARTICLE */
+/* ARTICLE CONTENT MODAL*/
 /* -------------------------------------------------------------------------- */
-
-x-annotate {
-	background-color: #fff2cc;
-	cursor:pointer;
-}
-
-x-remove {
-	margin-left: 3px;
-	cursor:pointer;
-	color:red;
-}
-
 #container {
-	width:100%;
 	display:flex;
 	justify-content: center;
 }
@@ -27,36 +9,93 @@ x-remove {
 #article {
 	max-width:980px;
 	padding:10px;
+
+	flex-grow:1;
+
 	text-align:left;
 	background-color:white;
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 	border:1px solid black;
 }
 
-#header {
+#notification {
+	visibility: hidden;
+	background-color: white;
+	width:300px;
+	max-height:100%;
+	padding:10px;
+	margin-right: 20px;
+	border:1px solid black;
+}
+
+#notification>span {
+	border:1px solid grey;
+	cursor:pointer;
+	display:inline-block;
+	padding:3px;
+	text-align: center;
+}
+
+#annotation {
+	border:1px solid black;
+	visibility: hidden;
+	background-color: white;
+	width:300px;
+	max-height:90%;
+	padding:10px;
+	margin-left: 20px;
+	z-index: 2;
+	text-align: left;
+	overflow-y: scroll;
+}
+
+#article>#header {
 	padding:10px;
 	background-color: yellow;
 	border:1px solid black;
 }
 
-#content {
+#article>#header>#title {
+	font-size:1.25em;
+}
+
+#article>#header>#author {
+}
+
+#article>#header>#publish_date {
+
+}
+
+#article>#content {
 	padding:10px;
 }
 
-#people {
+#article>#people {
 	padding: 7px;
 	border:1px solid grey;
 }
 
-#people>.name {
+#article>#people>.name {
 	padding:2px;
 	border:1px solid lightgrey;
 	display:inline-block;
 	margin: 1px;
 }
 
-#footer {
+#article>#footer {
 	padding: 10px;
+}
+
+#article>#footer>#id {
+
+}
+
+#article>#footer>#source {
+
+}
+
+#article>#footer>#link {
+
 }
 
 .loader {
@@ -78,32 +117,23 @@ x-remove {
 
 
 /* -------------------------------------------------------------------------- */
-/* SUMMARY */
+/* ANNOTATION */
 /* -------------------------------------------------------------------------- */
-#blackscreen {
-	display:none;
-	align-items: center;
-	flex-direction: column;
-
-	background-color: rgba(0, 0, 0, 0.5);
-	position:absolute;
-	width:100%;
-	height:100%;
-	top:0;
-	left:0;
+x-remove {
+	margin-left: 3px;
+	cursor:pointer;
+	color:red;
 }
 
-#summary-box {
-	background-color: white;
-	max-width:500px;
-	max-height:90%;
-
-	overflow-y: scroll;
-	display: block;
+x-annotate {
+	background-color: #fff2cc;
+	cursor:pointer;
 }
 
-#summary-close {
-	background-color: white;
-	max-width:100px;
-	align-self: flex-end;
+div .summary {
+	max-height:100px;
+	padding:10px;
+	border: 1px solid black;
+	box-shadow: inset 1px 1px 5px rgba(0, 0, 0, 0.25);
+	overflow-y:scroll;
 }

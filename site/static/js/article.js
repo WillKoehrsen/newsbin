@@ -3,14 +3,7 @@
 // -----------------------------------------------------------------------------
 
 layout = {
-	// top DOM elements
-	all_check: document.querySelector('#all_check'),
-	reg_check: document.querySelector('#reg_check'),
-	pla_check: document.querySelector('#pla_check'),
-	sources: document.querySelector('#sources'),
-
 	// article DOM elements
-	blackscreen: document.querySelector('#blackscreen'),
 	notification: document.querySelector('#notification'),
 	annotation: document.querySelector('#annotation'),
 
@@ -24,9 +17,6 @@ layout = {
 	id: document.querySelector('#id'),
 	source: document.querySelector('#source'),
 	link: document.querySelector('#link'),
-
-	// left-side DOM elements
-	titles: document.querySelectorAll('.title'),
 }
 
 // -----------------------------------------------------------------------------
@@ -37,48 +27,18 @@ globals = {
 	people: null,
 
 	// primary key of current article
-	pk: null,
+	pk: layout.article.getAttribute('pk'),
 
 	// a summary of the current selection (annotation)
 	summary: null,
 
 	// a global to track the last highlighted text
 	capture:null,
-
-	// a global to track the last highlighted title
-	title:null,
-
-	// article starting position
-	start: parseInt(window.getComputedStyle(layout.article).marginTop),
 }
 
 // -----------------------------------------------------------------------------
 // HANDLERS: either response or to events
 // -----------------------------------------------------------------------------
-function load_handler( response ){
-
-	// build the html for the people list at the bottom
-	// of the article
-	var people_html = '';
-	globals.people = response.people.split(';').filter(function(entry) { return entry.trim() != ''; });
-	for( var i=0; i<globals.people.length; i++){
-		people_html += '<span class="name">' + globals.people[i].trim() + '<x-remove onmousedown="remove_handler( this )">&minus;</x-remove></span>';
-	}
-
-	// fill all the parts of the article with the
-	// appropriate values
-	layout.title.innerHTML = response.title;
-	layout.author.innerHTML = 'AUTHOR: ' + response.author;
-	layout.publish_date.innerHTML = 'PUBLISHED: ' + response.publish_date;
-	layout.content.innerHTML = response.content;
-	layout.people.innerHTML = people_html;
-	layout.id.innerHTML = 'ID: ' + response.id;
-	layout.source.innerHTML = 'SOURCE: ' + response.source;
-	layout.link.innerHTML = 'ORIGINAL: <a href="' + response.link + '">link</a>';
-
-	layout.blackscreen.classList.add('expanded');
-}
-
 function refresh_handler( response ){
 	var people_html = '';
 
@@ -90,20 +50,7 @@ function refresh_handler( response ){
 	layout.content.innerHTML = response.content;
 }
 
-function scroll_handler(){
-	var top = layout.article.getBoundingClientRect().top;
-	var old_margin = parseInt(window.getComputedStyle(layout.article).marginTop);
-	var new_margin = (-top)+old_margin;
-
-	if(new_margin<globals.start){
-		layout.article.style.marginTop = globals.start + 'px';
-	} else {
-		layout.article.style.marginTop = new_margin + 'px';
-	}
-}
-
 function select_handler( _event ) {
-	console.log('hola');
 	if( typeof(window.getSelection) != "undefined" ){
 		var selection = window.getSelection();
 		var range = selection.getRangeAt(0);
@@ -121,28 +68,6 @@ function select_handler( _event ) {
 function clear_notification(){
 	layout.notification.innerHTML = '';
 	layout.notification.style.visibility = 'hidden';
-}
-
-function check_handler(){
-	var include = this.getAttribute('include');
-	var exclude = this.getAttribute('exclude');
-
-	if(include){
-		var targets = document.getElementsByClassName(include);
-		for( var i = 0; i < targets.length; i++ ){
-			targets[i].checked = this.checked;
-		}
-	}
-
-	if(exclude){
-		var targets = document.getElementsByClassName(exclude);
-		for( var i = 0; i < targets.length; i++ ){
-			if(targets[i]!=this){
-				targets[i].checked = !this.checked;
-			}
-		}
-	}
-
 }
 
 function add_handler( name ){
@@ -183,19 +108,6 @@ function summary_handler( response ){
 // -----------------------------------------------------------------------------
 // REQUESTORS: of endpoints
 // -----------------------------------------------------------------------------
-function load_requestor(){
-	var pk = this.getAttribute('pk');
-	network.get('articles', { id:pk });
-
-	globals.pk = pk;
-
-	if(globals.title){
-		globals.title.classList.remove('highlighted');
-	}
-	this.classList.add('highlighted');
-	globals.title = this;
-}
-
 function refresh_requestor(){
 	if(globals.pk!=null){
 		var people_str = globals.people.join(';');
@@ -214,14 +126,12 @@ function summary_requestor( element ){
 // -----------------------------------------------------------------------------
 // LISTENER DECLARATIONS
 // -----------------------------------------------------------------------------
-//window.addEventListener('click',function ( e ){
-//	if(e.target!=layout.annotation && layout.annotation.style.visibility == 'visible'){
-//		console.log('hide layout');
-//	}
-//});
-
-layout.all_check.addEventListener('change',check_handler);
-layout.reg_check.addEventListener('change',check_handler);
-layout.pla_check.addEventListener('change',check_handler);
-
 layout.content.addEventListener('mouseup',select_handler);
+
+
+network.register('refresh', refresh_handler);
+network.register('annotations', summary_handler);
+
+
+
+refresh_requestor();
