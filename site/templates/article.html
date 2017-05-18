@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>newsbin</title>
+		<link rel="stylesheet" type="text/css" href="/static/css/article.css" />
+	</head>
+	<body>
+		<div id="container">
+			<div id="article">
+				<div id="header">
+					<h1>{{ article.title }}</h1>
+					<span id="author">AUTHOR: {% if article.author %}{{ article.author }}{% else %}None{% endif %}</span>
+					<span id="publish_date">PUBLISHED: {{ article.publish_date }}</span>
+				</div>
+				<div id="content">
+					{{article.content|safe}}
+				</div>
+				<div id="people">
+				</div>
+				<div id="footer">
+					<span>ID: {{ article.id }}</span>
+					<span>SOURCE: {{ article.source }}</span>
+					<span>ORIGINAL: <a href="{{ article.link }}" target="_blank">link</a></span>
+				</div>
+			</div>
+		</div>
+
+		<div id="blackscreen">
+			<div id="summary-close">close</div>
+			<div id="summary-box">
+				<div id="summary-thumbnail">
+					THUMBNAIL
+				</div>
+				<div id="summary-content">
+					CONTENT
+				</div>
+			<div>
+		</div>
+
+		<script>
+			var people = "{{ article.people }}";
+			if (people){
+				people = people.split(';');
+			} else {
+				people = [];
+			}
+
+			var pk = "{{ article.id }}";
+
+			var pcontainer = document.getElementById('people');
+			for(var i = 0; i < people.length; i++){
+				pcontainer.innerHTML += '<span class="name">' + people[i] + '<x-remove onmousedown="remove_handler( this )">&minus;</x-remove></span>';
+			}
+
+			document.getElementById('content').addEventListener('mouseup',select_handler);
+
+			function post(path, params, method) {
+				method = method || "post";
+
+				var form = document.createElement("form");
+				form.setAttribute("method", method);
+				form.setAttribute("action", path);
+
+				for(var key in params) {
+					if(params.hasOwnProperty(key)) {
+						var hiddenField = document.createElement("input");
+						hiddenField.setAttribute("type", "hidden");
+						hiddenField.setAttribute("name", key);
+						hiddenField.setAttribute("value", params[key]);
+
+						form.appendChild(hiddenField);
+					 }
+				}
+
+				document.body.appendChild(form);
+				form.submit();
+			}
+
+			function remove_handler( element ){
+				if(people!=null){
+					var parent = element.parentNode;
+					var gparent = parent.parentNode;
+
+					if(parent!=null&&gparent!=null){
+						parent.removeChild(element);
+						var name = parent.textContent;
+
+						gparent.removeChild(parent);
+
+						var index = people.indexOf(name);
+						if( index >= 0 ){
+							people.splice( index, 1 );
+							var tmp = people.join(';');
+							post('/article', {id:pk,people:tmp});
+						}
+					}
+				}
+			}
+
+			function select_handler( _event ) {
+				if( typeof(window.getSelection) != "undefined" ){
+					var selection = window.getSelection();
+					var range = selection.getRangeAt(0);
+
+					if( selection.rangeCount > 0 && !range.collapsed ) {
+						var text = range.toString();
+						if(text.length<50){
+							if(confirm('Do you want to add "' + text + '" as an annotation?')){
+								people.push(text);
+								tmp = people.join(';');
+								post('/article', {id:pk,people:tmp});
+							}
+						}
+					}
+				}
+			}
+
+			function summary_requestor( element ){
+				var name = element.getAttribute('name');
+
+				
+
+				document.getElementById('blackscreen').style.display = "flex";
+			}
+
+		</script>
+
+		<!--
+		<script src="/static/js/base/extend.js"></script>
+		<script src="/static/js/base/interface.js"></script>
+		<script src="/static/js/base/newsbin.js"></script>
+		<script src="/static/js/base/register.js"></script> -->
+	</body>
+</html>

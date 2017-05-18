@@ -2,19 +2,11 @@
 <html>
 	<head>
 		<title>newsbin</title>
-		<!-- <link rel="stylesheet" type="text/css" href="/static/css/newsbin.min.css" /> -->
-		<link rel="stylesheet" type="text/css" href="/static/css/base/newsbin.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/newsbin.css" />
 	</head>
 	<body>
 		<div id="container">
 			<form id="options">
-
-				<!--
-				<div class="block">
-					<span>
-					</span>
-				</div>&nbsp;
-				-->
 
 				<div class="block">
 					<div id="sources">
@@ -80,44 +72,17 @@
 
 			<div id="bottom-container">
 				{% for article in articles %}
-					<div class="title" pk="{{ article.id }}">
-						{{article.source}}: {{ article.title }}
+					<div class="title">
+						<a href="/article?id={{ article.id }}">{{article.source}}: {{ article.title }}</a>
 					</div>
 				{% endfor %}
 			</div>
 		</div>
 
-		<!-- modal window to display articles -->
-		<div id="blackscreen">
-
-			<div id="notification"></div>
-
-			<div id="article">
-				<div id="close">&times;</div>
-				<div id="header">
-					<span id="title"></span><br/>
-					<span id="author"></span>
-					<span id="publish_date"></span>
-				</div>
-				<div id="content">
-				</div>
-				<div id="people">
-				</div>
-				<div id="footer">
-					<span class="footer_items" id="id"></span>
-					<span class="footer_items" id="source"></span>
-					<span class="footer_items" id="link"></span>
-				</div>
-			</div>
-
-			<div id="annotation"></div>
-
-		</div>
-
-		<!-- <script src="/static/js/newsbin.min.js"></script> -->
-		<script src="/static/js/base/extend.js"></script>
-		<script src="/static/js/base/interface.js"></script>
-		<script src="/static/js/base/newsbin.js"></script>
-		<script src="/static/js/base/register.js"></script>
+		<!-- <script src="/static/js/newsbin.min.js"></script>
+		<script src="/static/js/extend.js"></script>
+		<script src="/static/js/interface.js"></script>
+		<script src="/static/js/newsbin.js"></script>
+		<script src="/static/js/register.js"></script> -->
 	</body>
 </html>

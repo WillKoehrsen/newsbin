@@ -1,0 +1,109 @@
+
+body {
+	position:relative;
+}
+
+/* -------------------------------------------------------------------------- */
+/* ARTICLE */
+/* -------------------------------------------------------------------------- */
+
+x-annotate {
+	background-color: #fff2cc;
+	cursor:pointer;
+}
+
+x-remove {
+	margin-left: 3px;
+	cursor:pointer;
+	color:red;
+}
+
+#container {
+	width:100%;
+	display:flex;
+	justify-content: center;
+}
+
+#article {
+	max-width:980px;
+	padding:10px;
+	text-align:left;
+	background-color:white;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+	border:1px solid black;
+}
+
+#header {
+	padding:10px;
+	background-color: yellow;
+	border:1px solid black;
+}
+
+#content {
+	padding:10px;
+}
+
+#people {
+	padding: 7px;
+	border:1px solid grey;
+}
+
+#people>.name {
+	padding:2px;
+	border:1px solid lightgrey;
+	display:inline-block;
+	margin: 1px;
+}
+
+#footer {
+	padding: 10px;
+}
+
+.loader {
+	margin-left:auto;
+	margin-right:auto;
+	vertical-align: middle;
+	border: 5px solid #f3f3f3; /* Light grey */
+	border-top: 5px solid #3498db; /* Blue */
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* SUMMARY */
+/* -------------------------------------------------------------------------- */
+#blackscreen {
+	display:none;
+	align-items: center;
+	flex-direction: column;
+
+	background-color: rgba(0, 0, 0, 0.5);
+	position:absolute;
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+}
+
+#summary-box {
+	background-color: white;
+	max-width:500px;
+	max-height:90%;
+
+	overflow-y: scroll;
+	display: block;
+}
+
+#summary-close {
+	background-color: white;
+	max-width:100px;
+	align-self: flex-end;
+}

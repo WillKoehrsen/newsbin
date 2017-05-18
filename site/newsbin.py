@@ -40,32 +40,33 @@ def index():
 
 	return render_template('index.html', all_sources=all_sources, requested_all=requested_all, results=number, search=search, sources=sources, articles=articles, regex=use_regex)
 
-@app.route('/articles', methods=['GET'])
-def articles():
-	pk = request.values.get('id',None)
-	if pk:
-		article = session.query( models.Article ).get( pk )
-		tmp = utilities.annotate( article )
-		data = tmp.serialize()
-		return make_response(data)
+@app.route('/article', methods=['GET','POST'])
+def article():
+	if request.method == 'GET':
+		pk = request.args.get('id',None)
+		try:
+			article = session.query( models.Article ).get( pk )
+			article = utilities.annotate( article )
+			return render_template('article.html', article=article)
+		except Exception as e:
+			print(e)
+			return abort(404)
+	elif request.method == 'POST':
+		pk = request.form.get('id',None)
+		people = request.form.get('people','')
+		try:
+			article = session.query( models.Article ).get( pk )
+
+			article.set_people( sorted(people.split(';')) )
+			article = utilities.annotate( article )
+
+			session.commit()
+			return render_template('article.html', article=article)
+		except Exception as e:
+			print(e)
+			return abort(404)
 	else:
-		print('ARTICLES: NO PK')
-
-@app.route('/refresh', methods=['POST'])
-def refresh():
-	try:
-		pk = request.values.get('pk')
-		people = request.values.get('people')
-
-		article = session.query( models.Article ).get( pk )
-		article.set_people( people.split(';') )
-		tmp = utilities.annotate( article )
-		data = tmp.serialize()
-		
-		session.commit()
-		return make_response(data)
-	except:
-		return abort(404)
+		return abort(501)
 
 @app.route('/annotations', methods=['GET','POST'])
 def annotations():

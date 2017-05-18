@@ -18,8 +18,8 @@ def collapse( names ):
 	return [ (key,(value,)) for key,value in collapsed.items() if key not in values ]
 
 def multi_replace( content, lookups ):
-	annotate = regex.compile('|'.join(regex.escape(key) for key in lookups.keys()),flags=regex.IGNORECASE)
-	content = regex.sub(annotate,lambda m: lookups[m.string[m.start():m.end()].lower()], content)
+	annotate = regex.compile('|'.join(regex.escape(key) for key in lookups.keys()))
+	content = regex.sub(annotate,lambda m: lookups[m.string[m.start():m.end()]], content)
 	return content
 
 def annotate( article):
@@ -27,7 +27,7 @@ def annotate( article):
 		article = copy.deepcopy(article)
 		content = article.content
 		names = sorted( set( article.get_people() ), key=lambda x: len(x), reverse=True )
-		replacements = { name.lower():'<x-annotate onclick="summary_requestor(this);" name="{0}">{0}</x-annotate>'.format(name) for name in names }
+		replacements = { name:'<x-annotate onclick="summary_requestor(this);" name="{0}">{0}</x-annotate>'.format(name) for name in names }
 		content = multi_replace( content, replacements )
 		article.content = content
 
