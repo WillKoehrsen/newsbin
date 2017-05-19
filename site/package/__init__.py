@@ -13,6 +13,9 @@ from sqlalchemy.orm import sessionmaker
 root = os.path.dirname( os.path.dirname( os.path.dirname( __file__ ) ) )
 sys.path.insert( 1, root )
 
+# to simplify the settings portion of config
+from types import SimpleNamespace
+
 # import everything from shared
 from shared import models, filters
 
