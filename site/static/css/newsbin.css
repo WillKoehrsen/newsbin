@@ -25,19 +25,17 @@ body {
 	padding-top:10px;
 	padding-bottom:10px;
 
-	display:flex;
+	text-align:center;
 }
 
 .block {
 	height:40px;
+	line-height:40px;
 	padding:5px;
 	margin:0px;
 
-	display:flex;
-	align-items:center;
-	justify-content: center;
-
-	flex:1;
+	display:inline-block;
+	white-space: nowrap;
 
 	color:black;
 }
@@ -49,6 +47,8 @@ body {
 	cursor:pointer;
 	padding:3px;
 	width:100px;
+	height:20px;
+	line-height:20px;
 	text-align:center;
 	border:1px solid black;
 	border-radius:1px;
@@ -115,6 +115,7 @@ body {
 	border:1px solid black;
 	cursor:pointer;
 	background-color: white;
+	line-height:20px;
 }
 #submit:hover {
 
@@ -149,6 +150,10 @@ body {
 	padding:5px;
 	cursor:pointer;
 	background-color:white;
+}
+
+.title>a {
+	color:black;
 }
 
 .highlighted {

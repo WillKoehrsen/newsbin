@@ -1,38 +1,125 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>newsbin</title>
+		<title>newsbin - {{ article.title }}</title>
 		<link rel="stylesheet" type="text/css" href="/static/css/article.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 	<body>
 		<div id="container">
 
-			<div id="notification"></div>
+			<form id="annotate" method="post">
+				<input id="name-input" type="text" name="annotation">
+				<input type="hidden" name="id" value="{{ article.id }}">
+				<input type="hidden" name="action" id="action" value="add">
+				<div id="slider"><div id="toggle" onClick="activate( this );">&nbsp;</div></div>
+				<script>
+					function activate( element ){
+						if(	element.classList.toggle( 'slide' ) ){
+							document.getElementById('action').setAttribute("value","remove");
+							element.parentNode.style.backgroundColor = "#c45a5a";
+						} else {
+							document.getElementById('action').setAttribute("value","add");
+							element.parentNode.style.backgroundColor = "#5ac469";
+						}
 
-			<div id="article" pk="{{ aritcle.id }}">
+					}
+				</script>
 
-				<div id="header">
-					<span id="title">{{ article.title }}</span>
-					<span id="author">AUTHOR: {% if article.author %}{{ article.author }}{% else %}None{% endif %}</span>
-					<span id="publish_date">PUBLISHED: {{ article.publish_date }}</span>
-				</div>
-				<div id="content">
-					{{article.content|safe}}
-				</div>
-				<div id="people" string="{{ article.people }}"></div>
-				<div id="footer">
-					<span class="footer_items" id="id">ID: {{ article.id }}</span>
-					<span class="footer_items" id="source">SOURCE: {{ article.source }}</span>
-					<span class="footer_items" id="link">ORIGINAL: <a href="{{ article.link }}" target="_blank">link</a></span>
+				<input id="annotate-button" type="submit" value="annotate">
+			</form>
+
+			<div id="blackscreen">
+				<div id="summary">
+					<div id="summary-close" onClick="close_summary();">close</div>
+					<div id="summary-title"></div>
+					<img id="summary-image" src="">
+					<div id="summary-content"></div>
+					<a href="#" target="_blank" id="summary-link">on wikipedia<div></div></a>
 				</div>
 			</div>
+			<script>
+				var bscreen = document.getElementById('blackscreen');
+				var summary_title = document.getElementById('summary-title');
+				var summary_image = document.getElementById('summary-image');
+				var summary_content = document.getElementById('summary-content');
+				var summary_link = document.getElementById('summary-link');
 
-			<div id="annotation"></div>
+				function close_summary(){
+					bscreen.style.display = "none";
+					summary_title.innerHTML = "";
+					summary_image.setAttribute("src","http://placehold.it/300x300");
+					summary_content.innerHTML = "";
+					summary_link.setAttribute("href","#");
+				}
+
+				function open_summary( title, image, content, link ){
+					bscreen.style.display = "flex";
+					summary_title.innerHTML = title;
+					summary_image.setAttribute("src","http://placehold.it/300x300");
+					summary_content.innerHTML = content;
+					summary_link.setAttribute("href",link);
+				}
+			</script>
+
+			<div id="article">
+
+				<div id="title">{{ article.title }}</div>
+
+				<div id="header">
+					<span id="author">{{ article.author }}</span>
+					<span id="publish_date">{{ article.publish_date }}</span>
+				</div>
+
+				<div id="content">{{ article.content|safe }}</div>
+
+				<div id="people">
+				{% if article.people %}
+					{% for name in people %}
+					<span class="name">{{ name }}</span>
+					{% endfor %}
+				{% endif %}
+				</div>
+
+				<div id="footer">
+					<span id="id">{{ article.id }}</span>
+					<span id="source">{{ article.source }}</span>
+					<span id="link"><a href="{{ article.link }}">original</a></span>
+				</div>
+
+			</div>
+
+			<script>
+				var annotations = document.getElementsByClassName('annotation');
+				for(var i =0; i <annotations.length;i++){
+					annotations[i].addEventListener("click",function (e){
+						var name = e.target.getAttribute('name');
+
+						var handle = new XMLHttpRequest();
+						var url = '/annotations?name=' + name;
+
+						handle.onload = function(){
+							if(this.status==200){
+								var response = JSON.parse(this.responseText);
+								open_summary( response.name, response.image, response.summary, "https://en.wikipedia.org/wiki/" + response.name )
+							}
+						}
+
+						handle.onerror = function(){
+							console.log(this);
+						}
+
+						handle.ontimeout = function(){
+							console.log(this);
+						}
+
+						handle.open("GET", url, true);
+						handle.send();
+					});
+				}
+			</script>
 
 		</div>
 
-		<script src="/static/js/extend.js"></script>
-		<script src="/static/js/interface.js"></script>
-		<script src="/static/js/article.js"></script>
 	</body>
 </html>

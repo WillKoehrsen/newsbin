@@ -3,6 +3,7 @@
 	<head>
 		<title>newsbin</title>
 		<link rel="stylesheet" type="text/css" href="/static/css/newsbin.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 	<body>
 		<div id="container">
@@ -73,16 +74,36 @@
 			<div id="bottom-container">
 				{% for article in articles %}
 					<div class="title">
-						<a href="/article?id={{ article.id }}">{{article.source}}: {{ article.title }}</a>
+						<a href="/article?id={{ article.id }}" target="_blank">{{article.source}}: {{ article.title }}</a>
 					</div>
 				{% endfor %}
 			</div>
-		</div>
 
-		<!-- <script src="/static/js/newsbin.min.js"></script>
-		<script src="/static/js/extend.js"></script>
-		<script src="/static/js/interface.js"></script>
-		<script src="/static/js/newsbin.js"></script>
-		<script src="/static/js/register.js"></script> -->
+			<script>
+				function check_handler(){
+					var include = this.getAttribute('include');
+					var exclude = this.getAttribute('exclude');
+
+					if(include){
+						var targets = document.getElementsByClassName(include);
+						for( var i = 0; i < targets.length; i++ ){
+							targets[i].checked = this.checked;
+						}
+					}
+
+					if(exclude){
+						var targets = document.getElementsByClassName(exclude);
+						for( var i = 0; i < targets.length; i++ ){
+							if(targets[i]!=this){
+								targets[i].checked = !this.checked;
+							}
+						}
+					}
+				}
+				document.getElementById('all_check').addEventListener('change',check_handler);
+				document.getElementById('reg_check').addEventListener('change',check_handler);
+				document.getElementById('pla_check').addEventListener('change',check_handler);
+			</script>
+		</div>
 	</body>
 </html>

@@ -32,7 +32,17 @@ class Article(Base):
 		self.people = ';'.join(set(names))
 
 	def get_people( self ):
-		return self.people.split(';')
+		return self.people.split(';') if self.people else []
+
+	def add_person( self, name ):
+		plist = self.get_people()
+		if name not in plist:
+			plist.append( name )
+			self.set_people(plist)
+
+	def del_person( self, name ):
+		plist = [ n for n in self.get_people() if n != name ]
+		self.set_people( plist )
 
 	def serialize( self ):
 		variables = { str(key):str(value) for key,value in vars( self ).items() if not key.startswith('_') }

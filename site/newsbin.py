@@ -53,38 +53,44 @@ def article():
 			return abort(404)
 	elif request.method == 'POST':
 		pk = request.form.get('id',None)
-		people = request.form.get('people','')
-		people = [ name for name in people.split(';') if name ]
-		try:
-			article = session.query( models.Article ).get( pk )
+		name = request.form.get('annotation',None)
+		action = request.form.get('action',None)
+		if pk and name and action:
+			try:
+				article = session.query( models.Article ).get( pk )
 
-			article.set_people( sorted(people) )
-			article = utilities.annotate( article )
+				if action=='add':
+					article.add_person( name )
+				elif action=='remove':
+					article.del_person( name )
 
-			session.commit()
-			return render_template('article.html', article=article, scroll_bottom=True)
-		except Exception as e:
-			print(e)
+				article = utilities.annotate( article )
+
+				session.commit()
+				return render_template('article.html', article=article, people=article.get_people() )
+			except Exception as e:
+				print(e)
+				return abort(404)
+		else:
 			return abort(404)
 	else:
 		return abort(501)
 
-@app.route('/annotations', methods=['GET','POST'])
+@app.route('/annotations', methods=['GET'])
 def annotations():
 	name = request.values.get('name',None)
-	if name:
+	try:
+		annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
+		data = annotation.serialize()
+		return make_response(data)
+	except:
 		try:
-			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
-			data = annotation.serialize()
-			return make_response(data)
-		except:
-			try:
-				annotation = utilities.summarize(name,session)
-				if annotation.name:
-					data = annotation.serialize()
-					return make_response(data)
-			except Exception as e:
-				pass
+			annotation = utilities.summarize(name,session)
+			if annotation.name:
+				data = annotation.serialize()
+				return make_response(data)
+		except Exception as e:
+			print(e)
 	return abort(404)
 
 @app.route('/about', methods=['GET'])

@@ -27,7 +27,7 @@ def annotate( article):
 		article = copy.deepcopy(article)
 		content = article.content
 		names = sorted( set( article.get_people() ), key=lambda x: len(x), reverse=True )
-		replacements = { name:'<x-annotate onclick="summary_requestor(this);" name="{0}">{0}</x-annotate>'.format(name) for name in names }
+		replacements = { name:'<span class="annotation" name="{0}">{0}</span>'.format(name) for name in names }
 		content = multi_replace( content, replacements )
 		article.content = content
 
@@ -37,6 +37,7 @@ def annotate( article):
 def summarize( name, session ):
 	summary = wikipedia.summary(name)
 	if summary:
+		summary = '\n'.join([ '<p>{}</p>'.format(p) for p in summary.split('\n') if p ])
 		annotation = Annotation(name=name,summary=summary)
 		try:
 			session.add( annotation )
