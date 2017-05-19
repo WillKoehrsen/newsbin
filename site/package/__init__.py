@@ -16,11 +16,23 @@ sys.path.insert( 1, root )
 # import everything from shared
 from shared import models, filters
 
+# get the production environment variable
+production = os.environ.get('PRODUCTION',False)
+
 # load the config file from root/config
 config = ConfigParser( interpolation=ExtendedInterpolation() )
 config.read( os.path.join( root, 'config/newsbin.conf' ) )
 
-# attach to the database specified in the config file
-db_engine = create_engine( config['settings']['database'] )
+if production:
+    settings = SimpleNamespace( **config['production'] )
+
+    # attach to the database specified in the config file
+    db_engine = create_engine( settings.database )
+else:
+    settings = SimpleNamespace( **config['settings'] )
+
+    # attach to the database specified in the config file
+    db_engine = create_engine( settings.database )
+
 session_generator = sessionmaker(bind=db_engine)
 session = session_generator()
