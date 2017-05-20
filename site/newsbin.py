@@ -103,11 +103,6 @@ def annotations():
 def about():
 	return render_template('about.html')
 
-@app.route('/log', methods=['GET'])
-def log():
-	return render_template('about.html')
-
-
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0')

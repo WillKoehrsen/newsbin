@@ -1,0 +1,5 @@
+[2017-05-20 09:13:30] ERROR:  test
+Traceback (most recent call last):
+  File "newsbin.py", line 51, in article
+    raise Exception('test')
+Exception: test
