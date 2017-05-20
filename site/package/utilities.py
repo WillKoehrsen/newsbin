@@ -30,7 +30,7 @@ def get_thumbnail( title ):
 		for key,data in pages.items():
 			return data['thumbnail']['source']
 	except Exception as e:
-		print('get_thumbnail: ' + e)
+		print('get_thumbnail: ' + str(e))
 		return ''
 
 def multi_replace( content, lookups ):
