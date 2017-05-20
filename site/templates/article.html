@@ -48,7 +48,7 @@
 				function close_summary(){
 					bscreen.style.display = "none";
 					summary_title.innerHTML = "";
-					summary_image.setAttribute("src","http://placehold.it/300x300");
+					summary_image.setAttribute("src","");
 					summary_content.innerHTML = "";
 					summary_link.setAttribute("href","#");
 				}
@@ -56,7 +56,7 @@
 				function open_summary( title, image, content, link ){
 					bscreen.style.display = "flex";
 					summary_title.innerHTML = title;
-					summary_image.setAttribute("src","http://placehold.it/300x300");
+					summary_image.setAttribute("src","");
 					summary_content.innerHTML = content;
 					summary_link.setAttribute("href",link);
 				}
