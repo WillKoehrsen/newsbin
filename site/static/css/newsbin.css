@@ -178,7 +178,7 @@ body {
 	100% { transform: rotate(360deg); }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
     #options {
 		display:flex;
 		flex-direction: column;
