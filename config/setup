@@ -1,2 +1,13 @@
+#!bin/bash
+
+# flask stuff
 export FLASK_APP=newsbin.py
 export FLASK_DEBUG=1
+
+# site stuff
+export PRODUCTION=1
+
+# other stuff
+export EDITOR=nano
+
+
