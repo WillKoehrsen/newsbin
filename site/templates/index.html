@@ -43,10 +43,15 @@
 					</div>
 				</div>
 
-				<div class="block" style="flex:3;">
+				<div class="block">
 					<div id="searches">
 						{% if search %}<input id="search" type="text" name="search" placeholder="Search" value="{{ search }}" />
 						{% else %}<input id="search" type="text" name="search" placeholder="Search" />{% endif %}
+					</div>
+				</div>
+
+				<div class="block">
+					<div id="plain_or_regex">
 						{% if regex %}
 						&nbsp;<input class="regex_check" id="reg_check" exclude="regex_check" type="checkbox" name="regex" checked/> regex
 						&nbsp;<input class="regex_check" id="pla_check" exclude="regex_check" type="checkbox" name="plain"/> plain

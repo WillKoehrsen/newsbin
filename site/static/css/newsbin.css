@@ -28,6 +28,20 @@ body {
 	text-align:center;
 }
 
+@media screen and (max-width: 400px) {
+    #options {
+		display:flex;
+		flex-direction: column;
+	}
+	#options>.block {
+		width:100%;
+	}
+	#sources {
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
 .block {
 	height:40px;
 	line-height:40px;
