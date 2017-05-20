@@ -58,7 +58,10 @@ def article():
 			with session_scope() as session:
 				article = session.query( models.Article ).get( pk )
 				if action=='add':
-					utilities.summarize(name)
+					try:
+						utilities.summarize(name)
+					except Exception as e:
+						log.exception(e)
 					article.unblacklist_name( name )
 				elif action=='remove':
 					article.blacklist_name(name)

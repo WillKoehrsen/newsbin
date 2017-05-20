@@ -65,5 +65,3 @@ def summarize( name ):
 			except:
 				session.rollback()
 		return annotation
-	else:
-		raise PageError('no summary found')
