@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm /home/mhouse/Projects/python/newsbin/data/logs/*.log
+
 git add -A
 git commit -m "pre-deploy commit"
 git push && git push live

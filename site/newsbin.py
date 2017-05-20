@@ -12,25 +12,15 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET','POST'])
 def index():
-	all_sources = sorted(filters.all())
+	all_sources = filters.all()
+	number = request.values.get( 'results', 100 ) or 100
 	search = request.values.get( 'search', '' )
 	use_regex = request.values.get( 'regex', False )
-	sort_descending_date = request.values.get( 'sort_descending_date', True )
-	sources = { key:value for key,value in request.values.items() if key in all_sources }
-	if not sources:
-		sources = { key:'' for key in all_sources }
-
-	results = request.values.get( 'results', 100 )
-	if not results:
-		number = 100
-	else:
-		number = int(results)
+	sources = [ item for item in request.values if item in all_sources ]
+	if not sources: sources = all_sources
 
 	with session_scope() as session:
-		if sort_descending_date:
-			articles = session.query( models.Article ).filter( models.Article.source.in_(sources)).order_by( models.Article.publish_date.desc()).limit(number).all()
-		else:
-			articles = session.query( models.Article ).filter( models.Article.source.in_(sources)).order_by( models.Article.publish_date.asc()).limit(number).all()
+		articles = session.query( models.Article ).filter( models.Article.source.in_(sources)).order_by( models.Article.publish_date.desc()).limit(number).all()
 
 		if use_regex:
 			pattern = regex.compile( search )
@@ -38,8 +28,7 @@ def index():
 		else:
 			articles = [ a for a in articles if search in a.title or search in a.content ]
 
-		requested_all = sorted(list(sources.keys())) == sorted(all_sources)
-
+		requested_all = sorted(sources)==sorted(all_sources)
 		return render_template('index.html', all_sources=all_sources, requested_all=requested_all, results=number, search=search, sources=sources, articles=articles, regex=use_regex)
 
 @app.route('/article', methods=['GET','POST'])
