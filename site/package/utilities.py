@@ -3,10 +3,13 @@ import sys
 import regex
 import copy
 
+from sqlalchemy import literal
+import requests
+
 import wikipedia
 from wikipedia.exceptions import PageError
 
-from shared.models import Annotation
+from shared.models import Annotation, Article
 
 def collapse( names ):
 	names = sorted( set(names), key=len, reverse=True)
@@ -17,16 +20,30 @@ def collapse( names ):
 	values = [ item for sublist in collapsed.values() for item in sublist ]
 	return [ (key,(value,)) for key,value in collapsed.items() if key not in values ]
 
+def get_thumbnail( title ):
+	try:
+		response = requests.get( 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&pithumbsize=300&titles={}'.format(title) )
+		pages = response.json()['query']['pages']
+		if len(pages) > 1: raise ValueError('too many results')
+
+		for key,data in pages.items():
+			return data['thumbnail']['source']
+	except Exception as e:
+		print('get_thumbnail: ' + e)
+		return ''
+
 def multi_replace( content, lookups ):
 	annotate = regex.compile('|'.join(regex.escape(key) for key in lookups.keys()))
 	content = regex.sub(annotate,lambda m: lookups[m.string[m.start():m.end()]], content)
 	return content
 
-def annotate( article):
-	if article.people:
+def annotate( article, session ):
+	names = [ anno.name for anno in session.query( Annotation ).filter( literal(article.content).contains(Annotation.name) ).all() if anno.name not in article.get_blacklist() ]
+
+	if names:
 		article = copy.deepcopy(article)
 		content = article.content
-		names = sorted( set( article.get_people() ), key=lambda x: len(x), reverse=True )
+
 		replacements = { name:'<span class="annotation" name="{0}">{0}</span>'.format(name) for name in names }
 		content = multi_replace( content, replacements )
 		article.content = content
@@ -38,7 +55,8 @@ def summarize( name, session ):
 	summary = wikipedia.summary(name)
 	if summary:
 		summary = '\n'.join([ '<p>{}</p>'.format(p) for p in summary.split('\n') if p ])
-		annotation = Annotation(name=name,summary=summary)
+		image_url = get_thumbnail( name )
+		annotation = Annotation(name=name,summary=summary,image=image_url)
 		try:
 			session.add( annotation )
 			session.commit()

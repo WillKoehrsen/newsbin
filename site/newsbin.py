@@ -46,10 +46,10 @@ def article():
 		pk = request.args.get('id',None)
 		try:
 			article = session.query( models.Article ).get( pk )
-			article = utilities.annotate( article )
+			article = utilities.annotate( article, session )
 			return render_template('article.html', article=article)
 		except Exception as e:
-			print(e)
+			print('exception: ' + str(e))
 			return abort(404)
 	elif request.method == 'POST':
 		pk = request.form.get('id',None)
@@ -59,17 +59,21 @@ def article():
 			try:
 				article = session.query( models.Article ).get( pk )
 
-				if action=='add':
-					article.add_person( name )
-				elif action=='remove':
-					article.del_person( name )
+				try:
+					if action=='add':
+						utilities.summarize(name,session)
+						article.unblacklist_name( name )
+					elif action=='remove':
+						article.blacklist_name(name)
+				except:
+					pass
 
-				article = utilities.annotate( article )
+				article = utilities.annotate( article, session )
 
 				session.commit()
-				return render_template('article.html', article=article, people=article.get_people() )
+				return render_template('article.html', article=article, blacklist=article.get_blacklist() )
 			except Exception as e:
-				print(e)
+				print('exception: ' + str(e))
 				return abort(404)
 		else:
 			return abort(404)

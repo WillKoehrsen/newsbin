@@ -113,3 +113,27 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
 [2017-05-16 05:59:24] INFO:  Fetcher has stopped 10 workers
 [2017-05-16 05:59:24] INFO:  Watcher is stopping
 [2017-05-16 05:59:29] INFO:  Watcher has stopped 10 workers
+[2017-05-19 23:10:56] INFO:  Starting Fetcher
+[2017-05-19 23:10:56] INFO:  Fetcher initialized
+[2017-05-19 23:10:56] INFO:  Starting Watcher
+[2017-05-19 23:10:56] INFO:  Watcher initialized
+[2017-05-19 23:10:56] INFO:  Newsbin Engine Starting
+[2017-05-19 23:10:56] INFO:  Fetcher has started 10 workers
+[2017-05-19 23:10:56] INFO:  Watcher has started 10 workers
+[2017-05-19 23:11:00] INFO:  Newsbin Engine Stopping
+[2017-05-19 23:11:00] INFO:  Fetcher is stopping
+[2017-05-19 23:11:00] INFO:  Fetcher has stopped 10 workers
+[2017-05-19 23:11:00] INFO:  Watcher is stopping
+[2017-05-19 23:11:02] INFO:  Watcher has stopped 10 workers
+[2017-05-19 23:11:06] INFO:  Starting Fetcher
+[2017-05-19 23:11:06] INFO:  Fetcher initialized
+[2017-05-19 23:11:06] INFO:  Starting Watcher
+[2017-05-19 23:11:06] INFO:  Watcher initialized
+[2017-05-19 23:11:06] INFO:  Newsbin Engine Starting
+[2017-05-19 23:11:06] INFO:  Fetcher has started 10 workers
+[2017-05-19 23:11:06] INFO:  Watcher has started 10 workers
+[2017-05-19 23:15:25] INFO:  Newsbin Engine Stopping
+[2017-05-19 23:15:25] INFO:  Fetcher is stopping
+[2017-05-19 23:15:25] INFO:  Fetcher has stopped 10 workers
+[2017-05-19 23:15:25] INFO:  Watcher is stopping
+[2017-05-19 23:15:30] INFO:  Watcher has stopped 10 workers

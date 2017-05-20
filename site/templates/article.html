@@ -56,7 +56,7 @@
 				function open_summary( title, image, content, link ){
 					bscreen.style.display = "flex";
 					summary_title.innerHTML = title;
-					summary_image.setAttribute("src","");
+					summary_image.setAttribute("src",image);
 					summary_content.innerHTML = content;
 					summary_link.setAttribute("href",link);
 				}
@@ -73,12 +73,15 @@
 
 				<div id="content">{{ article.content|safe }}</div>
 
-				<div id="people">
-				{% if article.people %}
-					{% for name in people %}
-					<span class="name">{{ name }}</span>
-					{% endfor %}
-				{% endif %}
+				<div id="blacklist-block">
+					<div style="font-weight:bold;">blacklist: </div>
+					<div id="blacklist">
+					{% if blacklist %}
+						{% for name in blacklist %}
+						<span class="name">{{ name }}</span>
+						{% endfor %}
+					{% endif %}
+					</div>
 				</div>
 
 				<div id="footer">

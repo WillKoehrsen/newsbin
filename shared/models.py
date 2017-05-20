@@ -15,7 +15,7 @@ class Article(Base):
 	source = Column(String(10), nullable=True)
 
 	content = Column(Text, nullable=True, unique=True)
-	people = Column(Text, nullable=True)
+	blacklist = Column(Text, nullable=True)
 	title = Column(String(250), unique=True)
 	author = Column(String(250), nullable=True)
 	publish_date = Column(DateTime(timezone=True), nullable=True)
@@ -28,21 +28,21 @@ class Article(Base):
 		for key, value in kwargs.items():
 			setattr(self, key, value)
 
-	def set_people( self, names ):
-		self.people = ';'.join(set(names))
+	def set_blacklist( self, names ):
+		self.blacklist = ';'.join(set(names))
 
-	def get_people( self ):
-		return self.people.split(';') if self.people else []
+	def get_blacklist( self ):
+		return self.blacklist.split(';') if self.blacklist else []
 
-	def add_person( self, name ):
-		plist = self.get_people()
+	def blacklist_name( self, name ):
+		plist = self.get_blacklist()
 		if name not in plist:
 			plist.append( name )
-			self.set_people(plist)
+			self.set_blacklist(plist)
 
-	def del_person( self, name ):
-		plist = [ n for n in self.get_people() if n != name ]
-		self.set_people( plist )
+	def unblacklist_name( self, name ):
+		plist = [ n for n in self.get_blacklist() if n != name ]
+		self.set_blacklist( plist )
 
 	def serialize( self ):
 		variables = { str(key):str(value) for key,value in vars( self ).items() if not key.startswith('_') }
