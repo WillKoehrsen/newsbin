@@ -9,7 +9,7 @@
 		<div id="container">
 			<form id="options">
 
-				<div class="block">
+				<div class="block" id="sources-block">
 					<div id="sources">
 						Sources<br/>
 						<div id="choices" style="left:0;">
@@ -36,7 +36,7 @@
 					</div>
 				</div>
 
-				<div class="block" style="flex:2;">
+				<div class="block">
 					<div id="results">
 						{% if results %}<span>Number (max 1000):</span><input id="count" type="number" name="results" min="1" max="1000" value="{{ results }}" />
 						{% else %}<span>Number (max 1000):</span><input id="count" type="number" name="results" min="1" max="1000" value="100" />{% endif %}
