@@ -38,8 +38,8 @@
 
 				<div class="block" style="flex:2;">
 					<div id="results">
-						{% if results %}Number (max 1000): <input id="count" type="number" name="results" min="1" max="1000" value="{{ results }}" />
-						{% else %}Number (max 1000): <input id="count" type="number" name="results" min="1" max="1000" value="100" />{% endif %}
+						{% if results %}<span>Number (max 1000):</span><input id="count" type="number" name="results" min="1" max="1000" value="{{ results }}" />
+						{% else %}<span>Number (max 1000):</span><input id="count" type="number" name="results" min="1" max="1000" value="100" />{% endif %}
 					</div>
 				</div>
 

@@ -28,20 +28,6 @@ body {
 	text-align:center;
 }
 
-@media screen and (max-width: 400px) {
-    #options {
-		display:flex;
-		flex-direction: column;
-	}
-	#options>.block {
-		width:100%;
-	}
-	#sources {
-		margin-left: auto;
-		margin-right: auto;
-	}
-}
-
 .block {
 	height:40px;
 	line-height:40px;
@@ -131,6 +117,7 @@ body {
 	background-color: white;
 	line-height:20px;
 }
+
 #submit:hover {
 
 }
@@ -189,4 +176,43 @@ body {
 @keyframes spin {
 	0% { transform: rotate(0deg); }
 	100% { transform: rotate(360deg); }
+}
+
+@media screen and (max-width: 400px) {
+    #options {
+		display:flex;
+		flex-direction: column;
+	}
+	#options>.block {
+		width:100%;
+		flex-shrink: 1;
+	}
+	#sources {
+		margin-left: auto;
+		margin-right: auto;
+		width:85% !important;
+		height:30px;
+		line-height: 30px;
+	}
+	#searches>#search {
+		width:85%;
+		height:30px;
+		text-align:center;
+	}
+	#results {
+		display:flex;
+		justify-content: center;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+	#results>#count {
+		flex:2;
+	}
+	#results>span {
+		flex:0;
+	}
+	#submit {
+		height:40px;
+		width:85%;
+	}
 }
