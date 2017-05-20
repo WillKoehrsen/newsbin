@@ -16,8 +16,7 @@ sys.path.insert( 1, root )
 
 # to simplify the settings portion of config
 from types import SimpleNamespace
-
-# import everything from shared
+from contextlib import contextmanager
 from shared import models, filters
 
 # get the production environment variable
@@ -39,7 +38,19 @@ else:
     db_engine = create_engine( settings.database )
 
 session_generator = sessionmaker(bind=db_engine)
-session = session_generator()
+
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    session = session_generator()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 # ------------------------------------------------------------------------------
 # init the log

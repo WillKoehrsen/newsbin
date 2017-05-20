@@ -10,6 +10,7 @@ import wikipedia
 from wikipedia.exceptions import PageError
 
 from shared.models import Annotation, Article
+from . import session_scope
 
 def collapse( names ):
 	names = sorted( set(names), key=len, reverse=True)
@@ -51,18 +52,18 @@ def annotate( article, session ):
 	article.content = ''.join([ '<p>{}</p>\n'.format(p) for p in article.content.split('\n\n') if p ])
 	return article
 
-def summarize( name, session ):
+def summarize( name ):
 	summary = wikipedia.summary(name)
-	print(summary)
 	if summary:
 		summary = '\n'.join([ '<p>{}</p>'.format(p) for p in summary.split('\n') if p ])
 		image_url = get_thumbnail( name )
 		annotation = Annotation(name=name,summary=summary,image=image_url)
-		try:
-			session.add( annotation )
-			session.commit()
-		except:
-			session.rollback()
+		with session_scope() as session:
+			try:
+				session.add( annotation )
+				session.commit()
+			except:
+				session.rollback()
 		return annotation
 	else:
 		raise PageError('no summary found')
