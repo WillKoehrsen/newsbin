@@ -64,14 +64,14 @@ def article():
 					if action=='add':
 						utilities.summarize(name,session)
 						article.unblacklist_name( name )
+						session.commit()
 					elif action=='remove':
 						article.blacklist_name(name)
+						session.commit()
 				except:
 					pass
 
 				article = utilities.annotate( article, session )
-
-				session.commit()
 				return render_template('article.html', article=article, blacklist=article.get_blacklist() )
 			except Exception as e:
 				log.exception(e)
