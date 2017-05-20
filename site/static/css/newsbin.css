@@ -194,6 +194,9 @@ body {
 		height:30px;
 		line-height: 30px;
 	}
+	#sources>#choices {
+		width: calc(100% - 10px);
+	}
 	#searches>#search {
 		width:85%;
 		height:30px;
