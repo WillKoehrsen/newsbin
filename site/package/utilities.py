@@ -53,6 +53,7 @@ def annotate( article, session ):
 
 def summarize( name, session ):
 	summary = wikipedia.summary(name)
+	print(summary)
 	if summary:
 		summary = '\n'.join([ '<p>{}</p>'.format(p) for p in summary.split('\n') if p ])
 		image_url = get_thumbnail( name )

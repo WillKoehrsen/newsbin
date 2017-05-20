@@ -1,6 +1,7 @@
 # system imports
 import sys
 import os
+import logging
 
 # for config management
 from configparser import ConfigParser, ExtendedInterpolation
@@ -39,3 +40,18 @@ else:
 
 session_generator = sessionmaker(bind=db_engine)
 session = session_generator()
+
+# ------------------------------------------------------------------------------
+# init the log
+log = logging.getLogger("newsbin.site")
+log.setLevel(logging.DEBUG)
+
+# format messages for log
+_format = logging.Formatter('[%(asctime)s] %(levelname)s:  %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
+
+# create the file logging handler
+file_h = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_site.log' ) )
+file_h.setFormatter(_format)
+
+# add handlers to log object
+log.addHandler(file_h)

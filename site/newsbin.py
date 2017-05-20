@@ -6,6 +6,7 @@ import json
 
 from package import filters, utilities
 from package import models, session
+from package import log
 
 app = Flask(__name__)
 
@@ -49,7 +50,7 @@ def article():
 			article = utilities.annotate( article, session )
 			return render_template('article.html', article=article)
 		except Exception as e:
-			print('exception: ' + str(e))
+			log.exception(e)
 			return abort(404)
 	elif request.method == 'POST':
 		pk = request.form.get('id',None)
@@ -73,9 +74,10 @@ def article():
 				session.commit()
 				return render_template('article.html', article=article, blacklist=article.get_blacklist() )
 			except Exception as e:
-				print('exception: ' + str(e))
+				log.exception(e)
 				return abort(404)
 		else:
+			log.warning('pk, name or action missing from request: pk:{} name:{} action:{}'.format(pk,name,action))
 			return abort(404)
 	else:
 		return abort(501)
@@ -94,7 +96,7 @@ def annotations():
 				data = annotation.serialize()
 				return make_response(data)
 		except Exception as e:
-			print(e)
+			log.exception(e)
 	return abort(404)
 
 @app.route('/about', methods=['GET'])
