@@ -17,7 +17,8 @@ class Article(Base):
 	content = Column(Text, nullable=True, unique=True)
 	blacklist = Column(Text, nullable=True)
 	title = Column(String(250), unique=True)
-	author = Column(String(250), nullable=True)
+	author = Column(String(100), nullable=True)
+	category = Column(String(250), nullable=True)
 	publish_date = Column(DateTime(timezone=True), nullable=True)
 
 	def __init__( self, *args, **kwargs ):

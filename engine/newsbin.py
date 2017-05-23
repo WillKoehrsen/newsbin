@@ -9,6 +9,7 @@ import logging
 import signal
 import sys
 
+from requests.exceptions import InvalidSchema
 from wikipedia.exceptions import DisambiguationError, PageError
 from sqlalchemy import exists
 from sqlalchemy.exc import IntegrityError
@@ -61,6 +62,8 @@ class Fetcher(manager.Manager):
 			pass
 		except ConnectionError as e:
 			log.warning('Connection reset (ConnectionError) while fetching article: {}'.format(item.link))
+		except InvalidSchema as e:
+			log.warning('Article is video/other (InvalidSchema) while fetching article: {}'.format(item.link))
 		except Exception as e:
 			log.exception('{} exception while fetching article'.format(type(e)))
 
@@ -70,19 +73,20 @@ class Watcher(manager.Manager):
 		self.passback = kwargs.pop('passback',None)
 
 		super(Watcher, self).__init__( *args, **kwargs, callback=self.__operation )
-		feeds = [ ( filters.lookup( source ), feed ) for source in self.sources for feed in self.sources[source] if filters.exists( source )  ]
+		feeds = [ item for item in self.sources if filters.exists( item[0] ) ]
 		self.add(*feeds)
 
 		log.info('Watcher initialized')
 
 	def __operation( self, block, session ):
-		site_filter = block[0]
-		feed = block[1]
+		source, feed, category = block
+		site_filter = filters.lookup(source)
+
 		time.sleep(5)
 		try:
 			rss = feedparser.parse( feed )
 			for item in rss['items']:
-				article = models.Article( title=item['title'], link=item['link'], filter=site_filter, source=site_filter.source_name )
+				article = models.Article( title=item['title'], link=item['link'], filter=site_filter, source=source, category=category )
 				if self.passback: self.passback( article )
 
 		except Exception as e:
