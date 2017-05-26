@@ -226,7 +226,7 @@ input[type=checkbox] {
 	color:rgba(0,0,0,0.7);
 }
 
-label {
+.title-card-label {
 	font-weight:bold;
 }
 
