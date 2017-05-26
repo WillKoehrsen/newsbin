@@ -1,128 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<title>newsbin - {{ article.title }}</title>
-		<link rel="stylesheet" type="text/css" href="/static/css/article.css" />
+		<!-- Meta Declarations -->
+		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- End Meta Declarations -->
+
+		<title>newsbin - {{ article.title }}</title>
+
+		<!-- External Stylesheets -->
+		<link rel="stylesheet" type="text/css" href="/static/css/index.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/article.css" />
+		<!-- End External Stylesheets -->
+
 	</head>
 	<body>
-		<div id="container">
 
-			<form id="annotate" method="post">
-				<input id="name-input" type="text" name="annotation">
-				<input type="hidden" name="id" value="{{ article.id }}">
-				<input type="hidden" name="action" id="action" value="add">
-				<div id="slider"><div id="toggle" onClick="activate( this );">&nbsp;</div></div>
-				<script>
-					function activate( element ){
-						if(	element.classList.toggle( 'slide' ) ){
-							document.getElementById('action').setAttribute("value","remove");
-							element.parentNode.style.backgroundColor = "#c45a5a";
-						} else {
-							document.getElementById('action').setAttribute("value","add");
-							element.parentNode.style.backgroundColor = "#5ac469";
-						}
+		<div id="js-annotation-modal" class="modal-window"></div>
 
-					}
-				</script>
+		<div class="container">
 
-				<input id="annotate-button" type="submit" value="annotate">
-			</form>
+			<div class="sub-container side-container">
 
-			<div id="blackscreen">
-				<div id="summary">
-					<div id="summary-close" onClick="close_summary();">close</div>
-					<div id="summary-title"></div>
-					<img id="summary-image" src="">
-					<div id="summary-content"></div>
-					<a href="#" target="_blank" id="summary-link">on wikipedia<div></div></a>
-				</div>
-			</div>
-			<script>
-				var bscreen = document.getElementById('blackscreen');
-				var summary_title = document.getElementById('summary-title');
-				var summary_image = document.getElementById('summary-image');
-				var summary_content = document.getElementById('summary-content');
-				var summary_link = document.getElementById('summary-link');
+				<form action="/article" method="post" class="block" autocomplete="off">
+					<div class="header">Annotate</div>
+					<input type="hidden" name="id" value="{{ article.id }}">
+					<input class="annotation-input" type="text" name="annotation">
+					<input type="submit" class="item button" name="add" value="Add">
+					<input type="submit" class="item button" name="remove" value="Remove">
 
-				function close_summary(){
-					bscreen.style.display = "none";
-					summary_title.innerHTML = "";
-					summary_image.setAttribute("src","");
-					summary_content.innerHTML = "";
-					summary_link.setAttribute("href","#");
-				}
+				</form>
 
-				function open_summary( title, image, content, link ){
-					bscreen.style.display = "flex";
-					summary_title.innerHTML = title;
-					summary_image.setAttribute("src",image);
-					summary_content.innerHTML = content;
-					summary_link.setAttribute("href",link);
-				}
-			</script>
-
-			<div id="article">
-
-				<div id="title">{{ article.title }}</div>
-
-				<div id="header">
-					<span id="author">{{ article.author }}</span>
-					<span id="publish_date">{{ article.publish_date }}</span>
+				<div class="block whiteout">
+					<div class="header">Blacklist</div>
+					<div class="blacklist{{ ' fadelist' if not blacklist }}">{{ blacklist if blacklist else 'nothing here' }}</div>
 				</div>
 
-				<div id="content">{{ article.content|safe }}</div>
-
-				<div id="blacklist-block">
-					<div style="font-weight:bold;">blacklist: </div>
-					<div id="blacklist">
-					{% if blacklist %}
-						{% for name in blacklist %}
-						<span class="name">{{ name }}</span>
-						{% endfor %}
-					{% endif %}
-					</div>
-				</div>
-
-				<div id="footer">
-					<span id="id">{{ article.id }}</span>
-					<span id="source">{{ article.source }}</span>
-					<span id="link"><a href="{{ article.link }}">original</a></span>
+				<div class="block information-block">
+					<div class="header">Information</div>
+					<a href="/" class="item">Main</a>
+					<a href="/about" class="item">About</a>
+					<a href="https://github.com/mjhouse/newsbin" target="_blank" class="item">Github</a>
 				</div>
 
 			</div>
-
-			<script>
-				var annotations = document.getElementsByClassName('annotation');
-				for(var i =0; i <annotations.length;i++){
-					annotations[i].addEventListener("click",function (e){
-						var name = e.target.getAttribute('name');
-
-						var handle = new XMLHttpRequest();
-						var url = '/annotations?name=' + name;
-
-						handle.onload = function(){
-							if(this.status==200){
-								var response = JSON.parse(this.responseText);
-								open_summary( response.name, response.image, response.summary, "https://en.wikipedia.org/wiki/" + response.name )
-							}
-						}
-
-						handle.onerror = function(){
-							console.log(this);
-						}
-
-						handle.ontimeout = function(){
-							console.log(this);
-						}
-
-						handle.open("GET", url, true);
-						handle.send();
-					});
-				}
-			</script>
-
+			<div class="sub-container main-container">
+				<div class="article-title">{{ article.title }}</div>
+				<div class="information article-information">
+					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
+					<div class="author"><span class="title-card-label">author: </span>{{ article.author }}</div>
+					<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
+					<div class="date"><span class="title-card-label">published: </span>{{ article.published_date }}</div>
+				</div>
+				<div class="article-content">
+					{{ article.content|safe }}
+				</div>
+				<div class="information article-information">
+					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
+					<div class="id"><span class="title-card-label">id: </span>{{ article.id }}</div>
+				</div>
+				<div class="footer">
+					newsbin &copy; <span id="js-footer-year">2017</span> Michael House
+				</div>
+			</div>
 		</div>
-
+		<!-- External Javascript -->
+		<script src="/static/js/article.js"></script>
+		<!-- End External Javascript -->
 	</body>
 </html>

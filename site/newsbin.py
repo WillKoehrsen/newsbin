@@ -10,26 +10,31 @@ from package import log
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET','POST'])
+@app.route('/', methods=['GET'])
 def index():
-	all_sources = filters.all()
-	number = request.values.get( 'results', 100 ) or 100
-	search = request.values.get( 'search', '' )
-	use_regex = request.values.get( 'regex', False )
-	sources = [ item for item in request.values if item in all_sources ]
-	if not sources: sources = all_sources
+	options = request.values.to_dict()
+	sources = filters.all()
+
+	if not 'count' in options: options['count'] = 100
+	if 'all' in options or set(options.keys()).isdisjoint(sources):
+		options.update({ key:'on' for key in sources })
+		options['all'] = 'on'
 
 	with session_scope() as session:
-		articles = session.query( models.Article ).filter( models.Article.source.in_(sources)).order_by( models.Article.publish_date.desc()).limit(number).all()
+		articles = session.query( models.Article ).filter( models.Article.source.in_(options)).order_by( models.Article.publish_date.desc()).limit(int(options['count'])).all()
 
-		if use_regex:
+		search = options.get('search','')
+		if 'regex' in options:
 			pattern = regex.compile( search )
 			articles = [ a for a in articles if pattern.search(a.title) or pattern.search(a.content) ]
 		else:
+			options['plain'] = 'on'
 			articles = [ a for a in articles if search in a.title or search in a.content ]
 
-		requested_all = sorted(sources)==sorted(all_sources)
-		return render_template('index.html', all_sources=all_sources, requested_all=requested_all, results=number, search=search, sources=sources, articles=articles, regex=use_regex)
+		return render_template('index.html', **options, articles=articles)
+
+	# couldn't get a session for some reason
+	return abort(404)
 
 @app.route('/article', methods=['GET','POST'])
 def article():
@@ -42,23 +47,23 @@ def article():
 	elif request.method == 'POST':
 		pk = request.form.get('id',None)
 		name = request.form.get('annotation',None)
-		action = request.form.get('action',None)
-		if pk and name and action:
+		add = 'add' in request.form
+		if pk and name:
 			with session_scope() as session:
 				article = session.query( models.Article ).get( pk )
-				if action=='add':
+				if add:
 					try:
 						utilities.summarize(name)
 					except Exception as e:
 						log.exception(e)
 					article.unblacklist_name( name )
-				elif action=='remove':
+				else:
 					article.blacklist_name(name)
 
 				article = utilities.annotate( article, session )
-				return render_template('article.html', article=article, blacklist=article.get_blacklist() )
+				return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',',') )
 		else:
-			log.warning('pk, name or action missing from request: pk:{} name:{} action:{}'.format(pk,name,action))
+			log.warning('pk or name missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
 			return abort(404)
 	else:
 		return abort(501)

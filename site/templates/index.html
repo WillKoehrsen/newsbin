@@ -1,114 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<title>newsbin</title>
-		<link rel="stylesheet" type="text/css" href="/static/css/newsbin.css" />
+		<!-- Meta Declarations -->
+		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- End Meta Declarations -->
+
+		<title>newsbin</title>
+
+		<!-- External Stylesheets -->
+		<link rel="stylesheet" type="text/css" href="/static/css/index.css" />
+		<!-- End External Stylesheets -->
+
 	</head>
 	<body>
-		<div id="container">
-			<form id="options">
+		<div class="container">
+			<form action="/" method="get" class="sub-container side-container" id="js-sidebar-form">
+				<div class="block sources">
+					<div class="header">Sources</div>
+					<label for="all-check" class="item">
+						<input id="all-check" type="checkbox" name="all" {{ 'checked' if all else '' }}>
+						<div class="label-name">All</div>
+					</label>
+					<label for="cnn-check" class="item">
+						<input id="cnn-check" type="checkbox" name="cnn" {{ 'checked' if cnn else '' }}>
+						<div class="label-name">CNN</div>
+					</label>
+					<label for="cnbc-check" class="item">
+						<input id="cnbc-check" type="checkbox" name="cnbc" {{ 'checked' if cnbc else '' }}>
+						<div class="label-name">CNBC</div>
+					</label>
+					<label for="foxnews-check" class="item">
+						<input id="foxnews-check" type="checkbox" name="foxnews" {{ 'checked' if foxnews else '' }}>
+						<div class="label-name">Fox News</div>
+					</label>
+					<label for="nytimes-check" class="item">
+						<input id="nytimes-check" type="checkbox" name="nytimes" {{ 'checked' if nytimes else '' }}>
+						<div class="label-name">New York Times</div>
+					</label>
+					<label for="reuters-check" class="item">
+						<input id="reuters-check" type="checkbox" name="reuters" {{ 'checked' if reuters else '' }}>
+						<div class="label-name">Reuters</div>
+					</label>
+					<label for="washingtonpost-check" class="item">
+						<input id="washingtonpost-check" type="checkbox" name="washingtonpost" {{ 'checked' if washingtonpost else '' }}>
+						<div class="label-name">Washington Post</div>
+					</label>
+				</div>
 
-				<div class="block" id="sources-block">
-					<div id="sources">
-						Sources<br/>
-						<div id="choices" style="left:0;">
-							{% if requested_all %}<input id="all_check" type="checkbox" name="all" include="source_check" checked/> All<br/>
-							{% else %}<input id="all_check" type="checkbox" name="all" include="source_check" /> All<br/>{% endif %}
-							<div><span>C</span></div>
-							{% if 'cnn' in sources %}<input class="source_check" type="checkbox" name="cnn" checked/> CNN<br/>
-							{% else %}<input class="source_check" type="checkbox" name="cnn" /> CNN<br/>{% endif %}
-							{% if 'cnbc' in sources %}<input class="source_check" type="checkbox" name="cnbc" checked/> CNBC<br/>
-							{% else %}<input class="source_check" type="checkbox" name="cnbc" /> CNBC<br/>{% endif %}
-							<div><span>F</span></div>
-							{% if 'foxnews' in sources %}<input class="source_check" type="checkbox" name="foxnews" checked/> Fox News<br/>
-							{% else %}<input class="source_check" type="checkbox" name="foxnews" /> Fox News<br/>{% endif %}
-							<div><span>N</span></div>
-							{% if 'nytimes' in sources %}<input class="source_check" type="checkbox" name="nytimes" checked/> New York Times<br/>
-							{% else %}<input class="source_check" type="checkbox" name="nytimes" /> New York Times<br/>{% endif %}
-							<div><span>R</span></div>
-							{% if 'reuters' in sources %}<input class="source_check" type="checkbox" name="reuters" checked/> Reuters<br/>
-							{% else %}<input class="source_check" type="checkbox" name="reuters" /> Reuters<br/>{% endif %}
-							<div><span>W</span></div>
-							{% if 'washingtonpost' in sources %}<input class="source_check" type="checkbox" name="washingtonpost" checked/> Washington Post<br/>
-							{% else %}<input class="source_check" type="checkbox" name="washingtonpost" /> Washington Post<br/>{% endif %}
+				<div class="block">
+					<div class="header">Search</div>
+					<div class="search-bar">
+						<input class="search-input" id="js-search-input" type="text" name="search" placeholder="Search" value="{{ search if search else '' }}">
+						<div class="search-options">
+							<label for="plain-check" class="option">
+								<input id="plain-check" type="checkbox" name="plain" {{ 'checked' if plain else '' }}>
+								<div class="label-name">plain</div>
+							</label>
+							<label for="regex-check" class="option">
+								<input id="regex-check" type="checkbox" name="regex" {{ 'checked' if regex else '' }}>
+								<div class="label-name">regex</div>
+							</label>
 						</div>
 					</div>
-				</div>
-
-				<div class="block">
-					<div id="results">
-						{% if results %}<span>Number (max 1000):</span><input id="count" type="number" name="results" min="1" max="1000" value="{{ results }}" />
-						{% else %}<span>Number (max 1000):</span><input id="count" type="number" name="results" min="1" max="1000" value="100" />{% endif %}
+					<div class="result-bar">
+						<span>number of results (max 1000):&nbsp;</span>
+						<input class="count-input" type="number" value="{{ count if count else '100' }}" name="count" id="js-number-input">
 					</div>
 				</div>
 
 				<div class="block">
-					<div id="searches">
-						{% if search %}<input id="search" type="text" name="search" placeholder="Search" value="{{ search }}" />
-						{% else %}<input id="search" type="text" name="search" placeholder="Search" />{% endif %}
-					</div>
+					<input type="submit" value="Apply" class="submit-button" id="js-submit-form">
 				</div>
 
-				<div class="block">
-					<div id="plain_or_regex">
-						{% if regex %}
-						&nbsp;<input class="regex_check" id="reg_check" exclude="regex_check" type="checkbox" name="regex" checked/> regex
-						&nbsp;<input class="regex_check" id="pla_check" exclude="regex_check" type="checkbox" name="plain"/> plain
-						{% else %}
-						&nbsp;<input class="regex_check" id="reg_check" exclude="regex_check" type="checkbox" name="regex"/> regex
-						&nbsp;<input class="regex_check" id="pla_check" exclude="regex_check" type="checkbox" name="plain" checked/> plain
-						{% endif %}
-					</div>
-				</div>
-
-				<div class="block">
-					<div id="information">
-						<a href="/about">about</a><!-- |
-						<a href="/log" target="_blank">log</a>-->
-					</div>
-				</div>
-
-				<div class="block">
-					<input id='submit' type="submit" value="Apply" />
+				<div class="block information-block">
+					<div class="header">Information</div>
+					<a href="/about" class="item">About</a>
+					<a href="https://github.com/mjhouse/newsbin" target="_blank" class="item">Github</a>
 				</div>
 
 			</form>
 
-
-			<div id="bottom-container">
+			<div class="sub-container main-container">
 				{% for article in articles %}
-					<div class="title">
-						<a href="/article?id={{ article.id }}" target="_blank">{{article.source}}: {{ article.title }}</a>
+				<div class="title-card">
+					<a class="title" href="/article?id={{ article.id }}">{{ article.title }}</a>
+					<div class="information">
+						<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
+						<div class="author"><span class="title-card-label">author: </span>{{ article.author }}</div>
+						<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
+						<div class="date"><span class="title-card-label">published: </span>{{ article.publish_date }}</div>
 					</div>
+				</div>
 				{% endfor %}
+				<div class="footer">
+					newsbin &copy; <span id="js-footer-year">2017</span> Michael House
+				</div>
 			</div>
 
-			<script>
-				function check_handler(){
-					var include = this.getAttribute('include');
-					var exclude = this.getAttribute('exclude');
-
-					if(include){
-						var targets = document.getElementsByClassName(include);
-						for( var i = 0; i < targets.length; i++ ){
-							targets[i].checked = this.checked;
-						}
-					}
-
-					if(exclude){
-						var targets = document.getElementsByClassName(exclude);
-						for( var i = 0; i < targets.length; i++ ){
-							if(targets[i]!=this){
-								targets[i].checked = !this.checked;
-							}
-						}
-					}
-				}
-				document.getElementById('all_check').addEventListener('change',check_handler);
-				document.getElementById('reg_check').addEventListener('change',check_handler);
-				document.getElementById('pla_check').addEventListener('change',check_handler);
-			</script>
 		</div>
+
+		<!-- External Javascript -->
+		<script src="/static/js/index.js"></script>
+		<!-- End External Javascript -->
 	</body>
 </html>

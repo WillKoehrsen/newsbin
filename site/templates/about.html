@@ -1,40 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<title>newsbin - about</title>
-		<link rel="stylesheet" type="text/css" href="/static/css/about.css" />
+		<!-- Meta Declarations -->
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- End Meta Declarations -->
+
+		<title>newsbin</title>
+
+		<!-- External Stylesheets -->
+		<link rel="stylesheet" type="text/css" href="/static/css/index.css" />
+		<!-- End External Stylesheets -->
+
 	</head>
 	<body>
-		<div id="content">
-			<a href="/" id="back_link"><div id="back">Back</div></a>
-			<h1>welcome to newbin</h1>
-			<p>
- 				This site fetches articles from a lot of different news sources and tries to
-				annotate the articles with information about the people and places being discussed.
-				What this means is that you can click on names in the articles and get immediate
-				information in a small window.
-			</p>
-			<p>
-				On the front page you can select your sources, the number of results to return or
-				search titles and content with vanilla or <a href="http://pythex.org/" target="_blank">regex</a>
-				searches. Clicking any of the titles will take you to the article itself.
-			</p>
-			<p>
-				If you see an annotation that's wrong, copy and paste the highlighted text into the
-				input bar at the top of the article, flip the switch to 'remove' and submit. If you
-				want to add an annotation that doesn't exist, copy text into the input bar, flip to
-				'add' and hit the go button.
-			</p>
-			<p style="text-align:right;font-size:1.2em;">
-				- blackstampede
-			</p>
-			<div id="footer">
-				<div id="footer_block">
-					<a href="http://www.python.org" target="_blank" ><img src="/static/img/python.png" /></a>
-					<a href="http://flask.pocoo.org/" target="_blank" ><img src="/static/img/flask.png" /></a>
-					<a href="https://github.com/" target="_blank" ><img src="/static/img/github.jpg" /></a>
+		<div class="container">
+
+			<form action="/" method="get" class="sub-container side-container" id="js-sidebar-form">
+				<div class="block sources">
+					<div class="header">Sources</div>
+					<label for="all-check" class="item">
+						<input id="all-check" type="checkbox" name="all" checked>
+						<div class="label-name">All</div>
+					</label>
+					<label for="cnn-check" class="item">
+						<input id="cnn-check" type="checkbox" name="cnn" checked>
+						<div class="label-name">CNN</div>
+					</label>
+					<label for="cnbc-check" class="item">
+						<input id="cnbc-check" type="checkbox" name="cnbc" checked>
+						<div class="label-name">CNBC</div>
+					</label>
+					<label for="foxnews-check" class="item">
+						<input id="foxnews-check" type="checkbox" name="foxnews" checked>
+						<div class="label-name">Fox News</div>
+					</label>
+					<label for="nytimes-check" class="item">
+						<input id="nytimes-check" type="checkbox" name="nytimes" checked>
+						<div class="label-name">New York Times</div>
+					</label>
+					<label for="reuters-check" class="item">
+						<input id="reuters-check" type="checkbox" name="reuters" checked>
+						<div class="label-name">Reuters</div>
+					</label>
+					<label for="washingtonpost-check" class="item">
+						<input id="washingtonpost-check" type="checkbox" name="washingtonpost" checked>
+						<div class="label-name">Washington Post</div>
+					</label>
+				</div>
+
+				<div class="block">
+					<div class="header">Search</div>
+					<div class="search-bar">
+						<input class="search-input" id="js-search-input" type="text" name="search" placeholder="Search">
+						<div class="search-options">
+							<label for="plain-check" class="option">
+								<input id="plain-check" type="checkbox" name="plain" checked>
+								<div class="label-name">plain</div>
+							</label>
+							<label for="regex-check" class="option">
+								<input id="regex-check" type="checkbox" name="regex">
+								<div class="label-name">regex</div>
+							</label>
+						</div>
+					</div>
+					<div class="result-bar">
+						<span>number of results (max 1000):&nbsp;</span>
+						<input class="count-input" type="number" value="{{ count if count else '100' }}" name="count" id="js-number-input">
+					</div>
+				</div>
+
+				<div class="block">
+					<input type="submit" value="Apply" class="submit-button" id="js-submit-form">
+				</div>
+
+				<div class="block information-block">
+					<div class="header">Information</div>
+					<a href="/" class="item">Main</a>
+					<a href="https://github.com/mjhouse/newsbin" target="_blank" class="item">Github</a>
+				</div>
+
+			</form>
+
+			<div class="sub-container main-container">
+				<div class="about-title">newsbin</div>
+				<div class="about-content">
+					<p>
+						newsbin pulls articles from hundreds of rss feeds provided by
+						major news outlets, and fetches the articles into a single,
+						combined stream. The feed is as up-to-date as it can be without
+						spamming requests at the providers, which works out to about a
+						10 minute delay.
+					</p>
+					<p>
+						You can uses the tools in the left side to fetch the news
+						that interests you- by source, by keyword or even with regular
+						expressions. If you don't know what regular expressions are,
+						they're a way of describing text. You can go
+						<a href="https://regexone.com/" target="_blank">here</a> for
+						an introduction.
+					</p>
+					<p>
+						I'll be adding categories (like 'politics' and 'technology')
+						in the near future as well.
+					</p>
+					<p>
+						While reading an article, you'll notice that some of the names
+						and places are clickable. If you click on them, you'll get a
+						brief summary of the topic without leaving the article.
+						These are annotations.
+						If you want to add more, just copy and
+						paste a word or phrase (one that has an article on wikipedia)
+						into the box at the top-left of the page and click 'Add'. Newsbin
+						will fetch the information and it will be highlighted in every
+						article from then on.
+					</p>
+					<p>
+						If you see an annotation that's wrong, you can blacklist it
+						for the current article by copying the text into the submission
+						box and clicking 'Remove.'
+					</p>
+					<p>
+						If you want to see what features are currently under development,
+						you can take a look at open issues on github, and if you want
+						to contribute, you can send me an email.
+					</p>
+					<p class="about-footer">
+						<a href="https://github.com/mjhouse/newsbin/issues" target="_blank">Github Issues</a>
+						<a href="mailto:michaelhouse@gmx.us">michaelhouse@gmx.us</a>
+					</p>
+					<p style="text-align:right;">
+						-blackstampede
+					</p>
+				</div>
+				<div class="footer">
+					newsbin &copy; <span id="js-footer-year">2017</span> Michael House
 				</div>
 			</div>
 		</div>
+		<!-- External Javascript -->
+		<script src="/static/js/index.js"></script>
+		<!-- End External Javascript -->
 	</body>
 </html>
