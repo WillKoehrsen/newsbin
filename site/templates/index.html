@@ -89,7 +89,7 @@
 						<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
 						<div class="author"><span class="title-card-label">author: </span>{{ article.author }}</div>
 						<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
-						<div class="date"><span class="title-card-label">published: </span>{{ article.publish_date.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+						<div class="date"><span class="title-card-label">published: </span>{{ article.publish_date.strftime('%Y-%m-%d %H:%M:%S %p') }}</div>
 					</div>
 				</div>
 				{% endfor %}
