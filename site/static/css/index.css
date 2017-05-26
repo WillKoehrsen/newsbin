@@ -213,7 +213,7 @@ input[type=checkbox] {
 	border:1px dotted grey;
 }
 
-.title-card>.information {
+.information {
 	padding:5px;
 	display:flex;
 	align-items: center;
@@ -221,25 +221,25 @@ input[type=checkbox] {
 	color:rgba(0,0,0,0.7);
 }
 
-.title-card>.information a {
+.information a {
 	color:black;
 	color:rgba(0,0,0,0.7);
 }
 
-.title-card-label {
+label {
 	font-weight:bold;
 }
 
-.title-card>.information>div {
+.information>div {
 	flex:1;
 	font-size: 0.8em;
 }
 
-.title-card>.information>.author {
+.information>.author {
 	flex:3;
 }
 
-.title-card>.information>.date {
+.information>.date {
 	flex:2;
 }
 
