@@ -284,7 +284,7 @@ input[type=checkbox] {
 }
 
 .annotation {
-	background-color: lightgrey;
+	background-color: #e5e5e5;
 	cursor:pointer;
 }
 
