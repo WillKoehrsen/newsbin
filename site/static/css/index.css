@@ -147,6 +147,8 @@ input[type=checkbox] {
 */
 .checkable:not(:checked) + div::after {
 	height:20px;
+	width:20px;
+	text-align: center;
 	float:right;
 	content:'\25e6';
 	color:red;
@@ -154,6 +156,8 @@ input[type=checkbox] {
 
 .checkable:checked + div::after {
 	height:20px;
+	width:20px;
+	text-align: center;
 	float:right;
 	content:'\2022';
 	color:green;
