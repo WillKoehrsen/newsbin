@@ -86,6 +86,7 @@ body {
 .block>.button {
 	border:none;
 	width:100%;
+	text-align:left;
 }
 
 .block>.item, .option {
@@ -284,6 +285,7 @@ input[type=checkbox] {
 .annotation-input {
 	width:calc(100% - 2px);
 	border:1px solid grey;
+	margin:0 auto 0 auto;
 }
 
 .article-information {
@@ -311,7 +313,7 @@ input[type=checkbox] {
 	width:100%;
 	color:grey;
 	text-align: center;
-	margin-top: auto;
+	margin-top: 30px;
 }
 
 /* -------------------------------------------------------------------------- */
