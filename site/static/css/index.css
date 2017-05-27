@@ -264,7 +264,7 @@ input[type=checkbox] {
 /* Article Page */
 .article-title {
 	font-size:2em;
-	padding:0 10px 0 10px;
+	padding:10px;
 	box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 	background-color:#faff7f;
 }
