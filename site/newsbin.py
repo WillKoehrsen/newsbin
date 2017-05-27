@@ -21,7 +21,7 @@ def index():
 		options['all'] = 'on'
 
 	with session_scope() as session:
-		articles = session.query( models.Article ).filter( models.Article.source.in_(options)).order_by( models.Article.publish_date.desc()).limit(int(options['count'])).all()
+		articles = session.query( models.Article ).filter( models.Article.source.in_(options)).order_by( models.Article.fetched.desc()).limit(int(options['count'])).all()
 
 		search = options.get('search','')
 		if 'regex' in options:
