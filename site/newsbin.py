@@ -41,9 +41,13 @@ def article():
 	if request.method == 'GET':
 		pk = request.args.get('id',None)
 		with session_scope() as session:
-			article = session.query( models.Article ).get( pk )
-			article = utilities.annotate( article, session )
-			return render_template('article.html', article=article)
+			try:
+				article = session.query( models.Article ).get( pk )
+				article = utilities.annotate( article, session )
+				return render_template('article.html', article=article)
+			except Exception as e:
+				log.exception(e)
+				raise
 	elif request.method == 'POST':
 		pk = request.form.get('id',None)
 		name = request.form.get('annotation',None)
