@@ -150,7 +150,7 @@ input[type=checkbox] {
 	width:20px;
 	text-align: center;
 	float:right;
-	content:'\25e6';
+	content:'\2212';
 	color:red;
 }
 
@@ -159,7 +159,7 @@ input[type=checkbox] {
 	width:20px;
 	text-align: center;
 	float:right;
-	content:'\2022';
+	content:'\002B';
 	color:green;
 }
 /* -------------------------------------------------------------------------- */
