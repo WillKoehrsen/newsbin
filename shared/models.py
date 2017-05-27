@@ -19,7 +19,7 @@ class Article(Base):
 	title = Column(String(250), unique=True)
 	author = Column(String(100), nullable=True)
 	category = Column(String(250), nullable=True)
-	publish_date = Column(DateTime(timezone=True), nullable=True)
+	fetched = Column(DateTime(timezone=True), nullable=True)
 
 	def __init__( self, *args, **kwargs ):
 		for key, value in kwargs.items():

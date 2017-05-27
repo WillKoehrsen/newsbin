@@ -14,7 +14,7 @@ class Filter:
 
 	def process( self, content ):
 		soup = BeautifulSoup(content, 'html.parser')
-		result = {'keywords':'','author':'','content':'','publish_date':datetime.now()}
+		result = {'keywords':'','author':'','content':'','fetched':datetime.utcnow()}
 
 		for selector in self.content_selectors:
 			matches = soup.select( selector )
@@ -27,15 +27,6 @@ class Filter:
 			matches = soup.select( selector )
 			if matches:
 				result['author'] = unidecode( matches[0]['content'] ).strip()
-				break
-
-		for selector in self.date_selectors:
-			matches = soup.select( selector )
-			if matches:
-				try:
-					result['publish_date'] = parse( unidecode( matches[0]['content'] ).strip(), default=datetime.now())
-				except:
-					pass
 				break
 
 		result['content'] = result['content'].strip()
@@ -56,10 +47,6 @@ class CNN( Filter ):
 		'meta[name=author]'
 	)
 
-	date_selectors = (
-		'meta[itemprop=datePublished]',
-	)
-
 # ------------------------------------------------------------------------------
 # cnbc filter
 class CNBC( Filter ):
@@ -72,11 +59,6 @@ class CNBC( Filter ):
 
 	author_selectors = (
 		'meta[name=author]',
-	)
-
-	date_selectors = (
-		'meta[itemprop=dateCreated]',
-		'meta[name="DC.date.issued"]',
 	)
 
 # ------------------------------------------------------------------------------
@@ -92,10 +74,6 @@ class NYTimes( Filter ):
 		'meta[name=author]',
 	)
 
-	date_selectors = (
-		'meta[itemprop=datePublished]',
-	)
-
 class WashingtonPost( Filter ):
 	source_name = 'washingtonpost'
 
@@ -104,10 +82,6 @@ class WashingtonPost( Filter ):
 	)
 
 	author_selectors = (
-	)
-
-	date_selectors = (
-		'meta[itemprop=datePublished]',
 	)
 
 class Reuters( Filter ):
@@ -121,10 +95,6 @@ class Reuters( Filter ):
 		'meta[name=Author]',
 	)
 
-	date_selectors = (
-		'meta[property="og:article:published_time"]',
-	)
-
 class FoxNews( Filter ):
 	source_name = 'foxnews'
 
@@ -134,10 +104,6 @@ class FoxNews( Filter ):
 
 	author_selectors = (
 		'meta[name="dc.creator"]',
-	)
-
-	date_selectors = (
-		'meta[name="dcterms.created"]',
 	)
 
 def all():
