@@ -321,9 +321,10 @@ input[type=checkbox] {
 		width:100%;
 		flex-direction:column;
 	}
-	.side-container {
-		max-width:95%;
+	.side-container, .main-container {
+		width:90%;
 		margin:0 auto 0 auto;
+		border:none;
 	}
 	.search-bar, .result-bar {
 		justify-content:center;
