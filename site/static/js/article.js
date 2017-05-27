@@ -31,7 +31,7 @@ var modal = (function( target ){
 	layout.modal.appendChild(layout.contents);
 	for(item in layout.part){ layout.contents.appendChild(layout.part[item]); }
 
-	layout.part.link.innerHTML = "On Wikipedia";
+	layout.part.link.innerHTML = "wikipedia";
 	layout.part.close.innerHTML = "Close";
 
 	var operations = {
