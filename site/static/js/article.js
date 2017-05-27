@@ -15,7 +15,7 @@ HTMLDocument.prototype.createElementWithAttr = function( tag, attrs ){
 // -----------------------------------------------------------------------------
 // Annotation:
 //		a modal component that displays when an x-annotation is clicked
-var modal = (function( target ) {
+var modal = (function( target ){
 	var layout = {
 		modal:document.getElementById( target ),
 		contents:document.createElementWithAttr('div',{class:'modal-container'}),
