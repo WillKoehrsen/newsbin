@@ -1,6 +1,8 @@
 
 .annotation-input {
-	width:calc(100% - 4px);
+	width:calc(100% - 2px);
+	border:1px solid grey;
+	margin:0 auto 0 auto;
 }
 
 .fadelist {
@@ -78,4 +80,11 @@
 
 .modal-content {
 	padding:10px;
+}
+
+@media screen and (max-width: 500px) {
+	.annotation-input {
+		min-width:10px;
+		width:calc(100% - 2px);
+	}
 }

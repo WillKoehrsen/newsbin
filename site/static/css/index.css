@@ -273,12 +273,6 @@ input[type=checkbox] {
 	padding:0 10px 0 10px;
 }
 
-.annotation-input {
-	width:calc(100% - 2px);
-	border:1px solid grey;
-	margin:0 auto 0 auto;
-}
-
 .article-information {
 	padding-left:10px;
 }
@@ -338,10 +332,6 @@ input[type=checkbox] {
 	}
 	.search-options {
 		flex-wrap: wrap;
-	}
-	.annotation-input {
-		min-width:10px;
-		width:calc(100% - 2px);
 	}
 	.article-title {
 		word-wrap:break-word;
