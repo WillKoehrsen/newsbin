@@ -14,7 +14,7 @@ class Article(Base):
 	link = Column(String(250), nullable=True, unique=True)
 	source = Column(String(10), nullable=True)
 
-	content = Column(Text, nullable=True, unique=True)
+	content = Column(Text, nullable=True )
 	blacklist = Column(Text, nullable=True)
 	title = Column(String(250), unique=True)
 	author = Column(String(100), nullable=True)
