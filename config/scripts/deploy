@@ -1,8 +1,8 @@
 #!/bin/bash
 
 rm /home/mhouse/Projects/python/newsbin/data/logs/*.log 2> /dev/null
-if [ $1 ] ; then
-	MESSAGE=$1
+if [ "$1" ] ; then
+	MESSAGE="$1"
 else
 	MESSAGE="pre-deploy automated commit"
 fi
