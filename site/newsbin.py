@@ -35,8 +35,6 @@ def index():
 	options = request.values.to_dict()
 	sources = filters.all()
 
-	return abort(500)
-
 	if not 'count' in options: options['count'] = 100
 	if 'all' in options or set(options.keys()).isdisjoint(sources):
 		options.update({ key:'on' for key in sources })
