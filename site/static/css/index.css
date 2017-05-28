@@ -135,11 +135,15 @@ body {
 	float:none;
 }
 
+.categories {
+	width:100%;
+	background-color: white;
+	border-radius:none;
+	border:none;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Checkbox Styles
-input[type=checkbox] {
-	display:none;
-}
 */
 .checkable:not(:checked) + div::after {
 	height:20px;
@@ -177,6 +181,11 @@ input[type=checkbox] {
 	border:none;
 	cursor:pointer;
 	transition: all .2s ease-in-out;
+
+	/* to stop safari from trying to style my buttons */
+	-webkit-appearance:none;
+	-webkit-border-radius:none;
+			border-radius:none;
 }
 
 .submit-button:hover {

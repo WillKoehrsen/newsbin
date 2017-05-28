@@ -10,6 +10,26 @@ from package import log
 
 app = Flask(__name__)
 
+categories = [
+	'Top',
+	'US',
+	'World',
+	'Finance',
+	'Politics',
+	'Technology',
+	'Health',
+	'Entertainment',
+	'Travel',
+	'Life',
+	'Opinion',
+	'Economy',
+	'Business',
+	'Investing',
+	'Education',
+	'Sports',
+	'Science'
+]
+
 @app.route('/', methods=['GET'])
 def index():
 	options = request.values.to_dict()
@@ -21,7 +41,11 @@ def index():
 		options['all'] = 'on'
 
 	with session_scope() as session:
-		articles = session.query( models.Article ).filter( models.Article.source.in_(options)).order_by( models.Article.fetched.desc()).limit(int(options['count'])).all()
+		category = options.get('category','all')
+		if category == 'all':
+			articles = session.query( models.Article ).filter( models.Article.source.in_(options)).order_by( models.Article.fetched.desc()).limit(int(options['count'])).all()
+		else:
+			articles = session.query( models.Article ).filter( models.Article.source.in_(options) ).filter( models.Article.category.contains(category) ).order_by( models.Article.fetched.desc()).limit(int(options['count'])).all()
 
 		search = options.get('search','')
 		if 'regex' in options:
@@ -31,7 +55,7 @@ def index():
 			options['plain'] = 'on'
 			articles = [ a for a in articles if search in a.title or search in a.content ]
 
-		return render_template('index.html', **options, articles=articles)
+		return render_template('index.html', **options, articles=articles, categories=categories)
 
 	# couldn't get a session for some reason
 	return abort(404)
@@ -92,7 +116,7 @@ def annotations():
 
 @app.route('/about', methods=['GET'])
 def about():
-	return render_template('about.html')
+	return render_template('about.html', categories=categories)
 
 
 if __name__ == "__main__":

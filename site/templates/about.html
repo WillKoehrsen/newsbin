@@ -50,6 +50,14 @@
 				</div>
 
 				<div class="block">
+					<div class="header">Categories</div>
+					<select name="category" class="categories">
+						<option value="all">All</option>
+						{% for option in categories %}<option value="{{ option|lower }}">{{ option }}</option>{% endfor %}
+					</select>
+				</div>
+
+				<div class="block">
 					<div class="header">Search</div>
 					<div class="search-bar">
 						<input class="search-input" id="js-search-input" type="text" name="search" placeholder="Search">
