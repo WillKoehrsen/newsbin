@@ -1,7 +1,12 @@
 #!/bin/bash
 
-rm /home/mhouse/Projects/python/newsbin/data/logs/*.log
+rm /home/mhouse/Projects/python/newsbin/data/logs/*.log 2> /dev/null
+if [ $1 ] ; then
+	MESSAGE=$1
+else
+	MESSAGE="pre-deploy automated commit"
+fi
 
 git add -A
-git commit -m "pre-deploy commit"
+git commit -m "${MESSAGE}"
 git push && git push live
