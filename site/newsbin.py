@@ -55,7 +55,7 @@ def index():
 			options['plain'] = 'on'
 			articles = [ a for a in articles if search in a.title or search in a.content ]
 
-		return render_template('index.html', **options, articles=articles, categories=categories)
+		return render_template('index.html', **options, articles=articles, categories=categories, selected=category)
 
 	# couldn't get a session for some reason
 	return abort(404)

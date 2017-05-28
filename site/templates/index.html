@@ -47,12 +47,14 @@
 						<div class="label-name">Washington Post</div>
 					</label>
 				</div>
-
+				
 				<div class="block">
 					<div class="header">Categories</div>
 					<select name="category" class="categories">
 						<option value="all">All</option>
-						{% for option in categories %}<option value="{{ option|lower }}">{{ option }}</option>{% endfor %}
+						{% for option in categories %}
+						<option value="{{ option|lower }}" {{ 'selected' if option|lower == selected }}>{{ option }}</option>
+						{% endfor %}
 					</select>
 				</div>
 
