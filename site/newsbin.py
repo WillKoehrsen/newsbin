@@ -35,6 +35,8 @@ def index():
 	options = request.values.to_dict()
 	sources = filters.all()
 
+	return abort(500)
+
 	if not 'count' in options: options['count'] = 100
 	if 'all' in options or set(options.keys()).isdisjoint(sources):
 		options.update({ key:'on' for key in sources })
@@ -94,7 +96,7 @@ def article():
 			log.warning('pk or name missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
 			return abort(404)
 	else:
-		return abort(501)
+		return abort(404)
 
 @app.route('/annotations', methods=['GET'])
 def annotations():
@@ -118,6 +120,15 @@ def annotations():
 def about():
 	return render_template('about.html', categories=categories)
 
+# ------------------------------------------------------------------------------
+# Error Pages
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('errors/404.html', e=e), 404
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('errors/500.html', e=e), 500
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0')
