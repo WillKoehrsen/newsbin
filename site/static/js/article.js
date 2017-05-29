@@ -1,11 +1,11 @@
 // -----------------------------------------------------------------------------
-// Footer:
-//		set the year on load
-var today = new Date();
-document.getElementById('js-footer-year').innerHTML = today.getFullYear();
+// Localize the datetime on under the title
+var block = document.getElementById('js-localize-date');
+var date = new Date( block.getAttribute('iso') );
+block.innerHTML = date.toLocaleDateString() + " " + date.toLocaleTimeString();
 
 // -----------------------------------------------------------------------------
-// customize document
+// customize document prototype
 HTMLDocument.prototype.createElementWithAttr = function( tag, attrs ){
 	var elem = this.createElement(tag);
 	for(attr in attrs){ elem.setAttribute(attr,attrs[attr]); }

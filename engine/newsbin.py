@@ -94,8 +94,6 @@ class Watcher(manager.Manager):
 
 class Engine:
 	def __init__( self, *args, **kwargs ):
-		print('init engine:')
-
 		self.sessionmaker = session_generator
 		self.sources = defaults.sources
 

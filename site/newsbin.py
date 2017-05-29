@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, make_response, abort
 import regex
 import os
 import json
+import datetime
 
 from package import filters, utilities
 from package import models, session_scope
@@ -55,7 +56,7 @@ def index():
 			options['plain'] = 'on'
 			articles = [ a for a in articles if search in a.title or search in a.content ]
 
-		return render_template('index.html', **options, articles=articles, categories=categories, selected=category)
+		return render_template('index.html', **options, articles=articles, categories=categories, selected=category, date=datetime.datetime.now())
 
 	# couldn't get a session for some reason
 	return abort(404)
@@ -68,7 +69,11 @@ def article():
 			try:
 				article = session.query( models.Article ).get( pk )
 				article = utilities.annotate( article, session )
-				return render_template('article.html', article=article)
+				if article.blacklist:
+					blacklist = article.blacklist.replace(';',',')
+				else:
+					blacklist = ''
+				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now())
 			except Exception as e:
 				log.exception(e)
 				raise
@@ -89,7 +94,7 @@ def article():
 					article.blacklist_name(name)
 
 				article = utilities.annotate( article, session )
-				return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',',') )
+				return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
 		else:
 			log.warning('pk or name missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
 			return abort(404)
@@ -116,7 +121,7 @@ def annotations():
 
 @app.route('/about', methods=['GET'])
 def about():
-	return render_template('about.html', categories=categories)
+	return render_template('about.html', categories=categories, date=datetime.datetime.now())
 
 # ------------------------------------------------------------------------------
 # Error Pages

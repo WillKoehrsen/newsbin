@@ -8,13 +8,14 @@ if (!NodeList.prototype.forEach) {
     }
 }
 
-
 // -----------------------------------------------------------------------------
-// Footer:
-//		set the year on load
-var today = new Date();
-document.getElementById('js-footer-year').innerHTML = today.getFullYear();
-
+// Localize the datetime on title-cards
+var dates = document.getElementsByClassName('js-localize-date');
+for( var i = 0; i < dates.length; i++ ){
+    var block = dates[i]
+    var date = new Date( block.getAttribute('iso') );
+    block.innerHTML = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+}
 
 // -----------------------------------------------------------------------------
 //	Layout:

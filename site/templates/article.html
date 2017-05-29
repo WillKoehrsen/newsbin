@@ -49,7 +49,10 @@
 					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
 					<div class="author"><span class="title-card-label">author: </span>{{ article.author }}</div>
 					<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
-					<div class="date"><span class="title-card-label">fetched: </span>{{ article.fetched.strftime('%Y-%m-%d %H:%M:%S %p') }} UTC</div>
+					<div class="date">
+						<span class="title-card-label">fetched: </span>
+						<span id="js-localize-date" iso="{{ article.fetched.isoformat() }}">{{ article.fetched.strftime('%Y-%m-%d %H:%M:%S %p') }} UTC</span>
+					</div>
 				</div>
 				<div class="article-content">
 					{{ article.content|safe }}
@@ -59,7 +62,7 @@
 					<div class="id"><span class="title-card-label">id: </span>{{ article.id }}</div>
 				</div>
 				<div class="footer">
-					newsbin &copy; <span id="js-footer-year">2017</span> Michael House
+					newsbin &copy; {{ date.year }} Michael House
 				</div>
 			</div>
 		</div>
