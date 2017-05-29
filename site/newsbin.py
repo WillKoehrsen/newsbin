@@ -36,7 +36,7 @@ def index():
 	options = request.values.to_dict()
 	sources = filters.all()
 
-	if not 'count' in options: options['count'] = 100
+	if not options.get('count',False): options['count'] = 100
 	if 'all' in options or set(options.keys()).isdisjoint(sources):
 		options.update({ key:'on' for key in sources })
 		options['all'] = 'on'
@@ -44,9 +44,9 @@ def index():
 	with session_scope() as session:
 		category = options.get('category','all')
 		if category == 'all':
-			articles = session.query( models.Article ).filter( models.Article.source.in_(options)).order_by( models.Article.fetched.desc()).limit(int(options['count'])).all()
+			articles = session.query( models.Article ).filter( models.Article.source.in_(options) ).order_by( models.Article.fetched.desc() ).all()
 		else:
-			articles = session.query( models.Article ).filter( models.Article.source.in_(options) ).filter( models.Article.category.contains(category) ).order_by( models.Article.fetched.desc()).limit(int(options['count'])).all()
+			articles = session.query( models.Article ).filter( models.Article.source.in_(options) ).filter( models.Article.category.contains(category) ).order_by( models.Article.fetched.desc() ).all()
 
 		search = options.get('search','')
 		if 'regex' in options:
@@ -56,7 +56,7 @@ def index():
 			options['plain'] = 'on'
 			articles = [ a for a in articles if search in a.title or search in a.content ]
 
-		return render_template('index.html', **options, articles=articles, categories=categories, selected=category, date=datetime.datetime.now())
+		return render_template('index.html', articles=articles[:int(options['count'])], categories=categories, date=datetime.datetime.now())
 
 	# couldn't get a session for some reason
 	return abort(404)

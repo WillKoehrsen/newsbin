@@ -20,31 +20,31 @@
 				<div class="block sources">
 					<div class="header">Sources</div>
 					<label for="all-check" class="item">
-						<input id="all-check" type="checkbox" name="all" checked>
+						<input id="all-check" type="checkbox" name="all">
 						<div class="label-name">All</div>
 					</label>
 					<label for="cnn-check" class="item">
-						<input id="cnn-check" type="checkbox" name="cnn" checked>
+						<input id="cnn-check" type="checkbox" name="cnn">
 						<div class="label-name">CNN</div>
 					</label>
 					<label for="cnbc-check" class="item">
-						<input id="cnbc-check" type="checkbox" name="cnbc" checked>
+						<input id="cnbc-check" type="checkbox" name="cnbc">
 						<div class="label-name">CNBC</div>
 					</label>
 					<label for="foxnews-check" class="item">
-						<input id="foxnews-check" type="checkbox" name="foxnews" checked>
+						<input id="foxnews-check" type="checkbox" name="foxnews">
 						<div class="label-name">Fox News</div>
 					</label>
 					<label for="nytimes-check" class="item">
-						<input id="nytimes-check" type="checkbox" name="nytimes" checked>
+						<input id="nytimes-check" type="checkbox" name="nytimes">
 						<div class="label-name">New York Times</div>
 					</label>
 					<label for="reuters-check" class="item">
-						<input id="reuters-check" type="checkbox" name="reuters" checked>
+						<input id="reuters-check" type="checkbox" name="reuters">
 						<div class="label-name">Reuters</div>
 					</label>
 					<label for="washingtonpost-check" class="item">
-						<input id="washingtonpost-check" type="checkbox" name="washingtonpost" checked>
+						<input id="washingtonpost-check" type="checkbox" name="washingtonpost">
 						<div class="label-name">Washington Post</div>
 					</label>
 				</div>
@@ -52,7 +52,7 @@
 				<div class="block">
 					<div class="header">Categories</div>
 					<select name="category" class="categories">
-						<option value="all">All</option>
+						<option value="all"></option>
 						{% for option in categories %}<option value="{{ option|lower }}">{{ option }}</option>{% endfor %}
 					</select>
 				</div>
@@ -63,7 +63,7 @@
 						<input class="search-input" id="js-search-input" type="text" name="search" placeholder="Search">
 						<div class="search-options">
 							<label for="plain-check" class="option">
-								<input id="plain-check" type="checkbox" name="plain" checked>
+								<input id="plain-check" type="checkbox" name="plain">
 								<div class="label-name">plain </div>
 							</label>
 							<label for="regex-check" class="option">
@@ -74,7 +74,7 @@
 					</div>
 					<div class="result-bar">
 						<span>number of results (max 1000):&nbsp;</span>
-						<input class="count-input" type="number" value="{{ count if count else '100' }}" name="count" id="js-number-input">
+						<input class="count-input" type="number" placeholder="100" name="count" id="js-number-input">
 					</div>
 				</div>
 
@@ -107,10 +107,6 @@
 						they're a way of describing text. You can go
 						<a href="https://regexone.com/" target="_blank">here</a> for
 						an introduction.
-					</p>
-					<p>
-						I'll be adding categories (like 'politics' and 'technology')
-						in the near future as well.
 					</p>
 					<p>
 						While reading an article, you'll notice that some of the names

@@ -19,31 +19,31 @@
 				<div class="block sources">
 					<div class="header">Sources</div>
 					<label for="all-check" class="item">
-						<input id="all-check" type="checkbox" name="all" {{ 'checked' if all else '' }}>
+						<input id="all-check" type="checkbox" name="all">
 						<div class="label-name">All</div>
 					</label>
 					<label for="cnn-check" class="item">
-						<input id="cnn-check" type="checkbox" name="cnn" {{ 'checked' if cnn else '' }}>
+						<input id="cnn-check" type="checkbox" name="cnn">
 						<div class="label-name">CNN</div>
 					</label>
 					<label for="cnbc-check" class="item">
-						<input id="cnbc-check" type="checkbox" name="cnbc" {{ 'checked' if cnbc else '' }}>
+						<input id="cnbc-check" type="checkbox" name="cnbc">
 						<div class="label-name">CNBC</div>
 					</label>
 					<label for="foxnews-check" class="item">
-						<input id="foxnews-check" type="checkbox" name="foxnews" {{ 'checked' if foxnews else '' }}>
+						<input id="foxnews-check" type="checkbox" name="foxnews">
 						<div class="label-name">Fox News</div>
 					</label>
 					<label for="nytimes-check" class="item">
-						<input id="nytimes-check" type="checkbox" name="nytimes" {{ 'checked' if nytimes else '' }}>
+						<input id="nytimes-check" type="checkbox" name="nytimes">
 						<div class="label-name">New York Times</div>
 					</label>
 					<label for="reuters-check" class="item">
-						<input id="reuters-check" type="checkbox" name="reuters" {{ 'checked' if reuters else '' }}>
+						<input id="reuters-check" type="checkbox" name="reuters">
 						<div class="label-name">Reuters</div>
 					</label>
 					<label for="washingtonpost-check" class="item">
-						<input id="washingtonpost-check" type="checkbox" name="washingtonpost" {{ 'checked' if washingtonpost else '' }}>
+						<input id="washingtonpost-check" type="checkbox" name="washingtonpost">
 						<div class="label-name">Washington Post</div>
 					</label>
 				</div>
@@ -51,9 +51,9 @@
 				<div class="block">
 					<div class="header">Categories</div>
 					<select name="category" class="categories">
-						<option value="all">All</option>
+						<option value="all"></option>
 						{% for option in categories %}
-						<option value="{{ option|lower }}" {{ 'selected' if option|lower == selected }}>{{ option }}</option>
+						<option value="{{ option|lower }}">{{ option }}</option>
 						{% endfor %}
 					</select>
 				</div>
@@ -61,21 +61,21 @@
 				<div class="block">
 					<div class="header">Search</div>
 					<div class="search-bar">
-						<input class="search-input" id="js-search-input" type="text" name="search" placeholder="Search" value="{{ search if search else '' }}">
+						<input class="search-input" id="js-search-input" type="text" name="search" placeholder="Search">
 						<div class="search-options">
 							<label for="plain-check" class="option">
-								<input id="plain-check" type="checkbox" name="plain" {{ 'checked' if plain else '' }}>
+								<input id="plain-check" type="checkbox" name="plain">
 								<div class="label-name">plain </div>
 							</label>
 							<label for="regex-check" class="option">
-								<input id="regex-check" type="checkbox" name="regex" {{ 'checked' if regex else '' }}>
+								<input id="regex-check" type="checkbox" name="regex">
 								<div class="label-name">regex </div>
 							</label>
 						</div>
 					</div>
 					<div class="result-bar">
 						<span>number of results (max 1000):&nbsp;</span>
-						<input class="count-input" type="number" value="{{ count if count else '100' }}" name="count" id="js-number-input">
+						<input class="count-input" type="number" placeholder="100" name="count" id="js-number-input">
 					</div>
 				</div>
 

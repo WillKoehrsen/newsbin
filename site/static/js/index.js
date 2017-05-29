@@ -9,6 +9,35 @@ if (!NodeList.prototype.forEach) {
 }
 
 // -----------------------------------------------------------------------------
+// Keep track of form values
+window.addEventListener('unload', function(){
+    var elements = document.forms[0].elements;
+    for( var i = 0; i < elements.length; i++ ){
+        if(elements[i].type=='checkbox'){
+            sessionStorage[elements[i].name] = elements[i].checked;
+        }
+        else if(elements[i].type=='text'||elements[i].type=='number'||elements[i].type=='select-one'){
+            sessionStorage[elements[i].name] = elements[i].value;
+        }
+    }
+});
+
+window.addEventListener('load', function(){
+    var elements = document.forms[0].elements;
+    for( var i = 0; i < elements.length; i++ ){
+        if(elements[i].type=='checkbox'){
+            elements[i].checked = (sessionStorage[elements[i].name]!='false');
+        }
+        else if(elements[i].type=='text'||elements[i].type=='number'||elements[i].type=='select-one'){
+            if(elements[i].name in sessionStorage){
+                elements[i].value = sessionStorage[elements[i].name];
+            }
+        }
+    }
+    elements['regex'].checked = !elements['plain'].checked;
+});
+
+// -----------------------------------------------------------------------------
 // Localize the datetime on title-cards
 var dates = document.getElementsByClassName('js-localize-date');
 for( var i = 0; i < dates.length; i++ ){
@@ -84,9 +113,4 @@ layout.all.addEventListener('change',function(_event){
 // 		on form submit, preprocess data
 layout.form.addEventListener('submit',function(_event){
 	layout.plain = !layout.regex;												// sanity check
-	if(layout.all.checked){														// if 'all' submit only that, otherwise individual checks
-		layout.sources.forEach(function(source){
-			source.checked = false;
-		});
-	}
 });
