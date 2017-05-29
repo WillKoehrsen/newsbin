@@ -17,6 +17,7 @@ for( var i = 0; i < dates.length; i++ ){
     block.innerHTML = date.toLocaleDateString() + " " + date.toLocaleTimeString();
 }
 
+
 // -----------------------------------------------------------------------------
 //	Layout:
 // 		rather than search for elements in each function/handler
