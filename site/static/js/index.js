@@ -8,6 +8,25 @@ if (!NodeList.prototype.forEach) {
     }
 }
 
+if (!Element.prototype.saveAttribute) {
+    Element.prototype.saveAttribute = function( attr, default ) {
+		this.addEventListener('change',function(){
+			sessionStorage[this.name] = this[attr];
+		});
+		window.addEventListener('load',function(){
+			if(this.name in sessionStorage){
+				if(typeof(default)!="string"){
+					this[attr] = eval(sessionStorage[this.name]);
+				} else {
+					this[attr] = sessionStorage[this.name];
+				}
+			} else {
+				this[attr] = default;
+			}
+		});
+    }
+}
+
 // -----------------------------------------------------------------------------
 // Keep track of form values
 window.addEventListener('unload', function(){
@@ -37,12 +56,6 @@ window.addEventListener('load', function(){
     elements['regex'].checked = !elements['plain'].checked;
 });
 
-// -----------------------------------------------------------------------------
-// Test two-way binding for form values
-(function( name ){
-	var target = document.getElementById( name );
-	console.log(target);
-})('all-check');
 
 // -----------------------------------------------------------------------------
 // Localize the datetime on title-cards
