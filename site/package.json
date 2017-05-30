@@ -1,0 +1,18 @@
+{
+	"name":"newsbin",
+	"version":"0.1.0",
+	"scripts":{
+		"autoprefixer": "postcss -u autoprefixer -r static/css/*",
+		"scss": "node-sass --output-style compressed -o static/css static/scss",
+		"uglify": "uglifyjs static/js/*.js -m -o static/js/newsbin.js && uglifyjs src/js/*.js -m -c -o static/js/newsbin.min.js",
+
+		"build:css": "npm run scss && npm run autoprefixer",
+		"build:js": "npm run uglify",
+	},
+	"devDependencies":{
+		"autoprefixer": "x.x.x",
+		"postcss": "x.x.x",
+		"uglifyjs": "x.x.x",
+		"node-sass": "x.x.x",
+	},
+}
