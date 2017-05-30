@@ -38,6 +38,13 @@ window.addEventListener('load', function(){
 });
 
 // -----------------------------------------------------------------------------
+// Test two-way binding for form values
+(function( name ){
+	var target = document.getElementById( name );
+	console.log(target);
+})('all-check');
+
+// -----------------------------------------------------------------------------
 // Localize the datetime on title-cards
 var dates = document.getElementsByClassName('js-localize-date');
 for( var i = 0; i < dates.length; i++ ){
