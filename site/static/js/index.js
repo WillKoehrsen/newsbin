@@ -8,53 +8,29 @@ if (!NodeList.prototype.forEach) {
     }
 }
 
-if (!Element.prototype.saveAttribute) {
-    Element.prototype.saveAttribute = function( attr, default ) {
-		this.addEventListener('change',function(){
-			sessionStorage[this.name] = this[attr];
-		});
-		window.addEventListener('load',function(){
-			if(this.name in sessionStorage){
-				if(typeof(default)!="string"){
-					this[attr] = eval(sessionStorage[this.name]);
-				} else {
-					this[attr] = sessionStorage[this.name];
-				}
-			} else {
-				this[attr] = default;
-			}
-		});
-    }
-}
-
 // -----------------------------------------------------------------------------
-// Keep track of form values
-window.addEventListener('unload', function(){
-    var elements = document.forms[0].elements;
-    for( var i = 0; i < elements.length; i++ ){
-        if(elements[i].type=='checkbox'){
-            sessionStorage[elements[i].name] = elements[i].checked;
-        }
-        else if(elements[i].type=='text'||elements[i].type=='number'||elements[i].type=='select-one'){
-            sessionStorage[elements[i].name] = elements[i].value;
+// Refill Form
+//      On reloads and navigation without submission, we want to
+//      set the form values to the sessionStorage saved values
+//      so that they don't lose their options.
+var elements = document.forms[0].elements;
+for( var i = 0; i < elements.length; i++ ){
+    var obj = elements[i];
+    if(obj.type=='checkbox'){
+        if(obj.name in sessionStorage){
+            obj.checked = (sessionStorage[obj.name]!="false");
         }
     }
-});
-
-window.addEventListener('load', function(){
-    var elements = document.forms[0].elements;
-    for( var i = 0; i < elements.length; i++ ){
-        if(elements[i].type=='checkbox'){
-            elements[i].checked = (sessionStorage[elements[i].name]!='false');
-        }
-        else if(elements[i].type=='text'||elements[i].type=='number'||elements[i].type=='select-one'){
-            if(elements[i].name in sessionStorage){
-                elements[i].value = sessionStorage[elements[i].name];
+    else if(['text','number','select-one'].indexOf(obj.type) >= 0){
+        if(obj.name in sessionStorage){
+            if(obj.type=="number"){
+                obj.value = parseInt(sessionStorage[obj.name]);
+            } else {
+                obj.value = sessionStorage[obj.name];
             }
         }
     }
-    elements['regex'].checked = !elements['plain'].checked;
-});
+}
 
 
 // -----------------------------------------------------------------------------
@@ -76,6 +52,9 @@ layout = {
 	plain:document.getElementById('plain-check'),
 	regex:document.getElementById('regex-check'),
 	form:document.getElementById('js-sidebar-form'),
+	search:document.getElementById('js-search-input'),
+	number:document.getElementById('js-number-input'),
+	category:document.getElementById('js-category-select'),
 	sources:document.querySelectorAll('.sources input:not(#all-check)'),
 }
 
@@ -94,6 +73,7 @@ for( var i = 0; i < inputs.length; i++ ){
 // 		on changing source options, unselect/select 'all' appropriately
 for( var i = 0; i < layout.sources.length; i++ ){
 	layout.sources[i].addEventListener('change',function(_event){
+        sessionStorage[this.name] = this.checked;
 		if(this.checked){
 			layout.all.checked = true;
 			layout.sources.forEach(function(source){
@@ -104,18 +84,40 @@ for( var i = 0; i < layout.sources.length; i++ ){
 		} else {
 			layout.all.checked = false;
 		}
+        sessionStorage[layout.all.name] = layout.all.checked;
 	});
 }
+
+// -----------------------------------------------------------------------------
+// Save Changes (search,number,category)
+//      sessionStorage values are saved for checkboxes in
+//      the other handlers, but we didn't have handlers
+//      for these inputs, so these were added.
+layout.search.addEventListener('change',function(_event){
+    sessionStorage[this.name] = this.value;
+});
+
+layout.number.addEventListener('change',function(_event){
+    sessionStorage[this.name] = this.value;
+});
+
+layout.category.addEventListener('change',function(_event){
+    sessionStorage[this.name] = this.value;
+});
 
 // -----------------------------------------------------------------------------
 // Regex/Plain:
 // 		on 'regex' and 'plain', alternate checks (only one gets submitted)
 layout.plain.addEventListener('change',function(_event){
 	layout.regex.checked = !this.checked;
+    sessionStorage[this.name] = this.checked;
+    sessionStorage[layout.regex.name] = layout.regex.checked;
 });
 
 layout.regex.addEventListener('change',function(_event){
 	layout.plain.checked = !this.checked;
+    sessionStorage[this.name] = this.checked;
+    sessionStorage[layout.plain.name] = layout.plain.checked;
 });
 
 // -----------------------------------------------------------------------------
@@ -125,7 +127,9 @@ layout.all.addEventListener('change',function(_event){
 	var caller = this;
 	layout.sources.forEach(function(source){
 		source.checked = caller.checked;
+        sessionStorage[source.name] = source.checked;
 	});
+    sessionStorage[this.name] = this.checked;
 });
 
 // -----------------------------------------------------------------------------
