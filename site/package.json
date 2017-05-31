@@ -1,0 +1,23 @@
+{
+  "name": "newsbin",
+  "version": "0.1.0",
+  "description": "building newbin js/css with npm",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mjhouse/newsbin.git"
+  },
+  "scripts": {
+    "autoprefixer": "postcss -u autoprefixer --replace static/css/*.css",
+    "scss": "node-sass --output-style compressed --output static/css/ static/css/src/",
+    "uglify": "uglifyjs static/js/*.js -m -o static/js/newsbin.js && uglifyjs src/js/*.js -m -c -o static/js/newsbin.min.js",
+    "build:css": "npm run scss && npm run autoprefixer",
+    "build:js": "npm run uglify"
+  },
+  "devDependencies": {
+    "autoprefixer": "7.1.1",
+    "node-sass": "4.5.3",
+    "postcss-cli": "^4.0.0",
+    "uglifyjs": "2.4.11"
+  }
+}
