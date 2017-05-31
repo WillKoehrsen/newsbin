@@ -13,25 +13,26 @@ if (!NodeList.prototype.forEach) {
 //      On reloads and navigation without submission, we want to
 //      set the form values to the sessionStorage saved values
 //      so that they don't lose their options.
-var elements = document.forms[0].elements;
-for( var i = 0; i < elements.length; i++ ){
-    var obj = elements[i];
-    if(obj.type=='checkbox'){
-        if(obj.name in sessionStorage){
-            obj.checked = (sessionStorage[obj.name]!="false");
-        }
-    }
-    else if(['text','number','select-one'].indexOf(obj.type) >= 0){
-        if(obj.name in sessionStorage){
-            if(obj.type=="number"){
-                obj.value = parseInt(sessionStorage[obj.name]);
-            } else {
-                obj.value = sessionStorage[obj.name];
+window.addEventListener('load',function(){
+    var elements = document.forms[0].elements;
+    for( var i = 0; i < elements.length; i++ ){
+        var obj = elements[i];
+        if(obj.type=='checkbox'){
+            if(obj.name in sessionStorage){
+                obj.checked = (sessionStorage[obj.name]!="false");
             }
         }
-    }
-}
-
+        else if(['text','number','select-one'].indexOf(obj.type) >= 0){
+            if(obj.name in sessionStorage){
+                if(obj.type=="number"){
+                    obj.value = parseInt(sessionStorage[obj.name]);
+                } else {
+                    obj.value = sessionStorage[obj.name];
+                }
+            }
+        }
+    }    
+})
 
 // -----------------------------------------------------------------------------
 // Localize the datetime on title-cards
