@@ -312,6 +312,24 @@ body {
 }
 
 /* -------------------------------------------------------------------------- */
+/* NoScript */
+.noscript-notification {
+	width:100vw;
+	height:40px;
+	line-height:40px;
+	text-align: center;
+	color:white;
+	background-color: #bc0000;
+	position:fixed;
+	top:0;
+	left:0;
+	font-size:1.5em;
+	font-weight:bold;
+}
+
+.noscript-notification>a {
+	color:white;
+}
 
 /* Mobile CSS Styles */
 @media screen and (max-width: 680px) {
