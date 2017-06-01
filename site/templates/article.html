@@ -22,13 +22,13 @@
 		<div id="js-annotation-modal" class="modal-window"></div>
 
 		<div class="container">
-			
+
 			<div class="sub-container side-container">
 
 				<form action="/article" method="post" class="block annotation-block" autocomplete="off">
 					<div class="header">Annotate</div>
 					<input type="hidden" name="id" value="{{ article.id }}">
-					<input class="annotation-input" type="text" name="annotation">
+					<input class="annotation-input" type="text" name="annotation" id="js-add-selection">
 					<input type="submit" class="item button" name="add" value="Add">
 					<input type="submit" class="item button" name="remove" value="Remove">
 				</form>
@@ -57,7 +57,7 @@
 						<span id="js-localize-date" iso="{{ article.fetched.isoformat() }}">{{ article.fetched.strftime('%Y-%m-%d %H:%M:%S %p') }} UTC</span>
 					</div>
 				</div>
-				<div class="article-content">
+				<div class="article-content" id="js-capture-selection">
 					{{ article.content|safe }}
 				</div>
 				<div class="information article-information">

@@ -74,3 +74,17 @@ if(annotations){
 		});
 	}
 }
+
+var content = document.getElementById('js-capture-selection');
+if(content){
+	content.addEventListener('mouseup',function(){
+		var selection = window.getSelection();
+		if( !selection.isCollapsed && selection.rangeCount==1 ){
+			var range = selection.getRangeAt(0);
+			var input = document.getElementById('js-add-selection');
+			if( input && range ){
+				input.value = range.toString();
+			}
+		}
+	});
+}
