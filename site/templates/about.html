@@ -51,7 +51,7 @@
 
 				<div class="block">
 					<div class="header">Categories</div>
-					<select name="category" class="categories">
+					<select name="category" class="categories" id="js-category-select">
 						<option value="all"></option>
 						{% for option in categories %}<option value="{{ option|lower }}">{{ option }}</option>{% endfor %}
 					</select>
