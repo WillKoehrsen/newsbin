@@ -1,6 +1,8 @@
 #!/bin/bash
 
 rm /home/mhouse/Projects/python/newsbin/data/logs/*.log 2> /dev/null
+npm run build
+
 if [ "$1" ] ; then
 	MESSAGE="$1"
 else
