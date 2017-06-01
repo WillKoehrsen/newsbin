@@ -58,6 +58,7 @@ def index():
 
 		return render_template('index.html', articles=articles[:int(options['count'])], categories=categories, date=datetime.datetime.now())
 
+
 	# couldn't get a session for some reason
 	return abort(404)
 
