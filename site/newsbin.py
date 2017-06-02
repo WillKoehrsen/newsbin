@@ -12,6 +12,10 @@ from package import politifact
 
 app = Flask(__name__)
 
+# these are the categories that appear in the search
+# menu on the index/about pages. They need to be automatically
+# generated from the engine/package/defaults.py feed tags, but
+# I haven't done it yet.
 categories = [
 	'Top',
 	'US',
