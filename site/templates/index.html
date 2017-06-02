@@ -16,6 +16,11 @@
 	<body>
 		<noscript class="noscript-notification">
 			some site functionality won't be available without <a href="http://www.enable-javascript.com/" target="_blank">javascript</a> enabled.
+			<style>
+				.container {
+					margin-top:40px;
+				}
+			</style>
 		</noscript>
 		<div class="container">
 			<form action="/" method="get" class="sub-container side-container" id="js-sidebar-form">
@@ -97,7 +102,7 @@
 			<div class="sub-container main-container">
 				{% for article in articles %}
 				<div class="title-card">
-					<a class="title" href="/article?id={{ article.id }}">{{ article.title }}</a>
+					<a class="title" href="/article/{{ article.id }}">{{ article.title }}</a>
 					<div class="information">
 						<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
 						<div class="author"><span class="title-card-label">author(s): </span>{{ article.author }}</div>

@@ -1,19 +1,60 @@
 
 .annotation-input {
 	width:calc(100% - 4px);
-	border:1px solid grey;
+	border:1px solid lightgrey;
 	margin:0 auto 0 auto;
 }
 
-.fadelist {
-	color:lightgrey;
-	text-align: center;
+.button {
+	background-color: transparent;
 }
 
-.whiteout {
+/* -------------------------------------------------------------------------- */
+/* Article Page */
+
+.article {
 	background-color: white;
 }
 
+.article-title {
+	font-size:2em;
+	padding:10px;
+}
+
+.article-content {
+	padding:0 10px 0 10px;
+}
+
+.article-information {
+	padding-left:10px;
+}
+
+.blacklist {
+	margin: 5px 5px 5px 5px;
+	box-sizing:border-box;
+}
+
+.annotation {
+	background-color: #fbffaa;
+	cursor:pointer;
+}
+
+.modal-image {
+	border:1px solid lightgrey;
+	padding:1px;
+}
+
+.fadelist {
+	min-height:40px;
+	line-height: 40px;
+	color:grey;
+	text-align: center;
+	background-color: white;
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Modal */
 .modal-window {
 	height:100%;
 	width:100%;

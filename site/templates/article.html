@@ -17,6 +17,11 @@
 	<body>
 		<noscript class="noscript-notification">
 			some site functionality won't be available without <a href="http://www.enable-javascript.com/" target="_blank">javascript</a> enabled.
+			<style>
+				.container {
+					margin-top:40px;
+				}
+			</style>
 		</noscript>
 
 		<div id="js-annotation-modal" class="modal-window"></div>
@@ -33,7 +38,7 @@
 					<input type="submit" class="item button" name="remove" value="Remove">
 				</form>
 
-				<div class="block whiteout">
+				<div class="block">
 					<div class="header">Blacklist</div>
 					<div class="blacklist{{ ' fadelist' if not blacklist }}">{{ blacklist if blacklist else 'nothing here' }}</div>
 				</div>
@@ -46,7 +51,7 @@
 				</div>
 
 			</div>
-			<div class="sub-container main-container">
+			<div class="sub-container main-container article">
 				<div class="article-title">{{ article.title }}</div>
 				<div class="information article-information">
 					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>

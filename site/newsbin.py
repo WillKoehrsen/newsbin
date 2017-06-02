@@ -62,10 +62,9 @@ def index():
 	# couldn't get a session for some reason
 	return abort(404)
 
-@app.route('/article', methods=['GET','POST'])
-def article():
+@app.route('/article/<int:pk>', methods=['GET','POST'])
+def article( pk ):
 	if request.method == 'GET':
-		pk = request.args.get('id',None)
 		with session_scope() as session:
 			try:
 				article = session.query( models.Article ).get( pk )

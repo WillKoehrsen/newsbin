@@ -12,6 +12,7 @@ body {
 			 "Open Sans",
 			 "Helvetica Neue",
 			 sans-serif;
+	background-color: #faf8f6;
 }
 
 
@@ -55,15 +56,12 @@ body {
 /* Sidebar */
 .block {
 	margin-bottom:10px;
-	box-shadow: 2px 2px 5px rgba(0,0,0,0.25);
-	background-color:#FFECB3;
 }
 
 .block>.header {
-	color:white;
+	color:black;
 	font-size:1.5em;
 	padding:5px 3px 5px 5px;
-	background-color:#F57C00;
 }
 
 .block>.item {
@@ -73,7 +71,6 @@ body {
 	display:flex;
 	flex-direction:row-reverse;
 	justify-content:flex-end;
-	background-color:#FFECB3;
 	color:black;
 	text-decoration:none;
 	transition:background-color 0.1s ease;
@@ -94,13 +91,12 @@ body {
 }
 
 .block>.item:hover {
-	background-color:#fff4d3;
+	background-color: white;
 }
 
 .search-bar, .result-bar {
 	padding:5px 3px 5px 5px;
 	display:flex;
-	background-color:#FFECB3;
 }
 
 .result-bar {
@@ -110,7 +106,7 @@ body {
 
 .search-input {
 	padding:3px;
-	border:1px solid black;
+	border:1px solid lightgrey;
 	flex:1;
 }
 
@@ -139,7 +135,7 @@ body {
 	width:100%;
 	background-color: white;
 	border-radius:none;
-	border:none;
+	border:1px solid lightgrey;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -166,6 +162,7 @@ body {
 
 .count-input {
 	max-width:50px;
+	border:1px solid lightgrey;
 }
 
 .submit-button {
@@ -196,10 +193,10 @@ body {
 /* -------------------------------------------------------------------------- */
 /* Main Container */
 .title-card {
-	border:1px solid grey;
+	border-radius:3px;
 	padding:10px;
-	background-color: #f4f4f4;
-	box-shadow: 2px 2px 5px rgba(0,0,0,0.25);
+	background-color: white;
+	box-shadow: 2px 2px 5px rgba(0,0,0,0.20);
 	margin-bottom:10px;
 }
 
@@ -208,8 +205,6 @@ body {
 	color:black;
 	font-size: 1.25em;
 	padding:5px;
-	background-color: #faff7f;
-	box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 	border:1px dotted transparent;
 	text-decoration:none;
 }
@@ -254,6 +249,10 @@ body {
 
 /* -------------------------------------------------------------------------- */
 /* About Page */
+.about {
+	background-color: white;
+}
+
 .about-title, .about-content {
 	width:80%;
 	margin: 0 auto 0 auto;
@@ -269,38 +268,6 @@ body {
 	align-items:flex-end;
 }
 /* -------------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
-/* Article Page */
-.article-title {
-	font-size:2em;
-	padding:10px;
-	box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-	background-color:#faff7f;
-}
-
-.article-content {
-	padding:0 10px 0 10px;
-}
-
-.article-information {
-	padding-left:10px;
-}
-
-.blacklist {
-	margin: 5px 5px 5px 5px;
-	box-sizing:border-box;
-}
-
-.annotation {
-	background-color: #fbffaa;
-	cursor:pointer;
-}
-
-.modal-image {
-	border:1px solid lightgrey;
-	padding:1px;
-}
 
 /* -------------------------------------------------------------------------- */
 /* Footer */
@@ -323,7 +290,7 @@ body {
 	position:fixed;
 	top:0;
 	left:0;
-	font-size:1.5em;
+	font-size:1.2em;
 	font-weight:bold;
 }
 
