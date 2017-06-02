@@ -146,13 +146,27 @@ body {
 	float:right;
 	content:'\2212';
 	color:red;
+	background-color: white;
+    border-radius: 100px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 18px;
+    border: 1px solid lightgrey;
 }
 
 .checkable:checked + div::after {
-	height:20px;
-	float:right;
-	content:'\002B';
-	color:green;
+	height: 20px;
+    float: right;
+    content: '\002B';
+    color: green;
+    background-color: white;
+    border-radius: 100px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 18px;
+    border: 1px solid lightgrey;
 }
 /* -------------------------------------------------------------------------- */
 
