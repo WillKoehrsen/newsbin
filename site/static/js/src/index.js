@@ -50,8 +50,6 @@ for( var i = 0; i < dates.length; i++ ){
 // 		front.
 layout = {
 	all:document.getElementById('all-check'),
-	plain:document.getElementById('plain-check'),
-	regex:document.getElementById('regex-check'),
 	form:document.getElementById('js-sidebar-form'),
 	search:document.getElementById('js-search-input'),
 	number:document.getElementById('js-number-input'),
@@ -107,21 +105,6 @@ layout.category.addEventListener('change',function(_event){
 });
 
 // -----------------------------------------------------------------------------
-// Regex/Plain:
-// 		on 'regex' and 'plain', alternate checks (only one gets submitted)
-layout.plain.addEventListener('change',function(_event){
-	layout.regex.checked = !this.checked;
-    sessionStorage[this.name] = this.checked;
-    sessionStorage[layout.regex.name] = layout.regex.checked;
-});
-
-layout.regex.addEventListener('change',function(_event){
-	layout.plain.checked = !this.checked;
-    sessionStorage[this.name] = this.checked;
-    sessionStorage[layout.plain.name] = layout.plain.checked;
-});
-
-// -----------------------------------------------------------------------------
 // All:
 // 		on 'all' change, select/unselect all sources
 layout.all.addEventListener('change',function(_event){
@@ -137,5 +120,5 @@ layout.all.addEventListener('change',function(_event){
 // Form:
 // 		on form submit, preprocess data
 layout.form.addEventListener('submit',function(_event){
-	layout.plain = !layout.regex;												// sanity check
+
 });

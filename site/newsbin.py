@@ -49,11 +49,11 @@ def index():
 			articles = session.query( models.Article ).filter( models.Article.source.in_(options) ).filter( models.Article.category.contains(category) ).order_by( models.Article.fetched.desc() ).all()
 
 		search = options.get('search','')
-		if 'regex' in options:
+		if search.startswith('re:'):
+			search = search.split(':',1)[1]
 			pattern = regex.compile( search )
 			articles = [ a for a in articles if pattern.search(a.title) or pattern.search(a.content) ]
 		else:
-			options['plain'] = 'on'
 			articles = [ a for a in articles if search in a.title or search in a.content ]
 
 		return render_template('index.html', articles=articles[:int(options['count'])], categories=categories, date=datetime.datetime.now())
