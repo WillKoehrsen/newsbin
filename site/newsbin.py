@@ -78,7 +78,6 @@ def article( pk ):
 				log.exception(e)
 				raise
 	elif request.method == 'POST':
-		pk = request.form.get('id',None)
 		name = request.form.get('annotation',None)
 		add = 'add' in request.form
 		if pk and name:

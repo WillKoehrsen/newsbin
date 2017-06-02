@@ -30,9 +30,8 @@
 
 			<div class="sub-container side-container">
 
-				<form action="/article" method="post" class="block annotation-block" autocomplete="off">
+				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off">
 					<div class="header">Annotate</div>
-					<input type="hidden" name="id" value="{{ article.id }}">
 					<input class="annotation-input" type="text" name="annotation" id="js-add-selection">
 					<input type="submit" class="item button" name="add" value="Add">
 					<input type="submit" class="item button" name="remove" value="Remove">
