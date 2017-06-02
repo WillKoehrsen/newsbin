@@ -48,6 +48,8 @@ var modal = (function( target ){
 					layout.part.content.innerHTML = response.summary;
 					layout.part.link.setAttribute('href','https://en.wikipedia.org/wiki/' + response.name);
 					layout.modal.style.display = "flex";
+
+					console.log('TRUTH RATING: ',response.truth_score)
 				}
 			}
 			handle.open("GET", url, true);

@@ -8,6 +8,7 @@ import datetime
 from package import filters, utilities
 from package import models, session_scope
 from package import log
+from package import politifact
 
 app = Flask(__name__)
 
@@ -106,13 +107,13 @@ def annotations():
 	with session_scope() as session:
 		try:
 			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
-			data = annotation.serialize()
+			data = annotation.serialize(truth_score=politifact.get_rating(annotation.name))
 			return make_response(data)
 		except:
 			try:
 				annotation = utilities.summarize(name)
 				if annotation.name:
-					data = annotation.serialize()
+					data = annotation.serialize(truth_score=politifact.get_rating(annotation.name))
 					return make_response(data)
 			except Exception as e:
 				log.exception(e)

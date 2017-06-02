@@ -69,6 +69,7 @@ class Annotation(Base):
 		for key, value in kwargs.items():
 			setattr(self, key, value)
 
-	def serialize( self ):
+	def serialize( self, **kwargs ):
 		variables = { str(key):str(value) for key,value in vars( self ).items() if not key.startswith('_') }
+		variables.update(kwargs)
 		return json.dumps( variables )

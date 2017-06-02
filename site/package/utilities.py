@@ -12,6 +12,12 @@ from wikipedia.exceptions import PageError
 from shared.models import Annotation, Article
 from . import session_scope
 
+def politifact_exists( name ):
+	pass
+
+def politifact_rating( name ):
+	pass
+
 def collapse( names ):
 	names = sorted( set(names), key=len, reverse=True)
 	collapsed = {}
