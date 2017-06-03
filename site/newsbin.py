@@ -111,13 +111,15 @@ def annotations():
 	with session_scope() as session:
 		try:
 			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
-			data = annotation.serialize(truth_score=politifact.get_rating(annotation.name))
+			rating, slug = politifact.get_rating(annotation.name)
+			data = annotation.serialize(truth_score=rating,slug=slug)
 			return make_response(data)
 		except Exception as e:
 			try:
 				annotation = utilities.summarize(name)
 				if annotation.name:
-					data = annotation.serialize(truth_score=politifact.get_rating(annotation.name))
+					rating, slug = politifact.get_rating(annotation.name)
+					data = annotation.serialize(truth_score=rating,slug=slug)
 					print(data)
 					return make_response(data)
 			except Exception as e:

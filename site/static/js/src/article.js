@@ -25,6 +25,7 @@ var modal = (function( target ){
 			close:document.createElementWithAttr('div',{class:'modal-close',onClick:'modal.close()'}),
 			title:document.createElementWithAttr('div',{class:'modal-title'}),
 			image:document.createElementWithAttr('img',{class:'modal-image'}),
+			card:document.createElementWithAttr('div',{class:'modal-data'}),
 			content:document.createElementWithAttr('div',{class:'modal-content'}),
 			link:document.createElementWithAttr('a',{class:'modal-link',target:'_blank'}),
 		},
@@ -49,7 +50,13 @@ var modal = (function( target ){
 					layout.part.link.setAttribute('href','https://en.wikipedia.org/wiki/' + response.name);
 					layout.modal.style.display = "flex";
 
-					console.log('TRUTH RATING: ',response.truth_score)
+					if(response.slug!=null&&response.truth_score!=null){
+						layout.part.card.innerHTML = 'Truth rating: <span class="truth-rating" style="background-color:hsl(' +
+							response.truth_score + ',100%,50%);" >' +
+							response.truth_score + '%</span>' +
+							'<br/><span class="truth-disclaimer" >(<a href="http://www.politifact.com/personalities/' +
+							response.slug + '" target="_blank">based on last five statements</a>)</span>';
+					}
 				}
 			}
 			handle.open("GET", url, true);
