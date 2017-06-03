@@ -58,12 +58,14 @@
 
 				<div class="block">
 					<div class="header">Categories</div>
-					<select name="category" class="categories" id="js-category-select">
-						<option value="all"></option>
-						{% for option in categories %}
-						<option value="{{ option|lower }}">{{ option }}</option>
-						{% endfor %}
-					</select>
+					<div class ="category-bar">
+						<select name="category" class="category-input" id="js-category-select">
+							<option value="all"></option>
+							{% for option in categories %}
+							<option value="{{ option|lower }}">{{ option }}</option>
+							{% endfor %}
+						</select>
+					</div>
 				</div>
 
 				<div class="block">
@@ -72,8 +74,7 @@
 						<input class="search-input" id="js-search-input" type="text" name="search" placeholder="Search">
 					</div>
 					<div class="result-bar">
-						<span>number of results (max 1000):&nbsp;</span>
-						<input class="count-input" type="number" placeholder="100" name="count" id="js-number-input">
+						<input class="count-input" type="number" placeholder="Results (max 1000)" name="count" id="js-number-input">
 					</div>
 				</div>
 
@@ -112,8 +113,8 @@
 		</div>
 
 		<!-- External Javascript -->
-		<script src="/static/js/analytics.js"></script>
 		<script src="/static/js/index.js"></script>
+		<script src="/static/js/analytics.js"></script>
 		<!-- End External Javascript -->
 	</body>
 </html>
