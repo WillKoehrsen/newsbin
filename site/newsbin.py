@@ -41,27 +41,37 @@ def index():
 	options = request.values.to_dict()
 	sources = filters.all()
 
-	if not options.get('count',False): options['count'] = 100
-	if 'all' in options or set(options.keys()).isdisjoint(sources):
-		options.update({ key:'on' for key in sources })
-		options['all'] = 'on'
+	count = int(options.get('count',100)) or 100
 
 	with session_scope() as session:
 		category = options.get('category','all')
-		if category == 'all':
-			articles = session.query( models.Article ).filter( models.Article.source.in_(options) ).order_by( models.Article.fetched.desc() ).all()
-		else:
-			articles = session.query( models.Article ).filter( models.Article.source.in_(options) ).filter( models.Article.category.contains(category) ).order_by( models.Article.fetched.desc() ).all()
+		search, pattern = options.get('search',''), None
+		if search.startswith('re:'): pattern = regex.compile( search.split(':',1)[1] )
 
-		search = options.get('search','')
-		if search.startswith('re:'):
-			search = search.split(':',1)[1]
-			pattern = regex.compile( search )
-			articles = [ a for a in articles if pattern.search(a.title) or pattern.search(a.content) ]
-		else:
-			articles = [ a for a in articles if search in a.title or search in a.content ]
+		# the base query is just a filter to make sure the sources are
+		# what was requested and orders them by date. Note that we don't
+		# care about the 'all' option- it's just a javascript hook to set
+		# the other values in the search form.
+		articles = session.query( models.Article )\
+			.filter( models.Article.source.in_(options) )\
+			.order_by( models.Article.fetched.desc() )
 
-		return render_template('index.html', articles=articles[:int(options['count'])], categories=categories, date=datetime.datetime.now())
+		# if they have selected a category, add a filter that tests to make sure that category is
+		# in the results.
+		if category != 'all':
+			articles = articles.filter( models.Article.category.contains(category) )
+
+		# if there is a regular expression, we have to fetch all of the articles and then apply the pattern
+		# this is probably really slow, but it won't happen often. A regular search term will use the sqlalchemy
+		# query api, which is probably a lot faster.
+		if pattern:
+			articles = [ a for a in articles.all() if pattern.search(a.title) or pattern.search(a.content) ][:count]
+		else:
+			articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
+				.slice(0,count)\
+				.all()
+
+		return render_template('index.html', articles=articles, categories=categories, date=datetime.datetime.now())
 
 
 	# couldn't get a session for some reason
