@@ -301,9 +301,31 @@ body {
 	.article-title {
 		word-wrap:break-word;
 	}
-}
-@media screen and (max-width: 275px) {
-	.search-input {
-		width:20px;
+
+
+
+	.container {
+		padding-top: 0;
+	}
+	.main-container {
+		margin-top:10px;
+	}
+	.mobile-menu-button>img {
+		float:right;
+		margin-right:10px;
+	}
+	.mobile-menu-button {
+		width:90%;
+		background-color: white;
+		margin:0 auto 0 auto;
+		padding: 5px 0 5px 0;
+		border:1px solid black;
+	}
+	.side-container {
+		display:none;
+		max-width:90vw;
+		padding:10px;
+		border:1px solid grey;
+		box-shadow:2px 2px 5px rgba(0,0,0,0.5);
 	}
 }
