@@ -41,7 +41,7 @@ def index():
 	options = request.values.to_dict()
 	sources = filters.all()
 
-	count = int(options.get('count',100)) or 100
+	count = int(options.get('count',100) or 100)
 
 	with session_scope() as session:
 		category = options.get('category','all')
