@@ -248,6 +248,14 @@ body {
 	align-items:flex-end;
 }
 /* -------------------------------------------------------------------------- */
+/* Mobile Menu */
+.mobile-menu {
+	display:none;
+}
+.article-mobile-source {
+	display:none;
+}
+
 
 /* -------------------------------------------------------------------------- */
 /* Footer */
@@ -289,6 +297,7 @@ body {
 	.container {
 		width:100%;
 		flex-direction:column;
+		overflow:hidden;
 	}
 	.side-container, .main-container {
 		width:90%;
@@ -303,29 +312,83 @@ body {
 	}
 
 
-
+	/* In Progress */
+	.information {
+		display:none;
+	}
+	/* Mobile Menu */
 	.container {
 		padding-top: 0;
 	}
 	.main-container {
 		margin-top:10px;
+		padding-top: 10vh;
 	}
-	.mobile-menu-button>img {
-		float:right;
-		margin-right:10px;
-	}
-	.mobile-menu-button {
-		width:90%;
+	.mobile-menu {
+		position:fixed;
+		display:flex;
+
+		height:8vh;
+		width:100%;
 		background-color: white;
 		margin:0 auto 0 auto;
-		padding: 5px 0 5px 0;
-		border:1px solid black;
+	}
+	.mobile-menu>div {
+		flex:1;
+		height:100%;
+		user-select:none;
+
+		display:flex;
+		justify-content: center;
+		align-items: center;
+		background-color: lightgrey;
+		border-bottom:1px solid black;
+	}
+	.mobile-menu>.current {
+		background-color: #faf8f6;
+		border-bottom:1px solid lightgrey;
+	}
+	.article-content {
+		font-size:1.1em;
+	}
+	.article-mobile-source {
+		display:block;
+		width:100%;
+		text-decoration: none;
+		color:black;
+		height:30px;
+		line-height:30px;
+		background-color: lightgrey;
+		text-align: center;
+		font-size:1.25em;
+	}
+	.article {
+		padding-top: 0;
+	}
+	.side-container>div {
+		width:90%;
 	}
 	.side-container {
-		display:none;
-		max-width:90vw;
-		padding:10px;
+		position:fixed;
+		top:8vh;
+		left:0;
+		overflow-y: scroll;
+		overflow-x: hidden;
+		height:92vh;
+		width:90vw;
+		background-color: #faf8f6;
+		align-items: center;
+
 		border:1px solid grey;
-		box-shadow:2px 2px 5px rgba(0,0,0,0.5);
+		box-shadow:2px 2px 5px rgba(0,0,0,0.25);
+
+		margin-left: -91vw;
+		transition:margin-left 0.5s;
 	}
+	.open {
+		margin-left:0;
+	}
+
+
+
 }

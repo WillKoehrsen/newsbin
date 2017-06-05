@@ -41,7 +41,12 @@ def index():
 	options = request.values.to_dict()
 	sources = filters.all()
 
+	# count defaults to 100 if empty or not given
 	count = int(options.get('count',100) or 100)
+
+	# if there are no sources in arguments, all sources are set
+	if set(sources).isdisjoint(set(options)):
+		options.update({ key:'on' for key in sources })
 
 	with session_scope() as session:
 		category = options.get('category','all')

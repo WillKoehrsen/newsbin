@@ -54,6 +54,8 @@ layout = {
 	search:document.getElementById('js-search-input'),
 	number:document.getElementById('js-number-input'),
 	category:document.getElementById('js-category-select'),
+	search_tab:document.getElementById('js-tab-search'),
+	results_tab:document.getElementById('js-tab-results'),
 	sources:document.querySelectorAll('.sources input:not(#all-check)'),
 }
 
@@ -117,8 +119,28 @@ layout.all.addEventListener('change',function(_event){
 });
 
 // -----------------------------------------------------------------------------
-// Form:
-// 		on form submit, preprocess data
-layout.form.addEventListener('submit',function(_event){
+// Tabs:
+// 		handle tabbing on mobile
+if(layout.search_tab){
+    layout.search_tab.addEventListener('click',function(_event){
+        if(this.classList.toggle('current')){
+            layout.results_tab.classList.remove('current');
+            layout.form.classList.add('open');
+        } else {
+            layout.results_tab.classList.add('current');
+            layout.form.classList.remove('open');
+        }
+    });
+}
 
-});
+if(layout.results_tab){
+    layout.results_tab.addEventListener('click',function(_event){
+        if(this.classList.toggle('current')){
+            layout.search_tab.classList.remove('current');
+            layout.form.classList.remove('open');
+        } else {
+            layout.search_tab.classList.add('current');
+            layout.form.classList.add('open');
+        }
+    });
+}
