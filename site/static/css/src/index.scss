@@ -385,6 +385,9 @@ body {
 		margin-left: -91vw;
 		transition:margin-left 0.5s;
 	}
+	.annotaion {
+		user-select:none;
+	}
 	.open {
 		margin-left:0;
 	}
