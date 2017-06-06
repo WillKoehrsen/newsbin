@@ -64,7 +64,7 @@ body {
 	padding:5px 3px 5px 5px;
 }
 
-.block>.item {
+.item {
 	user-select:none;
 	cursor:pointer;
 	padding:5px 3px 5px 5px;
@@ -76,7 +76,7 @@ body {
 	transition:background-color 0.1s ease;
 }
 
-.block>.item>.label-name {
+.item>.label-name {
 	width:95%;
 }
 
@@ -86,11 +86,11 @@ body {
 	text-align:left;
 }
 
-.block>.item, .option {
+.item, .option {
 	user-select: none;
 }
 
-.block>.item:hover {
+.item:hover {
 	background-color: white;
 }
 
@@ -316,6 +316,9 @@ body {
 	.information {
 		display:none;
 	}
+	.block:last-child {
+		padding-bottom: 10px;
+	}
 	/* Mobile Menu */
 	.container {
 		padding-top: 0;
@@ -392,7 +395,7 @@ body {
 		margin-left: -91vw;
 		transition:margin-left 0.5s;
 	}
-	.annotaion {
+	.annotation {
 		user-select:none;
 	}
 	.open {
