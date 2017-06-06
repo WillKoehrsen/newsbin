@@ -17,10 +17,17 @@ def update_annotations():
 		for annotation in annotations:
 			try:
 				name = annotation.name
-				annotation.summary = wikipedia.summary(name)
-				annotation.image = utilities.get_thumbnail( name )
+				summary = wikipedia.summary(name)
+				image_url = utilities.get_thumbnail( name )
+
+				if summary:
+					annotation.summary = summary
+					annotation.image = image_url
+				else:
+					session.delete(annotation)
+
 			except Exception as e:
-				pass
+				print(e)
 
 if __name__=='__main__':
 	update_annotations()
