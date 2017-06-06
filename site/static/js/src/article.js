@@ -97,3 +97,31 @@ if(content){
 		}
 	});
 }
+
+menu_tab = document.getElementById('js-tab-menu');
+article_tab = document.getElementById('js-tab-article');
+menu_form = document.getElementById('js-sidebar-anno-menu');
+
+if(menu_tab){
+    menu_tab.addEventListener('click',function(_event){
+        if(this.classList.toggle('current')){
+            article_tab.classList.remove('current');
+            menu_form.classList.add('open');
+        } else {
+            article_tab.classList.add('current');
+            menu_form.classList.remove('open');
+        }
+    });
+}
+
+if(article_tab){
+    article_tab.addEventListener('click',function(_event){
+        if(this.classList.toggle('current')){
+            menu_tab.classList.remove('current');
+            menu_form.classList.remove('open');
+        } else {
+            menu_tab.classList.add('current');
+            menu_form.classList.add('open');
+        }
+    });
+}

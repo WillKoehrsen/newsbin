@@ -28,7 +28,16 @@
 
 		<div class="container">
 
-			<div class="sub-container side-container">
+			<div class="mobile-menu">
+				<div id="js-tab-menu">
+					Menu
+				</div>
+				<div id="js-tab-article" class="current">
+					Article
+				</div>
+			</div>
+
+			<div class="sub-container side-container" id="js-sidebar-anno-menu">
 
 				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off">
 					<div class="header">Annotate</div>
@@ -42,17 +51,27 @@
 					<div class="blacklist{{ ' fadelist' if not blacklist }}">{{ blacklist if blacklist else 'nothing here' }}</div>
 				</div>
 
+				<!-- only displays on mobile -->
 				<div class="block information-block">
 					<div class="header">Information</div>
+					<div class="info-block-content">
+						<div>Source: <a href="{{ article.link }}" target="_blank">{{ article.source|upper }}</a></div>
+						<div>Author(s): <span>{{ article.author }}</span></div>
+						<div>Fetched: <span>{{ article.fetched.strftime('%Y-%m-%d') }}</span></div>
+					</div>
+				</div>
+
+				<div class="block">
+					<div class="header">Navigation</div>
 					<a href="/" class="item">Main</a>
 					<a href="/about" class="item">About</a>
 					<a href="https://github.com/mjhouse/newsbin" target="_blank" class="item">Github</a>
 				</div>
 
 			</div>
+
 			<div class="sub-container main-container article">
 				<div class="article-title">{{ article.title }}</div>
-				<a href="{{ article.link }}" target="_blank" class="article-mobile-source">{{ article.source }}</a>
 				<div class="information article-information">
 					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
 					<div class="author"><span class="title-card-label">author: </span>{{ article.author }}</div>
