@@ -36,12 +36,15 @@ def get_slug( name ):
 
 def get_rating( name, count=5 ):
 	"""get slug, fetch last <count> statements and calculate score"""
-	slug = get_slug( name )
-	if slug:
-		url = 'http://www.politifact.com/api/statements/truth-o-meter/people/{}/json/?n={}'.format(slug,count)
-		data = requests.get(url).json()
-		count = len(data) if len(data) else 1
-		rating = round( ( sum( rulings_key[item['ruling']['ruling_slug']] for item in data )/1 )*100,1)
-		return (rating,slug)
-	else:
-		return (None,None)
+	try:
+		slug = get_slug( name )
+		if slug:
+			url = 'http://www.politifact.com/api/statements/truth-o-meter/people/{}/json/?n={}'.format(slug,count)
+			data = requests.get(url).json()
+			count = len(data) if len(data) else 1
+			rating = round( ( sum( rulings_key[item['ruling']['ruling_slug']] for item in data )/1 )*100,1)
+			return (rating,slug)
+	except Exception as e:
+		pass
+		
+	return (None,None)
