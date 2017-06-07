@@ -40,7 +40,8 @@ def get_rating( name, count=5 ):
 	if slug:
 		url = 'http://www.politifact.com/api/statements/truth-o-meter/people/{}/json/?n={}'.format(slug,count)
 		data = requests.get(url).json()
-		rating = round( ( sum( rulings_key[item['ruling']['ruling_slug']] for item in data )/len(data) )*100,3)
+		count = len(data) if len(data) else 1
+		rating = round( ( sum( rulings_key[item['ruling']['ruling_slug']] for item in data )/1 )*100,1)
 		return (rating,slug)
 	else:
 		return (None,None)
