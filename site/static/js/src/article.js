@@ -59,6 +59,7 @@ var modal = (function( target ){
 					}
 				}
 			}
+			handle.setRequestHeader('cache-control', 'no-cache');
 			handle.open("GET", url, true);
 			handle.send();
 		},
