@@ -41,9 +41,6 @@ var modal = (function( target ){
 		display:function( name ){
 			var handle = new XMLHttpRequest();
 			var url = '/annotations?name=' + name;
-			handle.open("GET", url, true);
-			handle.setRequestHeader('cache-control', 'no-cache');
-
 			handle.onload = function(){
 				if(this.status==200){
 					var response = JSON.parse(this.responseText);
@@ -62,7 +59,7 @@ var modal = (function( target ){
 					}
 				}
 			}
-
+			handle.open("GET", url, true);
 			handle.send();
 		},
 
