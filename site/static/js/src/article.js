@@ -45,7 +45,14 @@ var modal = (function( target ){
 				if(this.status==200){
 					var response = JSON.parse(this.responseText);
 					layout.part.title.innerHTML = response.name;
-					layout.part.image.setAttribute('src',response.image);
+
+					if(response.image){
+						layout.part.image.setAttribute('src',response.image);
+						layout.part.style.display = "block";
+					} else {
+						layout.part.style.display = "none";
+					}
+
 					layout.part.content.innerHTML = response.summary;
 					layout.part.link.setAttribute('href','https://en.wikipedia.org/wiki/' + response.name);
 					layout.modal.style.display = "flex";
@@ -55,7 +62,7 @@ var modal = (function( target ){
 								'<a href="http://www.politifact.com/personalities/' + response.slug + '" target="_blank">' +
 								response.truth_score +
 								'</a>' +
-							'%</div></div>'; 
+							'%</div></div>';
 					} else {
 						layout.part.card.innerHTML = '';
 					}
