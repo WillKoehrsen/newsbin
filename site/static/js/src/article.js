@@ -60,9 +60,6 @@ var modal = (function( target ){
 				}
 			}
 			handle.open("GET", url, true);
-			
-			handle.setRequestHeader('Cache-Control','no-cache');
-
 			handle.send();
 		},
 
