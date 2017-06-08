@@ -13,15 +13,11 @@
 /* Truth Score */
 
 .modal-data-table {
+	padding:5px 0 5px 0;
 	width:90%;
 	display:block;
 	display:flex;
 	flex-direction: column;
-}
-
-.modal-image {
-	max-width:90%;
-	height:auto;
 }
 
 .modal-data-table>div {
@@ -114,7 +110,7 @@
 }
 
 .modal-image {
-	width:90%;
+	max-width:90%;
 	height:auto;
 }
 
@@ -154,7 +150,7 @@
 }
 
 .modal-content {
-	padding:10px;
+	max-width:90%;
 }
 
 @media screen and (max-width: 500px) {
