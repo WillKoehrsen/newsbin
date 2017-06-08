@@ -26,7 +26,6 @@ def get_slug( name ):
 	"""preprocess name, get best matching slug"""
 	name = "-".join(name.lower().strip().split())
 	json_path = os.path.join( os.path.dirname(os.path.realpath(__file__)), 'politifact.json' )
-	print(json_path)
 	with open(json_path) as data:
 		data = json.load(data)
 		slugs = [ item['name_slug'] for item in data ]

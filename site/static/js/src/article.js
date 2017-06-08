@@ -50,12 +50,16 @@ var modal = (function( target ){
 					layout.part.link.setAttribute('href','https://en.wikipedia.org/wiki/' + response.name);
 					layout.modal.style.display = "flex";
 
+					console.log(response);
+
 					if(response.slug!=null&&response.truth_score!=null){
 						layout.part.card.innerHTML = 'Truth rating: <span class="truth-rating" style="background-color:hsl(' +
 							response.truth_score + ',100%,50%);" >' +
 							response.truth_score + '%</span>' +
 							'<br/><span class="truth-disclaimer" >(<a href="http://www.politifact.com/personalities/' +
 							response.slug + '" target="_blank">based on last five statements</a>)</span>';
+					} else {
+						layout.part.card.innerHTML = '';
 					}
 				}
 			}

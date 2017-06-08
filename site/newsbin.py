@@ -97,7 +97,7 @@ def article( pk ):
 			except Exception as e:
 				log.exception(e)
 				raise
-				
+
 	elif request.method == 'POST':
 		name = request.form.get('annotation',None)
 		add = 'add' in request.form
@@ -128,6 +128,7 @@ def annotations():
 		try:
 			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
 			rating, slug = politifact.get_rating(annotation.name)
+			print(rating,slug)
 			data = annotation.serialize(truth_score=rating,slug=slug)
 			return make_response(data)
 		except Exception as e:
@@ -135,8 +136,8 @@ def annotations():
 				annotation = utilities.summarize(name)
 				if annotation.name:
 					rating, slug = politifact.get_rating(annotation.name)
+					print(rating,slug)
 					data = annotation.serialize(truth_score=rating,slug=slug)
-					print(data)
 					return make_response(data)
 			except Exception as e:
 				log.exception(e)
