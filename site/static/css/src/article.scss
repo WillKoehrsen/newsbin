@@ -14,8 +14,14 @@
 
 .modal-data-table {
 	width:90%;
+	display:block;
 	display:flex;
 	flex-direction: column;
+}
+
+.modal-image {
+	max-width:90%;
+	height:auto;
 }
 
 .modal-data-table>div {
