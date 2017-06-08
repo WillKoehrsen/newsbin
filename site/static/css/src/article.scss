@@ -12,23 +12,29 @@
 /* -------------------------------------------------------------------------- */
 /* Truth Score */
 
-.modal-data {
-	width:80%;
-	text-align: left;
+.modal-data-table {
+	width:90%;
+	display:flex;
+	flex-direction: column;
 }
 
-.truth-rating {
-	display:inline-block;
-	height:40px;
-	width:40px;
-	line-height: 40px;
+.modal-data-table>div {
+	display:flex;
+}
+
+.data-label {
+	flex:1;
+	font-variant: small-caps;
+}
+
+.data-value {
 	text-align: center;
-	border-radius:200px;
 }
 
-.truth-disclaimer, .truth-disclaimer>a {
-	color:grey;
-	font-size:0.9em;
+.data-value, .data-value>a {
+	color:black;
+	font-size:1.0em;
+	flex:1;
 }
 
 /* -------------------------------------------------------------------------- */

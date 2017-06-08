@@ -25,7 +25,7 @@ var modal = (function( target ){
 			close:document.createElementWithAttr('div',{class:'modal-close',onClick:'modal.close()'}),
 			title:document.createElementWithAttr('div',{class:'modal-title'}),
 			image:document.createElementWithAttr('img',{class:'modal-image'}),
-			card:document.createElementWithAttr('div',{class:'modal-data'}),
+			card:document.createElementWithAttr('div',{class:'modal-data-table'}),
 			content:document.createElementWithAttr('div',{class:'modal-content'}),
 			link:document.createElementWithAttr('a',{class:'modal-link',target:'_blank'}),
 		},
@@ -50,11 +50,12 @@ var modal = (function( target ){
 					layout.part.link.setAttribute('href','https://en.wikipedia.org/wiki/' + response.name);
 					layout.modal.style.display = "flex";
 					if(response.slug!=null&&response.truth_score!=null){
-						layout.part.card.innerHTML = 'Truth rating: <span class="truth-rating" style="background-color:hsl(' +
-							response.truth_score + ',100%,50%);" >' +
-							response.truth_score + '%</span>' +
-							'<br/><span class="truth-disclaimer" >(<a href="http://www.politifact.com/personalities/' +
-							response.slug + '" target="_blank">based on last five statements</a>)</span>';
+						layout.part.card.innerHTML = '<div><div class="data-label">truth rating</div>' +
+							'<div class="data-value" style="background-color:hsl(' + response.truth_score + ',100%,50%);" >' +
+								'<a href="http://www.politifact.com/personalities/' + response.slug + '" target="_blank">' +
+								response.truth_score +
+								'</a>' +
+							'%</div></div>';
 					} else {
 						layout.part.card.innerHTML = '';
 					}
