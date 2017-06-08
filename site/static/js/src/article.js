@@ -49,9 +49,6 @@ var modal = (function( target ){
 					layout.part.content.innerHTML = response.summary;
 					layout.part.link.setAttribute('href','https://en.wikipedia.org/wiki/' + response.name);
 					layout.modal.style.display = "flex";
-
-					console.log(response);
-
 					if(response.slug!=null&&response.truth_score!=null){
 						layout.part.card.innerHTML = 'Truth rating: <span class="truth-rating" style="background-color:hsl(' +
 							response.truth_score + ',100%,50%);" >' +

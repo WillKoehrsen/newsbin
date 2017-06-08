@@ -128,7 +128,6 @@ def annotations():
 		try:
 			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
 			rating, slug = politifact.get_rating(annotation.name)
-			print(rating,slug)
 			data = annotation.serialize(truth_score=rating,slug=slug)
 			return make_response(data)
 		except Exception as e:
@@ -136,7 +135,6 @@ def annotations():
 				annotation = utilities.summarize(name)
 				if annotation.name:
 					rating, slug = politifact.get_rating(annotation.name)
-					print(rating,slug)
 					data = annotation.serialize(truth_score=rating,slug=slug)
 					return make_response(data)
 			except Exception as e:
