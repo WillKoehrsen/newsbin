@@ -1,27 +1,48 @@
 import threading
+import os
+import session
+import datetime
 
-class Reporter():
+
+class Action:
+	def __init__( self, *args, **kwargs ):
+		self.datetime = datetime.datetime.now()
+
+		self.is_success = kwargs.get('success',False)
+		self.reason = kwargs.get('reason','')
+		self.source = kwargs.get('source')
+		self.url = kwargs.get('url')
+
+
+class Reporter:
 	"""Has various statistics, and updates a report every hour"""
 
-	failed = {}
+	records = []
 
 	def __init__( self, *args, **kwargs ):
-		sources = kwargs.get('sources',[])
-		for source in sources:
-			failed[source.lower()] = 0
-
-	def __report( self ):
-		with open('report','w') as f:
-			f.write('Reported Failures')
-			for source,count in self.failed.items():
-				f.write('{}: {}'.format(source.upper(),count))
-
-	def start( self ):
 		pass
 
-	def stop( self ):
-		pass
+	def record_failure( self, article, reason='' ):
+		self.records.append( Action( source=article.source, url=article.url, reason=reason ) )
 
-	def add( self, article ):
-		src = article.source.lower()
-		failed[src] = failed.get(src,0) + 1
+	def record_success( self, article ):
+		self.records.append( Action( source=article.source, url=article.url, success=True ) )
+
+	def report( self ):
+		results = {}
+		reasons = {}
+		totals = {}
+		for record in records:
+			totals[record.source] = totals.get(record.source,0) + 1
+
+			if record.is_success:
+				results[record.source] = results.get(record.source,(0,0))[0] + 1
+			else:
+				results[record.source] = results.get(record.source,(0,0))[1] + 1
+
+			if record.reason:
+				reasons[record.reason] = reason.get(record.reason,0) + 1
+
+		print('{:<10}{:<10}{:<10}{:<10}'.format('Source','Failure','Success', 'Total'))
+		for source, result in results.items():
+			print('{:<10}{:<10}{:<10}{:<10}'.format(source,result[0],result[1],total[source]))
