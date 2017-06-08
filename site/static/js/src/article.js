@@ -55,7 +55,7 @@ var modal = (function( target ){
 								'<a href="http://www.politifact.com/personalities/' + response.slug + '" target="_blank">' +
 								response.truth_score +
 								'</a>' +
-							'%</div></div>';
+							'%</div></div>'; 
 					} else {
 						layout.part.card.innerHTML = '';
 					}
