@@ -48,9 +48,9 @@ var modal = (function( target ){
 
 					if(response.image){
 						layout.part.image.setAttribute('src',response.image);
-						layout.part.card.style.display = "block";
+						layout.part.image.style.display = "block";
 					} else {
-						layout.part.card.style.display = "none";
+						layout.part.image.style.display = "none";
 					}
 
 					layout.part.content.innerHTML = response.summary;
