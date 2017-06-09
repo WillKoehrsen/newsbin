@@ -66,8 +66,8 @@ class Reporter:
 
 			if self.output_location:
 				with open(self.output_location,'w') as f:
-					f.write('========== Newsbin Engine Status ==========')
-					f.write('Current: {}'.format(datetime.now().strftime('%H:%M:%S %p (server time)')))
+					f.write('========== Newsbin Engine Status ==========\n')
+					f.write('Current: {}\n'.format(datetime.now().strftime('%H:%M:%S %p (server time)')))
 					f.write('{:<20}{:>10}{:>10}{:>10}\n'.format('Source','Failed','Succeeded', 'Total'))
 					for source,result in results.items():
 						successes = result['successes']
