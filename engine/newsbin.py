@@ -25,12 +25,17 @@ from package.reporter import Reporter
 from package import session_scope
 from package import db_engine
 from package import settings
+from package import production
 
 # ------------------------------------------------------------------------------
 # GLOBALS
 log = None
 engine = None
-reporter = Reporter()
+
+if production:
+	reporter = Reporter(write_to='/etc/update-motd.d/engine_report.txt')
+else:
+	reporter = Reporter(write_to='/home/mhouse/Projects/python/newsbin/engine/engine_status')
 
 # ------------------------------------------------------------------------------
 # HOUSEKEEPING
@@ -58,7 +63,7 @@ class Fetcher(manager.Manager):
 					reporter.record_success(item)
 
 		except IntegrityError as e:
-			pass
+			reporter.record_failure(item, reason='article already exists ( {} )'.format(type(e)))
 		except Exception as e:
 			reason_for_failure = '{} exception while fetching article'.format( type(e) )
 			reporter.record_failure(item, reason=reason_for_failure)
@@ -133,7 +138,6 @@ class Engine:
 def shutdown( signal, frame ):
 	engine.stop()
 	reporter.report()
-	reporter.save()
 
 
 
