@@ -21,6 +21,7 @@ sys.path.insert( 1, root )
 
 # import everything from shared
 from shared import models
+from contextlib import contextmanager
 from shared import filters
 
 # load the config file from root/config
@@ -39,3 +40,16 @@ else:
     db_engine = create_engine( config['settings']['database'] )
 
 session_generator = sessionmaker(bind=db_engine)
+
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    session = session_generator()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()

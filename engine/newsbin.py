@@ -22,7 +22,7 @@ from package import models
 from package import manager
 from package.reporter import Reporter
 
-from package import session_generator
+from package import session_scope
 from package import db_engine
 from package import settings
 
@@ -46,30 +46,23 @@ class Fetcher(manager.Manager):
 
 		log.info('Fetcher initialized')
 
-	def __operation( self, item, session ):
+	def __operation( self, item ):
 		try:
 			response = requests.get( item.link, verify=False )
 			content = item.filter.process( response.text )
 			item.update( **content )
 
-			if item.title and item.content:
-				try:
+			with session_scope() as session:
+				if item.title and item.content:
 					session.add(item)
-					session.commit()
 					reporter.record_success(item)
-				except:
-					session.rollback()
-					reporter.record_failure(item)
-					raise
 
 		except IntegrityError as e:
 			pass
-		except ConnectionError as e:
-			log.warning('Connection reset (ConnectionError) while fetching article: {}'.format(item.link))
-		except InvalidSchema as e:
-			log.warning('Article is video/other (InvalidSchema) while fetching article: {}'.format(item.link))
 		except Exception as e:
-			log.exception('{} exception while fetching article'.format(type(e)))
+			reason_for_failure = '{} exception while fetching article'.format( type(e) )
+			reporter.record_failure(item, reason=reason_for_failure)
+			log.warning(reason_for_failure)
 
 class Watcher(manager.Manager):
 	def __init__( self, *args, **kwargs ):
@@ -82,7 +75,7 @@ class Watcher(manager.Manager):
 
 		log.info('Watcher initialized')
 
-	def __operation( self, block, session ):
+	def __operation( self, block ):
 		source, feed, category = block
 		site_filter = filters.lookup(source)
 
@@ -98,7 +91,6 @@ class Watcher(manager.Manager):
 
 class Engine:
 	def __init__( self, *args, **kwargs ):
-		self.sessionmaker = session_generator
 		self.sources = defaults.sources
 
 		self.fetcher = None
@@ -112,7 +104,6 @@ class Engine:
 		# and update given article objects (from watcher).
 		log.info('Starting Fetcher')
 		self.fetcher = Fetcher(
-			sessionmaker=self.sessionmaker
 			)
 		# THREADS: 10 working queue
 
@@ -122,7 +113,6 @@ class Engine:
 		log.info('Starting Watcher')
 		self.watcher = Watcher(
 			passback=self.fetcher.add,
-			sessionmaker=self.sessionmaker,
 			sources=self.sources,
 			loop=True
 			)
@@ -141,15 +131,13 @@ class Engine:
 		self.watcher.stop()
 
 def shutdown( signal, frame ):
-	reporter.report()
 	engine.stop()
+	reporter.report()
+	reporter.save()
+
+
 
 if __name__=='__main__':
-	if '-v' in sys.argv:
-		verbose = True
-	else:
-		verbose = False
-
 
 	log = logging.getLogger("newsbin.engine")
 	log.setLevel(logging.DEBUG)
@@ -167,7 +155,7 @@ if __name__=='__main__':
 
 	# add handlers to log object
 	log.addHandler(file_h)
-	if verbose:
+	if '-v' in sys.argv:
 		log.addHandler(console_h)
 
 	# register the shutdown signal

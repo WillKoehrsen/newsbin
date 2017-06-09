@@ -1,5 +1,5 @@
 import threading
-import os
+from os.path import join, dirname, realpath
 import datetime
 
 
@@ -12,12 +12,16 @@ class Action:
 		self.source = kwargs.get('source')
 		self.url = kwargs.get('url')
 
+	def __str__( self ):
+		return '{}:::{}:::{}:::{}'.format( self.source, self.url, self.reason, self.is_success  )
 
 class Reporter:
+
+	save_name = join( dirname( realpath(__file__) ), 'reporter.state' )
 	records = []
 
 	def __init__( self, *args, **kwargs ):
-		pass
+		self.load( self.save_name )
 
 	def record_failure( self, article, reason='' ):
 		self.records.append( Action( source=article.source, url=article.link, reason=reason ) )
@@ -43,12 +47,27 @@ class Reporter:
 			else:
 				results[record.source]['successes'] += 1
 
-		print('\n{:<10}{:<10}{:<10}{:<10}'.format('Source','Failure','Success', 'Total'))
+		print('\n{:<20}{:>10}{:>10}{:>10}'.format('Source','Failed','Succeeded', 'Total'))
 		for source,result in results.items():
 			successes = result['successes']
 			failures = result['failures']
 			total = result['total']
 
-			print('{:<10}{:<10}{:<10}{:<10}'.format( source, failures, successes, total ))
+			print('{:<20}{:>10}{:>10}{:>10}'.format( source, failures, successes, total ))
 
 		print('\n')
+
+	def save( self ):
+		with open(self.save_name,'w') as f:
+			for record in self.records:
+				f.write(str(record) + '\n')
+
+	def load( self, filename ):
+		try:
+			with open(filename,'r') as f:
+				for line in f:
+					source, url, reason, success = line.split(':::')
+					success = ( success=='True' )
+					self.records.append( Action( source=source, url=url, success=success, reason=reason ) )
+		except Exception as e:
+			print('Error on reporter load: {}'.format(type(e)))
