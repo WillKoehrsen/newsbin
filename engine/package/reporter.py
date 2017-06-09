@@ -1,6 +1,5 @@
 import threading
 import os
-import session
 import datetime
 
 
@@ -15,34 +14,41 @@ class Action:
 
 
 class Reporter:
-	"""Has various statistics, and updates a report every hour"""
-
 	records = []
 
 	def __init__( self, *args, **kwargs ):
 		pass
 
 	def record_failure( self, article, reason='' ):
-		self.records.append( Action( source=article.source, url=article.url, reason=reason ) )
+		self.records.append( Action( source=article.source, url=article.link, reason=reason ) )
 
 	def record_success( self, article ):
-		self.records.append( Action( source=article.source, url=article.url, success=True ) )
+		self.records.append( Action( source=article.source, url=article.link, success=True ) )
 
 	def report( self ):
 		results = {}
 		reasons = {}
 		totals = {}
-		for record in records:
-			totals[record.source] = totals.get(record.source,0) + 1
+		for record in self.records:
+			if not record.source in results:
+				results[record.source] = {
+					'successes':0,
+					'failures':0,
+					'total':0,
+				}
 
+			results[record.source]['total'] += 1
 			if record.is_success:
-				results[record.source] = results.get(record.source,(0,0))[0] + 1
+				results[record.source]['successes'] += 1
 			else:
-				results[record.source] = results.get(record.source,(0,0))[1] + 1
+				results[record.source]['successes'] += 1
 
-			if record.reason:
-				reasons[record.reason] = reason.get(record.reason,0) + 1
+		print('\n{:<10}{:<10}{:<10}{:<10}'.format('Source','Failure','Success', 'Total'))
+		for source,result in results.items():
+			successes = result['successes']
+			failures = result['failures']
+			total = result['total']
 
-		print('{:<10}{:<10}{:<10}{:<10}'.format('Source','Failure','Success', 'Total'))
-		for source, result in results.items():
-			print('{:<10}{:<10}{:<10}{:<10}'.format(source,result[0],result[1],total[source]))
+			print('{:<10}{:<10}{:<10}{:<10}'.format( source, failures, successes, total ))
+
+		print('\n')

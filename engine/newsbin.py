@@ -20,6 +20,7 @@ from package import defaults
 from package import filters
 from package import models
 from package import manager
+from package.reporter import Reporter
 
 from package import session_generator
 from package import db_engine
@@ -29,6 +30,7 @@ from package import settings
 # GLOBALS
 log = None
 engine = None
+reporter = Reporter()
 
 # ------------------------------------------------------------------------------
 # HOUSEKEEPING
@@ -54,8 +56,10 @@ class Fetcher(manager.Manager):
 				try:
 					session.add(item)
 					session.commit()
+					reporter.record_success(item)
 				except:
 					session.rollback()
+					reporter.record_failure(item)
 					raise
 
 		except IntegrityError as e:
@@ -137,6 +141,7 @@ class Engine:
 		self.watcher.stop()
 
 def shutdown( signal, frame ):
+	reporter.report()
 	engine.stop()
 
 if __name__=='__main__':
