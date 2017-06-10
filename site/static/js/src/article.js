@@ -7,105 +7,98 @@ if(block!=null){
 }
 
 // -----------------------------------------------------------------------------
-// customize document prototype
-HTMLDocument.prototype.createElementWithAttr = function( tag, attrs ){
-	var elem = this.createElement(tag);
-	for(attr in attrs){ elem.setAttribute(attr,attrs[attr]); }
-	return elem;
-}
-
-// -----------------------------------------------------------------------------
 // Annotation:
 //		a modal component that displays when an x-annotation is clicked
-var modal = (function( target ){
-	var layout = {
-		modal:document.getElementById( target ),
-		contents:document.createElementWithAttr('div',{class:'modal-container'}),
-		part:{
-			close:document.createElementWithAttr('div',{class:'modal-close',onClick:'modal.close()'}),
-			title:document.createElementWithAttr('div',{class:'modal-title'}),
-			image:document.createElementWithAttr('img',{class:'modal-image'}),
-			card:document.createElementWithAttr('div',{class:'modal-data-table'}),
-			content:document.createElementWithAttr('div',{class:'modal-content'}),
-			link:document.createElementWithAttr('a',{class:'modal-link',target:'_blank'}),
+//
+var data_set = {
+	name:'',
+	image:'',
+	table:{},
+	content:[],
+	wikipedia_link:'',
+	politifact_link:'',
+};
+
+var annotation = new Vue({
+
+	el: '#modal-annotation',
+
+	data: data_set,
+
+	methods: {
+		close: function( event ){
+			this.$el.style.display = "none";
+		},
+		open: function( event ){
+			this.$el.style.display = "flex";
+		},
+		clear: function( event ){
+			Object.assign( this.$data, data_set);
 		},
 	}
-	// add content to the modal window
-	layout.modal.appendChild(layout.contents);
-	for(item in layout.part){ layout.contents.appendChild(layout.part[item]); }
-
-	layout.part.link.innerHTML = "wikipedia";
-	layout.part.close.innerHTML = "Close";
-
-	var operations = {
-		display:function( name ){
-			var handle = new XMLHttpRequest();
-			var url = '/annotations?name=' + name;
-			handle.onload = function(){
-				if(this.status==200){
-					var response = JSON.parse(this.responseText);
-					layout.part.title.innerHTML = response.name;
-
-					if(response.image){
-						layout.part.image.setAttribute('src',response.image);
-						layout.part.image.style.display = "block";
-					} else {
-						layout.part.image.style.display = "none";
-					}
-
-					layout.part.content.innerHTML = response.summary;
-					layout.part.link.setAttribute('href','https://en.wikipedia.org/wiki/' + response.name);
-					layout.modal.style.display = "flex";
-					if(response.slug!=null&&response.truth_score!=null){
-						layout.part.card.innerHTML = '<div><div class="data-label">truth rating</div>' +
-							'<div class="data-value" style="background-color:hsl(' + response.truth_score + ',100%,50%);" >' +
-								'<a href="http://www.politifact.com/personalities/' + response.slug + '" target="_blank">' +
-								response.truth_score +
-								'</a>' +
-							'%</div></div>';
-					} else {
-						layout.part.card.innerHTML = '';
-					}
-				}
-			}
-			handle.open("GET", url, true);
-			handle.send();
-		},
-
-		close:function(){
-			layout.part.title.innerHTML = "";
-			layout.part.image.setAttribute('src',"#");
-			layout.part.content.innerHTML = "";
-			layout.part.link.setAttribute('href','#');
-			layout.modal.style.display = "none";
-		},
-	}
-
-	return operations;
-})( 'js-annotation-modal' );
+});
 
 var annotations = document.getElementsByClassName('annotation');
 if(annotations){
 	for( var i = 0; i < annotations.length; i++ ){
 		annotations[i].addEventListener("click", function(_event){
-			modal.display(this.getAttribute('name'));
+			var name = this.getAttribute('name');
+			var handle = new XMLHttpRequest();
+			var url = '/annotations?name=' + name;
+
+			handle.onload = function(){
+				if(this.status==200){
+					var response = JSON.parse(this.responseText);
+					annotation.clear();
+
+					annotation.$data.name = response.name;
+					annotation.$data.image = response.image;
+					annotation.$data.content = response.summary.split('\n\n');
+					if(response.truth_score){
+						annotation.$data.table['truth_score'] = {
+								key:"Truth Score",
+								value:response.truth_score+"%",
+								tooltip:'calculated from the last five statements fact-checked by politifact.com'
+							};
+					}
+					if(response.slug){
+						annotation.$data.politifact_link = "http://www.politifact.com/personalities/" + response.slug;
+					}
+					annotation.$data.wikipedia_link = "https://en.wikipedia.org/wiki/" + response.name;
+
+					annotation.open();
+				}
+			}
+
+			handle.open("GET", url, true);
+			handle.send();
 		});
 	}
 }
 
-var content = document.getElementById('js-capture-selection');
-if(content){
-	content.addEventListener('mouseup',function(){
-		var selection = window.getSelection();
-		if( !selection.isCollapsed && selection.rangeCount==1 ){
-			var range = selection.getRangeAt(0);
-			var input = document.getElementById('js-add-selection');
-			if( input && range ){
-				input.value = range.toString();
+var add = new Vue({
+	el: '#js-add-selection',
+	data: {
+		value:'',
+	},
+	methods: {}
+});
+
+var content = new Vue({
+	el: '#js-capture-selection',
+	data: {},
+	methods: {
+		capture: function( event ){
+			var selection = window.getSelection();
+			if( !selection.isCollapsed && selection.rangeCount==1 ){
+				var range = selection.getRangeAt(0);
+				if( range ){
+					add.$data.value = range.toString();
+				}
 			}
-		}
-	});
-}
+		},
+	}
+});
 
 menu_tab = document.getElementById('js-tab-menu');
 article_tab = document.getElementById('js-tab-article');

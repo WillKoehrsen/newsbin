@@ -24,7 +24,30 @@
 			</style>
 		</noscript>
 
-		<div id="js-annotation-modal" class="modal-window"></div>
+		{% raw %}
+		<div id="modal-annotation" class="modal-annotation" >
+			<div class="modal-close" v-on:click="close">Close</div>
+			<div class="modal-title">{{ name }}</div>
+			<div class="modal-image-wrapper" v-if="image">
+				<img :src="image"/>
+			</div>
+			<div class="modal-data-table" v-if="table">
+				<div v-for="item in table" class="modal-data-item">
+					<div>{{ item.key }}</div>
+					<div v-bind:title="item.tooltip">{{ item.value }}</div>
+				</div>
+			</div>
+			<div class="modal-content">
+				<p v-for="item in content">
+					{{ item }}
+				</p>
+			</div>
+			<div class="modal-links">
+				<a v-if="wikipedia_link" :href="wikipedia_link" target="_blank">on wikipedia</a>
+				<a v-if="politifact_link" :href="politifact_link" target="_blank">on politifact</a>
+			</div>
+		</div>
+		{% endraw %}
 
 		<div class="container">
 
@@ -41,7 +64,7 @@
 
 				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off">
 					<div class="header">Annotate</div>
-					<input class="annotation-input" type="text" name="annotation" id="js-add-selection">
+					<input v-bind:value="value" class="annotation-input" type="text" name="annotation" id="js-add-selection">
 					<input type="submit" class="item button" name="add" value="Add">
 					<input type="submit" class="item button" name="remove" value="Remove">
 				</form>
@@ -81,7 +104,7 @@
 						<span id="js-localize-date" iso="{{ article.fetched.isoformat() }}">{{ article.fetched.strftime('%Y-%m-%d %H:%M:%S %p') }} UTC</span>
 					</div>
 				</div>
-				<div class="article-content" id="js-capture-selection">
+				<div v-on:mouseup="capture" class="article-content" id="js-capture-selection">
 					{{ article.content|safe }}
 				</div>
 				<div class="information article-information">
@@ -94,8 +117,8 @@
 			</div>
 		</div>
 		<!-- External Javascript -->
+		<script src="/static/js/vue.js"></script>
 		<script src="/static/js/article.js"></script>
-		<script src="/static/js/analytics.js"></script>
 		<!-- End External Javascript -->
 	</body>
 </html>

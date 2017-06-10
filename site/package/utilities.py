@@ -29,7 +29,7 @@ def collapse( names ):
 
 def get_thumbnail( title ):
 	try:
-		response = requests.get( 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&pithumbsize=300&titles={}'.format(title) )
+		response = requests.get( 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&pithumbsize=400&titles={}'.format(title) )
 		pages = response.json()['query']['pages']
 		if len(pages) > 1: raise ValueError('too many results')
 
@@ -60,7 +60,7 @@ def annotate( article, session ):
 def summarize( name ):
 	summary = wikipedia.summary(name)
 	if summary:
-		summary = '\n'.join([ '<p>{}</p>'.format(p) for p in summary.split('\n') if p ])
+		summary = '\n\n'.join([ p for p in summary.split('\n') if p ])
 		image_url = get_thumbnail( name )
 		annotation = Annotation(name=name,summary=summary,image=image_url)
 		with session_scope() as session:

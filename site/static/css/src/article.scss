@@ -1,5 +1,6 @@
 
 .annotation-input {
+	min-width:10px;
 	width:calc(100% - 4px);
 	border:1px solid lightgrey;
 	margin:0 auto 0 auto;
@@ -13,149 +14,148 @@
 /* Article Page */
 .article {
 	background-color: white;
-}
 
-.article-title {
-	font-size:2em;
-	padding:10px;
-}
+	.article-title {
+		font-size:2em;
+		padding:10px;
+	}
 
-.article-content {
-	padding:0 10px 0 10px;
-}
+	.article-content {
+		padding:0 10px 0 10px;
+	}
 
-.article-information {
-	padding-left:10px;
-}
+	.article-information {
+		padding-left:10px;
+	}
 
-.blacklist {
-	margin: 5px 5px 5px 5px;
-	box-sizing:border-box;
-}
+	.blacklist {
+		margin: 5px 5px 5px 5px;
+		box-sizing:border-box;
+	}
 
-.annotation {
-	background-color: #fbffaa;
-	cursor:pointer;
-}
+	.annotation {
+		background-color: #fbffaa;
+		cursor:pointer;
+	}
 
-.modal-image {
-	border:1px solid lightgrey;
-	padding:1px;
+	.fadelist {
+		min-height:40px;
+		line-height: 40px;
+		color:grey;
+		text-align: center;
+		background-color: white;
+	}
 }
-
-.fadelist {
-	min-height:40px;
-	line-height: 40px;
-	color:grey;
-	text-align: center;
-	background-color: white;
-}
-
 
 /* -------------------------------------------------------------------------- */
 /* Modal */
-.modal-window {
-	height:100%;
-	width:100%;
-	background-color: black;
-	background-color:rgba(0,0,0,0.6);
-	position:fixed;
-	display:none;
-	justify-content:center;
-	align-items:center;
-	z-index:2;
-}
-
-.modal-container {
-	max-width:300px;
+.modal-annotation {
 	max-height:90%;
-	background-color:white;
-	padding:10px;
-	overflow-y:scroll;
-	display:flex;
-	align-items:center;
+	width:400px;
+	position:fixed;
+	left:50%;
+	top:50%;
+	margin-left: -200px;
+	margin-top: -44vh;
+
+	display:none;
 	flex-direction:column;
-	box-shadow: 2px 2px 10px rgba(0,0,0,0.8);
-}
+	align-items: center;
 
-.modal-image {
-	width:90%;
-	height:auto;
-	max-width:100%;
-	max-height:100%;
-}
+	background-color: white;
+	border:1px solid black;
+	box-shadow:5px 5px 5px rgba(0,0,0,0.5);
+	overflow-y: scroll;
 
-.modal-title {
-	font-size:1.5em;
-	font-weight:bold;
-	padding:10px 0 10px 0;
-	width:90%;
-	text-align: center;
-}
+	div, a {
+		width:90%;
+	}
 
-.modal-close, .modal-link {
-	display:block;
-	width:90%;
-	min-height:30px;
-	line-height:30px;
-	text-align:center;
-	cursor:pointer;
-}
+	.modal-close {
+		text-align:center;
+		color:white;
+		font-size:1.5em;
+		cursor:pointer;
+		font-weight:bold;
+		margin: 10px 0 10px 0;
+		background-color:#e86a6a;
+		transition: background-color 0.1s ease;
+		min-height:40px;
+		line-height:40px;
 
-.modal-link {
-	color:grey;
-	transition: color 0.1s ease;
-}
+		&:hover {
+			background-color:#bf4a4a;
+		}
+	}
 
-.modal-link:hover {
-	color:black;
-}
+	.modal-title {
+		text-align: center;
+		font-size:2em;
+	}
 
-.modal-close {
-	color:white;
-	font-weight:bold;
-	background-color:#e86a6a;
-	transition: background-color 0.1s ease;
-}
+	.modal-image-wrapper {
+		height:auto;
+		text-align: center;
 
-.modal-close:hover {
-	background-color:#bf4a4a;
-}
+		img {
+			width:100%;
+		}
+	}
 
-.modal-content {
-	max-width:90%;
-}
+	.modal-data-item {
+		font-size:1.25em;
+		padding:5px 0 5px 0;
+		display:flex;
 
-/* -------------------------------------------------------------------------- */
-/* Truth Score */
-.modal-data-table {
-	padding:5px 0 5px 0;
-	width:90%;
-	display:block;
-}
+		div:first-child {
+			flex:1;
+			text-align:left;
 
-.modal-data-table>div {
-	display:flex;
-}
+			&:after {
+				content:":";
+			}
+		}
 
-.data-label {
-	flex:1;
-	font-variant: small-caps;
-}
+		div:last-child {
+			flex:1;
+			text-align:center;
+		}
 
-.data-value {
-	text-align: center;
-}
+	}
 
-.data-value, .data-value>a {
-	color:black;
-	font-size:1.0em;
-	flex:1;
-}
+	.modal-content {
+		padding:10px 2px 10px 2px;
+	}
 
-@media screen and (max-width: 500px) {
-	.annotation-input {
-		min-width:10px;
-		width:calc(100% - 2px);
+	.modal-links {
+		display:flex;
+
+		a {
+			flex:1;
+			display:block;
+			height:40px;
+			line-height: 40px;
+			text-align:center;
+			font-size:1.25em;
+			color:black;
+			text-decoration:none;
+			border-top: 2px solid transparent;
+			transition: border-top 0.5s ease;
+
+			&:hover {
+				border-top:2px solid black;
+			}
+		}
+
+	}
+
+	@media screen and (max-width: 500px) {
+		width:calc(100% - 4px);
+		margin-left: 0;
+		margin-top: 0;
+		left:0;
+		top:10%;
+		height:85%;
+		word-wrap: break-word;
 	}
 }
