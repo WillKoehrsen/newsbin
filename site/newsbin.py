@@ -4,6 +4,7 @@ import regex
 import os
 import json
 import datetime
+from sqlalchemy import literal
 
 from package import filters, utilities
 from package import models, session_scope
@@ -128,18 +129,20 @@ def annotations():
 		try:
 			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
 			rating, slug = politifact.get_rating(annotation.name)
-			data = annotation.serialize(truth_score=rating,slug=slug)
-			return make_response(data)
 		except Exception as e:
 			try:
 				annotation = utilities.summarize(name)
 				if annotation.name:
 					rating, slug = politifact.get_rating(annotation.name)
-					data = annotation.serialize(truth_score=rating,slug=slug)
-					return make_response(data)
 			except Exception as e:
 				log.exception(e)
-	return abort(404)
+				return abort(404)
+
+		table_items = []
+		if rating: table_items.append({'key':'Truth Score','value':str(rating)+'%','tooltip':'from last five statements rated by politifact.com'})
+
+		data = annotation.serialize(data_table=table_items,slug=slug)
+		return make_response(data)
 
 @app.route('/about', methods=['GET'])
 def about():

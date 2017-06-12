@@ -6,6 +6,14 @@
 	margin:0 auto 0 auto;
 }
 
+.fadelist {
+	min-height:40px;
+	line-height: 40px;
+	color:grey;
+	text-align: center;
+	background-color: white;
+}
+
 .button {
 	background-color: transparent;
 }
@@ -33,17 +41,9 @@
 		box-sizing:border-box;
 	}
 
-	.annotation {
+	.highlight {
 		background-color: #fbffaa;
 		cursor:pointer;
-	}
-
-	.fadelist {
-		min-height:40px;
-		line-height: 40px;
-		color:grey;
-		text-align: center;
-		background-color: white;
 	}
 }
 

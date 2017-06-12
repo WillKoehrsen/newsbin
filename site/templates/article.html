@@ -25,7 +25,7 @@
 		</noscript>
 
 		{% raw %}
-		<div id="modal-annotation" class="modal-annotation" >
+		<div id="modal-annotation" class="modal-annotation" ref="modal" >
 			<div class="modal-close" v-on:click="close">Close</div>
 			<div class="modal-title">{{ name }}</div>
 			<div class="modal-image-wrapper" v-if="image">
@@ -51,20 +51,20 @@
 
 		<div class="container">
 
-			<div class="mobile-menu">
-				<div id="js-tab-menu">
+			<div class="mobile-menu" id="js-mobile-menu">
+				<div v-bind:class="{ current: menu }" v-on:click="toggle">
 					Menu
 				</div>
-				<div id="js-tab-article" class="current">
+				<div v-bind:class="{ current: article }" v-on:click="toggle">
 					Article
 				</div>
 			</div>
 
-			<div class="sub-container side-container" id="js-sidebar-anno-menu">
+			<div class="sub-container side-container" v-bind:class="{ open: active }" id="js-sidebar-menu">
 
 				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off">
 					<div class="header">Annotate</div>
-					<input v-bind:value="value" class="annotation-input" type="text" name="annotation" id="js-add-selection">
+					<input class="annotation-input" v-bind:title="input_tooltip" type="text" name="annotation" id="js-add-selection">
 					<input type="submit" class="item button" name="add" value="Add">
 					<input type="submit" class="item button" name="remove" value="Remove">
 				</form>
@@ -101,7 +101,7 @@
 					<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
 					<div class="date">
 						<span class="title-card-label">fetched: </span>
-						<span id="js-localize-date" iso="{{ article.fetched.isoformat() }}">{{ article.fetched.strftime('%Y-%m-%d %H:%M:%S %p') }} UTC</span>
+						<span id="js-localize-date">{{ article.fetched.strftime('%Y-%m-%d') }}</span>
 					</div>
 				</div>
 				<div v-on:mouseup="capture" class="article-content" id="js-capture-selection">
