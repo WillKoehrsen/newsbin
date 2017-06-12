@@ -1,3 +1,29 @@
+var source_item = {
+    template:   '<label for="{{ name }}" class="source-item" >\
+                 <span>{{ label }}</span>\
+                 <input id="{{ name }}" type="checkbox" value="{{ name }}" v-model="checked">\
+                 </label>',
+    data:function(){ return { checked:false } },
+    props: ['name','label'],
+};
+
+var sidebar = new Vue({
+	el: '#js-sidebar-form',
+    components: {
+            'x-source-item':source_item,
+    },
+	data:{
+		active: false,
+        sources: [],
+	},
+	methods: {
+	}
+});
+
+
+
+
+
 // -----------------------------------------------------------------------------
 // implement forEach if we're in IE -.-
 if (!NodeList.prototype.forEach) {
@@ -13,6 +39,7 @@ if (!NodeList.prototype.forEach) {
 //      On reloads and navigation without submission, we want to
 //      set the form values to the sessionStorage saved values
 //      so that they don't lose their options.
+/*
 window.addEventListener('load',function(){
     var elements = document.forms[0].elements;
     for( var i = 0; i < elements.length; i++ ){
@@ -33,16 +60,7 @@ window.addEventListener('load',function(){
         }
     }
 })
-
-// -----------------------------------------------------------------------------
-// Localize the datetime on title-cards
-var dates = document.getElementsByClassName('js-localize-date');
-for( var i = 0; i < dates.length; i++ ){
-    var block = dates[i]
-    var date = new Date( block.getAttribute('iso') );
-    block.innerHTML = date.toLocaleDateString() + " " + date.toLocaleTimeString();
-}
-
+*/
 // -----------------------------------------------------------------------------
 //	Layout:
 // 		rather than search for elements in each function/handler
@@ -63,12 +81,13 @@ layout = {
 // Checkboxes:
 //		if javascript is enabled, we grab all the checkboxes in the page,
 //		hide them and apply a class that displays an alternate 'checkbox'
+/*
 var inputs = document.querySelectorAll('input[type=checkbox]');
 for( var i = 0; i < inputs.length; i++ ){
 	inputs[i].style.display = "none";
 	inputs[i].classList.add('checkable');
 }
-
+*/
 // -----------------------------------------------------------------------------
 // Sources:
 // 		on changing source options, unselect/select 'all' appropriately
