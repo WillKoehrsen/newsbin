@@ -1,31 +1,5 @@
-var source_item = {
-    template:   '<label for="{{ name }}" class="source-item" >\
-                 <span>{{ label }}</span>\
-                 <input id="{{ name }}" type="checkbox" value="{{ name }}" v-model="checked">\
-                 </label>',
-    data:function(){ return { checked:false } },
-    props: ['name','label'],
-};
-
-var sidebar = new Vue({
-	el: '#js-sidebar-form',
-    components: {
-            'x-source-item':source_item,
-    },
-	data:{
-		active: false,
-        sources: [],
-	},
-	methods: {
-	}
-});
-
-
-
-
-
 // -----------------------------------------------------------------------------
-// implement forEach if we're in IE -.-
+// implement forEach if we're in IE
 if (!NodeList.prototype.forEach) {
     NodeList.prototype.forEach = function(fn, scope) {
         for(var i = 0, len = this.length; i < len; ++i) {
@@ -33,6 +7,74 @@ if (!NodeList.prototype.forEach) {
         }
     }
 }
+
+var storage = new Vue();
+
+var options = new Vue({
+	el: '#js-sidebar-form',
+	components: {
+		'x-option':{
+			template:"<label :class='{ mark: checked }'>{{ label }}<input v-model='checked' type='checkbox' v-on:change='notify' style='display:none;'></label>",
+			props:['value','label'],
+			data:function(){return { checked:false }},
+			methods:{
+				notify:function( event ){
+                    this.$emit('toggled',this);
+                },
+			},
+		},
+	},
+	data: {
+		checkboxes:[],
+		category:'',
+		search:'',
+		count:'',
+	},
+	methods: {
+		set_all:function( caller ){
+            this.$children.forEach(function(item){
+                if(item.$options._componentTag=='x-option'){
+                    item.checked = caller.checked;
+                }
+            });
+		},
+		update:function( caller ){
+            var options = this.$children.filter(function( item ){ return (item.$options._componentTag=='x-option') });
+            var all = options[0];
+            var children = options.slice(1);
+            for(var i = 0; i < children.length; i++){
+                var item = children[i];
+                if(!item.checked){
+                    all.checked = false;
+                    return;
+                }
+            }
+            all.checked = true;
+		},
+	},
+});
+
+var titles = new Vue({
+	el: '#js-titlecard-list',
+	components: {
+		'x-titlecard':{
+			template:'<div class="titlecard">\
+                      <a :href="link" class="title-link">{{ title }}</a>\
+                      </div>',
+			props:['title','link'],
+			data:function(){return { }},
+			methods:{
+				notify:function( event ){
+                    this.$emit('toggled',this);
+                },
+			},
+		},
+	},
+	data: {
+	},
+	methods: {
+	},
+});
 
 // -----------------------------------------------------------------------------
 // Refill Form
@@ -66,16 +108,7 @@ window.addEventListener('load',function(){
 // 		rather than search for elements in each function/handler
 // 		this layout object gets the searching out of the way up
 // 		front.
-layout = {
-	all:document.getElementById('all-check'),
-	form:document.getElementById('js-sidebar-form'),
-	search:document.getElementById('js-search-input'),
-	number:document.getElementById('js-number-input'),
-	category:document.getElementById('js-category-select'),
-	search_tab:document.getElementById('js-tab-search'),
-	results_tab:document.getElementById('js-tab-results'),
-	sources:document.querySelectorAll('.sources input:not(#all-check)'),
-}
+
 
 // -----------------------------------------------------------------------------
 // Checkboxes:
@@ -91,7 +124,7 @@ for( var i = 0; i < inputs.length; i++ ){
 // -----------------------------------------------------------------------------
 // Sources:
 // 		on changing source options, unselect/select 'all' appropriately
-for( var i = 0; i < layout.sources.length; i++ ){
+/*for( var i = 0; i < layout.sources.length; i++ ){
 	layout.sources[i].addEventListener('change',function(_event){
         sessionStorage[this.name] = this.checked;
 		if(this.checked){
@@ -107,12 +140,13 @@ for( var i = 0; i < layout.sources.length; i++ ){
         sessionStorage[layout.all.name] = layout.all.checked;
 	});
 }
-
+*/
 // -----------------------------------------------------------------------------
 // Save Changes (search,number,category)
 //      sessionStorage values are saved for checkboxes in
 //      the other handlers, but we didn't have handlers
 //      for these inputs, so these were added.
+/*
 layout.search.addEventListener('change',function(_event){
     sessionStorage[this.name] = this.value;
 });
@@ -124,10 +158,11 @@ layout.number.addEventListener('change',function(_event){
 layout.category.addEventListener('change',function(_event){
     sessionStorage[this.name] = this.value;
 });
-
+*/
 // -----------------------------------------------------------------------------
 // All:
 // 		on 'all' change, select/unselect all sources
+/*
 layout.all.addEventListener('change',function(_event){
 	var caller = this;
 	layout.sources.forEach(function(source){
@@ -136,10 +171,11 @@ layout.all.addEventListener('change',function(_event){
 	});
     sessionStorage[this.name] = this.checked;
 });
-
+*/
 // -----------------------------------------------------------------------------
 // Tabs:
 // 		handle tabbing on mobile
+/*
 if(layout.search_tab){
     layout.search_tab.addEventListener('click',function(_event){
         if(this.classList.toggle('current')){
@@ -163,3 +199,4 @@ if(layout.results_tab){
         }
     });
 }
+*/

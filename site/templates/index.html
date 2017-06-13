@@ -35,45 +35,20 @@
 			<form action="/" method="get" class="sub-container side-container" id="js-sidebar-form">
 				<div class="block sources">
 					<div class="header">Sources</div>
-					<x-source-item name="all" label="All"></x-source-item><br/>
-
-					<noscript>
-					<label for="all-check" class="item">
-						<input id="all-check" type="checkbox" name="all" checked>
-						<div class="label-name">All</div>
-					</label>
-					<label for="cnn-check" class="item">
-						<input id="cnn-check" type="checkbox" name="cnn" checked>
-						<div class="label-name">CNN</div>
-					</label>
-					<label for="cnbc-check" class="item">
-						<input id="cnbc-check" type="checkbox" name="cnbc" checked>
-						<div class="label-name">CNBC</div>
-					</label>
-					<label for="foxnews-check" class="item">
-						<input id="foxnews-check" type="checkbox" name="foxnews" checked>
-						<div class="label-name">Fox News</div>
-					</label>
-					<label for="nytimes-check" class="item">
-						<input id="nytimes-check" type="checkbox" name="nytimes" checked>
-						<div class="label-name">New York Times</div>
-					</label>
-					<label for="reuters-check" class="item">
-						<input id="reuters-check" type="checkbox" name="reuters" checked>
-						<div class="label-name">Reuters</div>
-					</label>
-					<label for="washingtonpost-check" class="item">
-						<input id="washingtonpost-check" type="checkbox" name="washingtonpost" checked>
-						<div class="label-name">Washington Post</div>
-					</label>
-				</noscript>
+					<x-option class="options-item" label="All"	v-on:toggled="set_all"></x-option>
+					<x-option class="options-item" label="CNN" v-on:toggled="update"></x-option>
+					<x-option class="options-item" label="CNBC" v-on:toggled="update"></x-option>
+					<x-option class="options-item" label="Fox News" v-on:toggled="update"></x-option>
+					<x-option class="options-item" label="New York Times" v-on:toggled="update"></x-option>
+					<x-option class="options-item" label="Reuters" v-on:toggled="update"></x-option>
+					<x-option class="options-item" label="Washington Post" v-on:toggled="update"></x-option>
 				</div>
 
 				<div class="block">
 					<div class="header">Categories</div>
 					<div class ="category-bar">
-						<select name="category" class="category-input" id="js-category-select">
-							<option value="all"></option>
+						<select name="category" class="category-input" v-model="category">
+							<option value="all">All</option>
 							{% for option in categories %}
 							<option value="{{ option|lower }}">{{ option }}</option>
 							{% endfor %}
@@ -84,15 +59,15 @@
 				<div class="block">
 					<div class="header">Search</div>
 					<div class="search-bar">
-						<input class="search-input" id="js-search-input" type="text" name="search" placeholder="Search">
+						<input class="search-input" type="text" name="search" placeholder="Search" v-model="search">
 					</div>
 					<div class="result-bar">
-						<input class="count-input" type="number" placeholder="Results (max 1000)" name="count" id="js-number-input">
+						<input class="count-input" type="number" placeholder="Results (max 1000)" name="count" v-model="count">
 					</div>
 				</div>
 
 				<div class="block">
-					<input type="submit" value="Apply" class="submit-button" id="js-submit-form">
+					<input type="submit" value="Apply">
 				</div>
 
 				<div class="block">
@@ -103,20 +78,16 @@
 
 			</form>
 
-			<div class="sub-container main-container">
+			<div class="sub-container main-container" id="js-titlecard-list">
 				{% for article in articles %}
-				<div class="title-card">
-					<a class="title" href="/article/{{ article.id }}">{{ article.title }}</a>
-					<div class="information">
-						<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
-						<div class="author"><span class="title-card-label">author(s): </span>{{ article.author }}</div>
-						<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
-						<div class="date">
-							<span class="title-card-label">fetched: </span>
-							<span class="js-localize-date">{{ article.fetched.strftime('%Y-%m-%d') }}</span>
-						</div>
-					</div>
-				</div>
+					<x-titlecard
+						title="{{ article.title }}"
+						link="/article/{{ article.id }}"
+						original="{{ article.link }}"
+						author="{{ article.author }}"
+						source="{{ article.source }}"
+						date="{{ article.fetched.strftime('%Y-%m-%d') }}">
+					</x-titlecard>
 				{% endfor %}
 				<div class="footer">
 					newsbin &copy; {{ date.year }} Michael House
