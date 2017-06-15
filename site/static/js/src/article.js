@@ -117,3 +117,9 @@ var modal = new Vue({
 		});
 	}
 })(document.getElementsByClassName('annotation'));
+
+(function( block ){
+    if(block){
+        block.innerHTML = (new Date()).getFullYear();
+    }
+})(document.getElementById('js-year'));

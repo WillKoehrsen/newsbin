@@ -52,19 +52,19 @@
 		<div class="container">
 
 			<div class="mobile-menu" id="js-mobile-menu">
-				<div v-bind:class="{ current: menu }" v-on:click="toggle">
+				<div :class="{ current: menu }" v-on:click="toggle">
 					Menu
 				</div>
-				<div v-bind:class="{ current: article }" v-on:click="toggle">
+				<div :class="{ current: article }" v-on:click="toggle">
 					Article
 				</div>
 			</div>
 
-			<div class="sub-container side-container" v-bind:class="{ open: active }" id="js-sidebar-menu">
+			<div class="sub-container side-container" :class="{ open: active }" id="js-sidebar-menu">
 
 				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off">
 					<div class="header">Annotate</div>
-					<input class="annotation-input" v-bind:title="input_tooltip" type="text" name="annotation" id="js-add-selection">
+					<input class="annotation-input" :title="input_tooltip" type="text" name="annotation" id="js-add-selection">
 					<input type="submit" class="item button" name="add" value="Add">
 					<input type="submit" class="item button" name="remove" value="Remove">
 				</form>
@@ -95,24 +95,17 @@
 
 			<div class="sub-container main-container article">
 				<div class="article-title">{{ article.title }}</div>
-				<div class="information article-information">
-					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
-					<div class="author"><span class="title-card-label">author: </span>{{ article.author }}</div>
-					<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
-					<div class="date">
-						<span class="title-card-label">fetched: </span>
-						<span id="js-localize-date">{{ article.fetched.strftime('%Y-%m-%d') }}</span>
-					</div>
-				</div>
 				<div v-on:mouseup="capture" class="article-content" id="js-capture-selection">
 					{{ article.content|safe }}
 				</div>
-				<div class="information article-information">
-					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
-					<div class="id"><span class="title-card-label">id: </span>{{ article.id }}</div>
-				</div>
+				<table class="information">
+					<tr>
+						<td>original: <a href="{{ article.link }}" target="_blank">on {{ article.source }}</a></td>
+						<td>id: {{ article.id }}</td>
+					</tr>
+				</table>
 				<div class="footer">
-					newsbin &copy; {{ date.year }} Michael House
+					newsbin &copy; <span id="js-year"></span> Michael House
 				</div>
 			</div>
 		</div>

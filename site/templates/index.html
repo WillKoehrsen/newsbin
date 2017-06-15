@@ -11,6 +11,15 @@
 		<!-- External Stylesheets -->
 		<link rel="stylesheet" type="text/css" href="/static/css/index.css" />
 		<!-- End External Stylesheets -->
+
+		<style>
+			.fade-enter-active, .fade-leave-active {
+				transition: opacity .5s
+			}
+			.fade-enter, .fade-leave-to {
+				opacity: 0
+			}
+		</style>
 	</head>
 	<body>
 		<noscript class="noscript-notification">
@@ -23,25 +32,26 @@
 		</noscript>
 		<div class="container">
 
-			<div class="mobile-menu">
-				<div id="js-tab-search">
-					Search
+			<div class="mobile-menu" id="js-mobile-menu">
+				<div :class="{ current: menu }" v-on:click="toggle">
+					Menu
 				</div>
-				<div id="js-tab-results" class="current">
-					Results
+				<div :class="{ current: article }" v-on:click="toggle">
+					Article
 				</div>
 			</div>
 
-			<form action="/" method="get" class="sub-container side-container" id="js-sidebar-form">
-				<div class="block sources">
+			<form action="/" method="get" class="sub-container side-container" :class="{ open: active }" id="js-sidebar-form">
+				<div class="block sources" id="js-fit-height">
 					<div class="header">Sources</div>
-					<x-option class="options-item" label="All"	v-on:toggled="set_all"></x-option>
-					<x-option class="options-item" label="CNN" v-on:toggled="update"></x-option>
-					<x-option class="options-item" label="CNBC" v-on:toggled="update"></x-option>
-					<x-option class="options-item" label="Fox News" v-on:toggled="update"></x-option>
-					<x-option class="options-item" label="New York Times" v-on:toggled="update"></x-option>
-					<x-option class="options-item" label="Reuters" v-on:toggled="update"></x-option>
-					<x-option class="options-item" label="Washington Post" v-on:toggled="update"></x-option>
+					<x-option
+						class="options-item"
+						v-for="box in checkboxes"
+						:key="box.name"
+						:name="box.name"
+						:label="box.label"
+						v-on:toggled="notify">
+					</x-option>
 				</div>
 
 				<div class="block">
@@ -67,7 +77,7 @@
 				</div>
 
 				<div class="block">
-					<input type="submit" value="Apply">
+					<input class="search-submit" type="submit" value="Apply">
 				</div>
 
 				<div class="block">
@@ -90,7 +100,7 @@
 					</x-titlecard>
 				{% endfor %}
 				<div class="footer">
-					newsbin &copy; {{ date.year }} Michael House
+					newsbin &copy; <span id="js-year"></span> Michael House
 				</div>
 			</div>
 
