@@ -13,7 +13,7 @@ var modal = (function( target ){
 
 	handlers = {
 		close:function(){
-			for(ref in target.refs){ ref.innerHTML = ''; }
+			for(ref in target.refs){ target.refs[ref].innerHTML = ''; }
 			target.style.display = 'none';
 		},
 		open:function( name ){
@@ -23,6 +23,7 @@ var modal = (function( target ){
 			handle.onload = function(){
 				if(this.status==200){
 					var response = JSON.parse(this.responseText);
+					refs.close.innerHTML = 'Close';
 					refs.title.innerHTML = response.name;
 					refs.image.innerHTML = '<img src="'+response.image+'"/>';
 
@@ -32,15 +33,15 @@ var modal = (function( target ){
 					});
 
 					refs.links.innerHTML += '<a href="https://en.wikipedia.org/wiki/'+response.name+'" target="_blank">on wikipedia</a>';
-					if(response.slug){ refs.links += '<a href="http://www.politifact.com/personalities/'+response.slug+'" target="_blank">on politifact</a>'; }
+					if(response.slug){ refs.links.innerHTML += '<a href="http://www.politifact.com/personalities/'+response.slug+'" target="_blank">on politifact</a>'; }
 
-					for(var i = 0; i < response.data_table.length; i++){
-						var item = response.data_table[i];
-						refs.data +='<div class="modal-data-item">\
-										<div>'+item.key+'</div>\
-										<div>'+item.value+'</div>\
-									 </div>';
-					}
+					response.data_table.forEach(function( item ){
+						refs.data.innerHTML += '<div class="modal-data-item">\
+													<div>'+item.key+'</div>\
+													<div>'+item.value+'</div>\
+												</div>';
+					});
+					
 					target.style.display = 'flex';
 				} else {
 					console.log(this.status);
@@ -54,9 +55,6 @@ var modal = (function( target ){
 
 	return handlers;
 })( document.getElementById('js-modal-annotation') );
-
-
-modal.open('MOSCOW');
 
 var annotations = document.getElementsByClassName('annotation');
 if(annotations){
