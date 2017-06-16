@@ -8,146 +8,135 @@ if (!NodeList.prototype.forEach) {
     }
 }
 
-var storage = new Vue();
+/* -----------------------------------------------------------------------------
+	OPTIONS
+		This immediately invoked function operates over options in the left side
+		menu of the index and about pages and does the following:
 
-var options = new Vue({
-	el: '#js-sidebar-form',
-	components: {
-		'x-option':{
-			template:"<label :class='{ mark: checked }'>{{ label }}<input v-model='checked' type='checkbox' v-on:change='crybaby' :name='name' style='display:none;'></label>",
-			props:['value','label','name'],
-			data:function(){return { checked:true }},
-			methods:{
-				crybaby:function( event ){
-                    this.$emit('toggled',this);
-                },
-                set:function( value ){
-                    this.$data.checked = value;
-                }
-			},
-		},
-	},
-	data: {
-		checkboxes:[
-            { name:'all', label:'All', checked:true },
-            { name:'cnn', label:'CNN', checked:true },
-            { name:'cnbc', label:'CNBC', checked:true },
-            { name:'foxnews', label:'Fox News', checked:true },
-            { name:'nytimes', label:'New York Times', checked:true },
-            { name:'reuters', label:'Reuters', checked:true },
-            { name:'washingtonpost', label:'Washington Post', checked:true },
-        ],
-		category:'',
-		search:'',
-		count:'',
-		active:false,
-	},
-	methods: {
-        notify:function( caller ){
-            if(caller.name=='all'){
-                this.set_all( caller );
-            } else {
-                this.update( caller );
-            }
-        },
-		set_all:function( caller ){
-            this.$children.forEach(function(item){
-                if(item.$options._componentTag=='x-option'){
-                    item.checked = caller.checked;
+		1.	Shortcuts the input contained by the option (label) to the option.box
+			attribute.
 
-                    // update the local value of each checkbox
-                    window.sessionStorage[item.name] = item.checked;
-                }
-            });
-		},
-		update:function( caller ){
-            // store the checkbox value locally
-            window.sessionStorage[caller.name] = caller.checked;
+		2.	Adds an onchange event listener to the 'all' button as well as the
+			rest of the options that calls either 'all_label' (for all) or 'default'
+			(for the rest) on a change in value.
 
-            var options = this.$children.filter(function( item ){ return (item.$options._componentTag=='x-option') });
-            var all = options[0];
-            var children = options.slice(1);
-            for(var i = 0; i < children.length; i++){
-                var item = children[i];
-                if(!item.checked){
-                    all.checked = false;
-                    window.sessionStorage[all.name] = all.checked;
-                    return;
-                }
-            }
-            all.checked = true;
-            window.sessionStorage[all.name] = all.checked;
-		},
-        reload:function(){
-            this.$children.forEach(function(item){
-                if(item.$options._componentTag=='x-option'){
-                    console.log('setting ' + item.name + '.checked to ' + window.sessionStorage[item.name]);
-                    item.$data.checked = window.sessionStorage[item.name];
-                }
-            });
-        },
-        open: function(){
-			this.active = true;
-		},
-		close: function(){
-			this.active = false;
-		},
-	},
-});
+		3.	'all_label' sets all other checkboxes to its own value.
 
-var titles = new Vue({
-	el: '#js-titlecard-list',
-	components: {
-		'x-titlecard':{
-			template:'<div class="titlecard">\
-                            <a :href="link" class="title-link">{{ title }}</a>\
-                            <table class="information">\
-                                <tr>\
-                                <td><a :href="original" target="_blank">on {{ source }}</a></td>\
-                                <td>author: {{ author ? author : "unknown" }}</td>\
-                                <td>fetched: {{ date }}</td>\
-                                </tr>\
-                            </table>\
-                      </div>',
-			props:['title','link','source','original','author','date'],
-			data:function(){return { }},
-			methods:{
-				notify:function( event ){
-                    this.$emit('toggled',this);
-                },
-			},
-		},
-	},
-	data: {
-	},
-	methods: {
-	},
-});
+		4.	'default' checks that all options (aside from all) are checked, and
+			sets all or unsets all based on that.
+*/
+var options = (function( buttons ){
+	var all = null;
+	var opts = [];
 
-var mobile = new Vue({
-	el: '#js-mobile-menu',
-	data:{
-		article: true,
-		menu: false,
-	},
-	methods: {
-		toggle: function( event ){
-			this.article = this.menu;
-			if(this.menu = !this.menu){
-				options.open();
-			} else {
-				options.close();
+	// for each option button (left menu) . . .
+	for(var i = 0; i < buttons.length; i++){
+
+		// sort them into 'all' or 'opts'
+		var item = buttons[i];
+		if(item.id=='all_label'){ all=item; }
+		else { opts.push(item); }
+
+		// shortcut the inner input (the checkbox) to an
+		// attribute for conveniance
+		item.box = item.getElementsByTagName('input')[0];
+
+        // if we have a value stored in sessionStorage,
+        // we need to load it.
+        if(item.box.id in sessionStorage){
+            item.box.checked = sessionStorage.getItem(item.box.id)!='false';
+        }
+
+        item.classList.toggle('mark',item.box.checked);
+
+		// on change, either call a custom handler, or the
+		// default option handler
+		item.addEventListener('change',function( _event ){
+			if ( this.id in handlers){ handlers[this.id]( this );}
+			else { handlers.default( this ); }
+		});
+	}
+	// define handlers for changing values
+	var handlers = {
+
+		// the function sets all other options to the same value
+		// as the calling function, used by 'all'.
+		all_label:function( button ){
+			opts.forEach(function( item ){ item.box.checked = button.box.checked; });
+            this.update();
+		},
+
+		// this function updates 'all' on the status of the other
+		// options. (if they're all checked = set 'all' true, else
+		// false)
+		default:function( button ){
+			all.box.checked = opts.every(function( item ){ return item.box.checked });
+            this.update();
+		},
+
+		// called on every change to update the mark class on each
+		// option so that styles apply.
+		update:function(){
+			for( var i=0 ; i<buttons.length ; i++ ){
+				var item = buttons[i];
+				item.classList.toggle('mark',item.box.checked);
+                window.sessionStorage.setItem(item.box.id,item.box.checked);
 			}
-		},
-	},
-});
+		}
+	}
 
+})(document.getElementsByClassName('option-item'));
+
+/* -----------------------------------------------------------------------------
+	ANONYMOUS
+
+		This immediately invoked anonymous function operates over inputs
+		in the left-side menu of the index and about pages and does the
+		following:
+
+		1.	If the input has a value stored in sessionStorage, set it to that
+            value, otherwise leave it.
+
+		2.	Adds an 'onchange' eventlistener that saves the changed value into
+			sessionStorage whenever it changes.
+*/
+(function( inputs ){
+    for(var i=0; i <inputs.length;i++){
+        var item = inputs[i];
+
+        // if the input is already in sessionStorage
+        // we load that value, otherwise we save the
+        // starting value.
+        if(item.id in sessionStorage){
+            item.value = sessionStorage.getItem(item.id);
+        } else {
+            sessionStorage.setItem(item.id,item.value);
+        }
+        item.addEventListener('change',function( _event ){
+            if(this.id){
+                sessionStorage.setItem(this.id,this.value);
+            }
+        });
+    }
+})(document.querySelectorAll('input[type="text"], input[type="number"], select'));
+
+/* -----------------------------------------------------------------------------
+	ANONYMOUS
+
+		Sets the date in the copyright notice
+*/
 (function( block ){
     if(block){
         block.innerHTML = (new Date()).getFullYear();
     }
 })(document.getElementById('js-year'));
 
+/* -----------------------------------------------------------------------------
+	ANONYMOUS
+
+		Waits a moment, and then changes the min height of
+        the sources block so that the tranition plays.
+*/
 (function( target ){
     if(target){
         setTimeout(function(){

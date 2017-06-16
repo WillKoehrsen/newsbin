@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<!-- Meta Declarations -->
@@ -24,47 +23,38 @@
 			</style>
 		</noscript>
 
-		{% raw %}
-		<div id="modal-annotation" class="modal-annotation" ref="modal" >
-			<div class="modal-close" v-on:click="close">Close</div>
-			<div class="modal-title">{{ name }}</div>
-			<div class="modal-image-wrapper" v-if="image">
-				<img :src="image"/>
+		<div id="js-modal-annotation" class="modal-annotation" >
+			<div class="modal-close" ref="close" onClick="modal.close()">Close</div>
+			<div class="modal-title" ref="title"></div>
+			<div class="modal-image-wrapper" ref="image">
+				<img src=""/>
 			</div>
-			<div class="modal-data-table" v-if="table">
-				<div v-for="item in table" class="modal-data-item">
-					<div>{{ item.key }}</div>
-					<div v-bind:title="item.tooltip">{{ item.value }}</div>
-				</div>
+			<div class="modal-data-table" ref="data">
 			</div>
-			<div class="modal-content">
-				<p v-for="item in content">
-					{{ item }}
+			<div class="modal-content" ref="content">
+				<p>
 				</p>
 			</div>
-			<div class="modal-links">
-				<a v-if="wikipedia_link" :href="wikipedia_link" target="_blank">on wikipedia</a>
-				<a v-if="politifact_link" :href="politifact_link" target="_blank">on politifact</a>
+			<div class="modal-links" ref="links">
 			</div>
 		</div>
-		{% endraw %}
 
 		<div class="container">
 
-			<div class="mobile-menu" id="js-mobile-menu">
-				<div :class="{ current: menu }" v-on:click="toggle">
+			<div class="mobile-menu">
+				<div id="js-tab-menu">
 					Menu
 				</div>
-				<div :class="{ current: article }" v-on:click="toggle">
+				<div id="js-tab-article" class="current">
 					Article
 				</div>
 			</div>
 
-			<div class="sub-container side-container" :class="{ open: active }" id="js-sidebar-menu">
+			<div class="sub-container side-container" id="js-sidebar-anno-menu">
 
 				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off">
 					<div class="header">Annotate</div>
-					<input class="annotation-input" :title="input_tooltip" type="text" name="annotation" id="js-add-selection">
+					<input class="annotation-input" type="text" name="annotation" id="js-add-selection">
 					<input type="submit" class="item button" name="add" value="Add">
 					<input type="submit" class="item button" name="remove" value="Remove">
 				</form>
@@ -95,23 +85,30 @@
 
 			<div class="sub-container main-container article">
 				<div class="article-title">{{ article.title }}</div>
-				<div v-on:mouseup="capture" class="article-content" id="js-capture-selection">
+				<div class="information article-information">
+					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
+					<div class="author"><span class="title-card-label">author: </span>{{ article.author }}</div>
+					<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
+					<div class="date">
+						<span class="title-card-label">fetched: </span>
+						<span id="js-localize-date" iso="{{ article.fetched.isoformat() }}">{{ article.fetched.strftime('%Y-%m-%d %H:%M:%S %p') }} UTC</span>
+					</div>
+				</div>
+				<div class="article-content" id="js-capture-selection">
 					{{ article.content|safe }}
 				</div>
-				<table class="information">
-					<tr>
-						<td>original: <a href="{{ article.link }}" target="_blank">on {{ article.source }}</a></td>
-						<td>id: {{ article.id }}</td>
-					</tr>
-				</table>
+				<div class="information article-information">
+					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
+					<div class="id"><span class="title-card-label">id: </span>{{ article.id }}</div>
+				</div>
 				<div class="footer">
-					newsbin &copy; <span id="js-year"></span> Michael House
+					newsbin &copy; <span id="js-year"></span>  Michael House
 				</div>
 			</div>
 		</div>
 		<!-- External Javascript -->
-		<script src="/static/js/vue.js"></script>
 		<script src="/static/js/article.js"></script>
+		<script src="/static/js/analytics.js"></script>
 		<!-- End External Javascript -->
 	</body>
 </html>

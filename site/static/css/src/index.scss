@@ -192,8 +192,8 @@ body {
 			padding:5px 0 5px 0;
 		}
 
-		/* x-option styles*/
-		.options-item {
+		/* option menu styles*/
+		.option-item {
 			display:block;
 			user-select:none;
 			cursor:pointer;
@@ -204,6 +204,10 @@ body {
 			transition:background-color 0.05s ease, border-right 0.1s ease;
 
 			@include fade-in(0.5s,0.5s);
+
+			input {
+				display:none;
+			}
 
 			&:hover {
 				background-color: white;

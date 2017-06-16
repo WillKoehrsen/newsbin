@@ -1,125 +1,110 @@
+
+
 // -----------------------------------------------------------------------------
-// Article Window
-var content = new Vue({
-	el: '#js-capture-selection',
-	data: {},
-	methods: {
-		capture: function( event ){
-			var selection = window.getSelection();
-			if( !selection.isCollapsed && selection.rangeCount==1 ){
-				var range = selection.getRangeAt(0);
-				if( range ){
-					var input = document.getElementById('js-add-selection');
-					input.value = range.toString();
-				}
-			}
-		},
+// Annotation:
+//		a modal component that displays when an x-annotation is clicked
+var modal = (function( target ){
+	target.refs = {};
+	var children = target.getElementsByTagName('div');
+	for( var i=0; i<children.length; i++ ){
+		var ref = children[i].getAttribute('ref');
+		if(ref){ target.refs[ref] = children[i]; }
 	}
-});
 
-var menu = new Vue({
-	el: '#js-sidebar-menu',
-	data:{
-		active: false,
-		input_tooltip: 'add or remove annotations',
-	},
-	methods: {
-		open: function(){
-			this.$data.active = true;
+	handlers = {
+		close:function(){
+			for(ref in target.refs){ ref.innerHTML = ''; }
+			target.style.display = 'none';
 		},
-		close: function(){
-			this.$data.active = false;
-		},
-	}
-});
-
-var mobile = new Vue({
-	el: '#js-mobile-menu',
-	data:{
-		article: true,
-		menu: false,
-	},
-	methods: {
-		toggle: function( event ){
-			this.$data.article = this.$data.menu;
-			if(this.$data.menu = !this.$data.menu){
-				menu.open();
-			} else {
-				menu.close();
-			}
-		},
-	},
-});
-
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// Modal Window
-var annotation_defaults = {
-	name:'',
-	image:'',
-	table:[],
-	content:[],
-	wikipedia_link:'',
-	politifact_link:'',
-};
-
-var modal = new Vue({
-	el: '#modal-annotation',
-	data: annotation_defaults,
-	methods: {
-		close: function( event ){
-			this.$el.style.display = "none";
-			this.clear();
-		},
-		open: function( event ){
-			this.$el.style.display = "flex";
-		},
-		clear: function( event ){
-			Object.assign( this.$data, annotation_defaults);
-		},
-		fetch: function( name ){
+		open:function( name ){
 			var handle = new XMLHttpRequest();
-			var data = this.$data;
-			var modal = this;
+			var refs = target.refs;
 
 			handle.onload = function(){
 				if(this.status==200){
 					var response = JSON.parse(this.responseText);
-					data.name = response.name;
-					data.image = response.image;
-					data.content = response.summary.split('\n\n');
-					data.wikipedia_link = "https://en.wikipedia.org/wiki/"+response.name;
+					refs.title.innerHTML = response.name;
+					refs.image.innerHTML = '<img src="'+response.image+'"/>';
+
+					var content = response.summary.split('\n\n')
+					content.forEach(function( p ){
+						refs.content.innerHTML += '<p>'+p+'</p>';
+					});
+
+					refs.links.innerHTML += '<a href="https://en.wikipedia.org/wiki/'+response.name+'" target="_blank">on wikipedia</a>';
+					if(response.slug){ refs.links += '<a href="http://www.politifact.com/personalities/'+response.slug+'" target="_blank">on politifact</a>'; }
+
 					for(var i = 0; i < response.data_table.length; i++){
-						data.table.push( response.data_table[i] );
+						var item = response.data_table[i];
+						refs.data +='<div class="modal-data-item">\
+										<div>'+item.key+'</div>\
+										<div>'+item.value+'</div>\
+									 </div>';
 					}
-					if(response.slug){
-						data.politifact_link = "http://www.politifact.com/personalities/" + response.slug;
-					}
-					modal.open();
+					target.style.display = 'flex';
+				} else {
+					console.log(this.status);
 				}
 			}
 
 			handle.open("GET", '/annotations?name=' + name, true);
 			handle.send();
-		}
+		},
 	}
-});
 
-// -----------------------------------------------------------------------------
-// Plain JS
-(function( annotations ){
+	return handlers;
+})( document.getElementById('js-modal-annotation') );
+
+
+modal.open('MOSCOW');
+
+var annotations = document.getElementsByClassName('annotation');
+if(annotations){
 	for( var i = 0; i < annotations.length; i++ ){
-		var annotation = annotations[i];
-		annotation.classList.add('highlight');
-		annotation.addEventListener("click", function(_event){
-			var name = this.getAttribute('name');
-			modal.fetch( name );
+		annotations[i].addEventListener("click", function(_event){
+			modal.open(this.getAttribute('name'));
 		});
 	}
-})(document.getElementsByClassName('annotation'));
+}
 
-(function( block ){
-    if(block){
-        block.innerHTML = (new Date()).getFullYear();
-    }
-})(document.getElementById('js-year'));
+var content = document.getElementById('js-capture-selection');
+if(content){
+	content.addEventListener('mouseup',function(){
+		var selection = window.getSelection();
+		if( !selection.isCollapsed && selection.rangeCount==1 ){
+			var range = selection.getRangeAt(0);
+			var input = document.getElementById('js-add-selection');
+			if( input && range ){
+				input.value = range.toString();
+			}
+		}
+	});
+}
+
+menu_tab = document.getElementById('js-tab-menu');
+article_tab = document.getElementById('js-tab-article');
+menu_form = document.getElementById('js-sidebar-anno-menu');
+
+if(menu_tab){
+    menu_tab.addEventListener('click',function(_event){
+        if(this.classList.toggle('current')){
+            article_tab.classList.remove('current');
+            menu_form.classList.add('open');
+        } else {
+            article_tab.classList.add('current');
+            menu_form.classList.remove('open');
+        }
+    });
+}
+
+if(article_tab){
+    article_tab.addEventListener('click',function(_event){
+        if(this.classList.toggle('current')){
+            menu_tab.classList.remove('current');
+            menu_form.classList.remove('open');
+        } else {
+            menu_tab.classList.add('current');
+            menu_form.classList.add('open');
+        }
+    });
+}
