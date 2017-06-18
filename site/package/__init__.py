@@ -17,7 +17,7 @@ sys.path.insert( 1, root )
 # to simplify the settings portion of config
 from types import SimpleNamespace
 from contextlib import contextmanager
-from shared import models, filters
+from shared import models, filters, defaults
 
 # get the production environment variable
 production = os.environ.get('PRODUCTION',False)

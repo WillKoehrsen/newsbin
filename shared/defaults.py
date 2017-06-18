@@ -114,21 +114,33 @@ sources = [
 	('foxnews','http://feeds.foxnews.com/foxnews/world','world'),
 ]
 
+labels = {
+	'cnn':'CNN',
+	'cnbc':'CNBC',
+	'nytimes':'New York Times',
+	'washingtonpost':'Washington Post',
+	'reuters':'Reuters',
+	'foxnews':'Fox News',
+}
+
 def default_categories():
-	yielded = []
+	results = []
 	for source, feed, categories in sources:
 		for category in categories.split(','):
-			if category not in yielded:
-				yield category
-				yielded.append(category)
+			if category not in results:
+				results.append(category)
+	results = sorted(results)
+	return results
 
 def default_feeds():
 	for source, feed, categories in sources:
 		yield feed
 
 def default_sources():
-	yielded = []
+	results = []
 	for source, feed, categories in sources:
-		if source not in yielded:
-			yield source
-			yielded.append(source)
+		result = ( source, labels[source] )
+		if result not in results:
+			results.append(result)
+	results = sorted(results,key=lambda x: x[1])
+	return results

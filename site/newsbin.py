@@ -10,32 +10,9 @@ from package import filters, utilities
 from package import models, session_scope
 from package import log
 from package import politifact
+from package import defaults
 
 app = Flask(__name__)
-
-# these are the categories that appear in the search
-# menu on the index/about pages. They need to be automatically
-# generated from the engine/package/defaults.py feed tags, but
-# I haven't done it yet.
-categories = [
-	'Top',
-	'US',
-	'World',
-	'Finance',
-	'Politics',
-	'Technology',
-	'Health',
-	'Entertainment',
-	'Travel',
-	'Life',
-	'Opinion',
-	'Economy',
-	'Business',
-	'Investing',
-	'Education',
-	'Sports',
-	'Science'
-]
 
 @app.route('/', methods=['GET'])
 def index():
@@ -77,7 +54,7 @@ def index():
 				.slice(0,count)\
 				.all()
 
-		return render_template('index.html', articles=articles, categories=categories, date=datetime.datetime.now())
+		return render_template('index.html', articles=articles, categories=defaults.default_categories(), date=datetime.datetime.now())
 
 
 	# couldn't get a session for some reason
@@ -118,7 +95,7 @@ def article( pk ):
 				article = utilities.annotate( article, session )
 				return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
 		else:
-			log.warning('pk or name missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
+			log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
 			return abort(404)
 	else:
 		return abort(404)
@@ -147,7 +124,7 @@ def annotations():
 
 @app.route('/about', methods=['GET'])
 def about():
-	return render_template('about.html', categories=categories, date=datetime.datetime.now())
+	return render_template('about.html', categories=defaults.default_categories(), date=datetime.datetime.now())
 
 # ------------------------------------------------------------------------------
 # Error Pages

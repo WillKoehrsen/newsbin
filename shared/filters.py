@@ -7,6 +7,12 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from dateutil.parser import parse
 
+# -------------------------------
+# ADD FILTERS FOR:
+#	The Economist				http://www.economist.com/rss
+#	BBC							http://www.bbc.com/news/10628494
+# 	Wall Street Journal			http://www.wsj.com/public/page/rss_news_and_feeds.html
+
 class Filter:
 	source_name = ''
 
