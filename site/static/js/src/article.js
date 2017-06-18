@@ -82,13 +82,32 @@ var modal = (function( target ){
 		This immediately invoked function adds an 'onclick'
 		event handler that launches the modal window.
 */
-(function( annotations ){
+var annotations = (function( annotations ){
 	if(annotations){
+        var active = true;
+
 		for( var i = 0; i < annotations.length; i++ ){
 			annotations[i].addEventListener("click", function(_event){
-				modal.open(this.getAttribute('name'));
+				if(active){ modal.open(this.getAttribute('name')); }
 			});
 		}
+
+        var handlers = {
+            disable:function(){
+                active = false;
+                for( var i = 0; i < annotations.length; i++ ){
+                    annotations[i].classList.remove('highlight');
+        		}
+            },
+            enable:function(){
+                active = true;
+                for( var i = 0; i < annotations.length; i++ ){
+                    annotations[i].classList.add('highlight');
+        		}
+            },
+        }
+        handlers.enable();
+        return handlers;
 	}
 })(document.getElementsByClassName('annotation'));
 
@@ -155,3 +174,34 @@ var modal = (function( target ){
 	document.getElementById('js-mobile-menu'),
 	document.getElementById('js-menu')
 );
+
+
+/* -----------------------------------------------------------------------------
+	EYE TOGGLE
+
+		This adds a 'click' eventlistener to the 'eye' in the menu
+        that toggles the display of annotations in the article
+*/
+(function( eye ){
+    if( eye ){
+        if(eye.id in sessionStorage){
+            var initial = sessionStorage.getItem(eye.id)!='false';
+            if(initial){
+                eye.classList.add('active-toggle');
+                annotations.enable();
+            } else {
+                eye.classList.remove('active-toggle');
+                annotations.disable();
+            }
+        }
+        eye.addEventListener('click',function(){
+            if(this.classList.toggle('active-toggle')){
+                annotations.enable();
+                window.sessionStorage.setItem(this.id,true);
+            } else {
+                annotations.disable();
+                window.sessionStorage.setItem(this.id,false);
+            }
+        });
+    }
+})(document.getElementById('eye-toggle'));

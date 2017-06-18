@@ -2,9 +2,25 @@
 $mobile_width:500px;
 
 .annotation-block {
+	position:relative;
+
 	@media screen and (max-width: $mobile_width) {
 			width:85%;
 	}
+
+	.eye-toggle {
+		position: absolute;
+		cursor:pointer;
+		top:10px;
+		right:5px;
+		width:20;
+		stroke:rgba(0,0,0,0.5);
+	}
+
+	.active-toggle {
+		stroke:green;
+	}
+
 	.annotation-input {
 		min-width:10px;
 		width:calc(100% - 4px);
@@ -76,23 +92,20 @@ $mobile_width:500px;
 		}
 
 		.annotation {
-			background-color: #fffa7f;
-			cursor:pointer;
-
 			@media screen and (max-width: $mobile_width) {
 				user-select:none;
 			}
+		}
+
+		.highlight {
+			background-color: #fbffaa;
+			cursor:pointer;
 		}
 	}
 
 	.blacklist {
 		margin: 5px 5px 5px 5px;
 		box-sizing:border-box;
-	}
-
-	.highlight {
-		background-color: #fbffaa;
-		cursor:pointer;
 	}
 
 	.information {
