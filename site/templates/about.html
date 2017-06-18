@@ -52,7 +52,7 @@
 						<select name="category" class="category-input" id="category-input">
 							<option value="all">All</option>
 							{% for option in categories %}
-							<option value="{{ option|lower }}">{{ option }}</option>
+							<option value="{{ option|lower }}">{{ option|capitalize }}</option>
 							{% endfor %}
 						</select>
 					</div>
