@@ -1,9 +1,11 @@
 import regex
+import requests
+import sys
+
 from unidecode import unidecode
 from bs4 import BeautifulSoup
 from datetime import datetime
 from dateutil.parser import parse
-import requests
 
 class Filter:
 	source_name = ''
@@ -127,8 +129,6 @@ if __name__=='__main__':
 	response = requests.get( 'http://www.cnbc.com/2017/03/22/trump-sees-obamacare-replacement-passing-house-vote-needs-to-happen.html' )
 	test = CNBC()
 	result = test.process( response.content )
-	print(result['title'])
 	print(result['author'])
-	print(result['publish_date'])
 	print(result['keywords'])
 	print(result['content'])

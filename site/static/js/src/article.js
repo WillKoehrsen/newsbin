@@ -41,6 +41,7 @@ var modal = (function( target ){
 
 			handle.onload = function(){
 				if(this.status==200){
+                    handlers.close();
 					var response = JSON.parse(this.responseText);
 					refs.close.innerHTML = 'Close';
 					refs.title.innerHTML = response.name;

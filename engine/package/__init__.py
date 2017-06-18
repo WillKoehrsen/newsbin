@@ -23,6 +23,7 @@ sys.path.insert( 1, root )
 from shared import models
 from contextlib import contextmanager
 from shared import filters
+from shared import defaults
 
 # load the config file from root/config
 config = ConfigParser( interpolation=ExtendedInterpolation() )

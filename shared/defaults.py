@@ -114,7 +114,7 @@ sources = [
 	('foxnews','http://feeds.foxnews.com/foxnews/world','world'),
 ]
 
-def get_categories():
+def default_categories():
 	yielded = []
 	for source, feed, categories in sources:
 		for category in categories.split(','):
@@ -122,11 +122,11 @@ def get_categories():
 				yield category
 				yielded.append(category)
 
-def get_feeds():
+def default_feeds():
 	for source, feed, categories in sources:
 		yield feed
 
-def get_sources():
+def default_sources():
 	yielded = []
 	for source, feed, categories in sources:
 		if source not in yielded:
