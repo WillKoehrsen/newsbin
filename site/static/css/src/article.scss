@@ -1,9 +1,28 @@
 
-.annotation-input {
-	min-width:10px;
-	width:calc(100% - 4px);
-	border:1px solid lightgrey;
-	margin:0 auto 0 auto;
+$mobile_width:500px;
+
+.annotation-block {
+	@media screen and (max-width: $mobile_width) {
+			width:85%;
+	}
+	.annotation-input {
+		min-width:10px;
+		width:calc(100% - 4px);
+		border:1px solid lightgrey;
+		margin:0 auto 0 auto;
+
+		@media screen and (max-width: $mobile_width) {
+			height:30px;
+			line-height:30px;
+		}
+	}
+}
+
+.blacklist {
+	min-height:40px;
+	padding:5px;
+	font-size: 0.8em;
+	background-color: white;
 }
 
 .fadelist {
@@ -19,12 +38,24 @@
 	background-color: transparent;
 }
 
+.information-block {
+	table {
+		width:100%;
+		table-layout: fixed;
+
+		td:last-child {
+			color:grey;
+			font-size:0.9em;
+		}
+	}
+}
+
 /* -------------------------------------------------------------------------- */
 /* Article Page */
 .article {
 	background-color: white;
 
-	@media screen and (max-width: 500px) {
+	@media screen and (max-width: $mobile_width) {
 		padding-top: 8vh;
 	}
 
@@ -32,7 +63,7 @@
 		font-size:2em;
 		padding:10px;
 
-		@media screen and (max-width: 500px) {
+		@media screen and (max-width: $mobile_width) {
 			word-wrap:break-word;
 		}
 	}
@@ -40,22 +71,18 @@
 	.article-content {
 		padding:0 10px 0 10px;
 
-		@media screen and (max-width: 500px) {
+		@media screen and (max-width: $mobile_width) {
 			font-size:1.1em;
 		}
 
 		.annotation {
-			background-color: yellow;
+			background-color: #fffa7f;
 			cursor:pointer;
 
-			@media screen and (max-width: 500px) {
+			@media screen and (max-width: $mobile_width) {
 				user-select:none;
 			}
 		}
-	}
-
-	.article-information {
-		padding-left:10px;
 	}
 
 	.blacklist {
@@ -73,8 +100,11 @@
 		table-layout: fixed;
 		width:100%;
 
-		$text_color: grey;
+		@media screen and (max-width: $mobile_width) {
+			display:none;
+		}
 
+		$text_color: grey;
 		td {
 			color:$text_color;
 			background-color: #f2f2f2;
@@ -189,7 +219,7 @@
 
 	}
 
-	@media screen and (max-width: 500px) {
+	@media screen and (max-width: $mobile_width) {
 		width:calc(100% - 4px);
 		margin-left: 0;
 		margin-top: 0;

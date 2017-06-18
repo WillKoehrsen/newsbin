@@ -34,16 +34,16 @@
 
 		<div class="container">
 
-			<div class="mobile-menu">
-				<div id="js-tab-menu">
+			<div class="mobile-menu" id="js-mobile-menu">
+				<div run="open_menu">
 					Menu
 				</div>
-				<div id="js-tab-article" class="current">
+				<div run="close_menu" class="current">
 					Article
 				</div>
 			</div>
 
-			<div class="sub-container side-container" id="js-sidebar-anno-menu">
+			<div class="sub-container side-container" id="js-menu">
 
 				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off">
 					<div class="header">Annotate</div>
@@ -60,11 +60,19 @@
 				<!-- only displays on mobile -->
 				<div class="block information-block">
 					<div class="header">Information</div>
-					<div class="info-block-content">
-						<div>Source: <a href="{{ article.link }}" target="_blank">{{ article.source|upper }}</a></div>
-						<div>Author(s): <span>{{ article.author }}</span></div>
-						<div>Fetched: <span>{{ article.fetched.strftime('%Y-%m-%d') }}</span></div>
-					</div>
+					<table>
+						<tr>
+							<td>Source:</td>
+							<td><a href="{{ article.link }}" target="_blank">{{ article.source }}</a></td>
+						</tr>
+						<tr>
+							<td>Author(s):</td>
+							<td>{{ article.author if article.author else 'unknown' }}</td>
+						</tr>
+						<tr>
+							<td>Fetched:</td>
+							<td>{{ article.fetched.strftime('%Y-%m-%d') }}</td></tr>
+					</table>
 				</div>
 
 				<div class="block">
@@ -78,22 +86,25 @@
 
 			<div class="sub-container main-container article">
 				<div class="article-title">{{ article.title }}</div>
-				<div class="information article-information">
-					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
-					<div class="author"><span class="title-card-label">author: </span>{{ article.author }}</div>
-					<div class="source"><span class="title-card-label">source: </span>{{ article.source }}</div>
-					<div class="date">
-						<span class="title-card-label">fetched: </span>
-						<span id="js-localize-date" iso="{{ article.fetched.isoformat() }}">{{ article.fetched.strftime('%Y-%m-%d %H:%M:%S %p') }} UTC</span>
-					</div>
-				</div>
+				<table class="information">
+					<tr>
+						<td>original: <a href="{{ article.link }}" target="_blank">link</a></td>
+						<td>author: {{ article.author }}</td>
+						<td>source: {{ article.source }}</td>
+						<td>fetched: {{ article.fetched.strftime('%Y-%m-%d') }}</td>
+					</tr>
+				</table>
 				<div class="article-content" id="js-capture-selection">
 					{{ article.content|safe }}
 				</div>
-				<div class="information article-information">
-					<div class="link"><span class="title-card-label">original: </span><a href="{{ article.link }}" target="_blank">link</a></div>
-					<div class="id"><span class="title-card-label">id: </span>{{ article.id }}</div>
-				</div>
+				<table class="information">
+					<tr>
+						<td>original: <a href="{{ article.link }}" target="_blank">link</a></td>
+						<td>id: {{ article.id }}</td>
+						<td></td>
+						<td></td>
+					</tr>
+				</table>
 				<div class="footer">
 					newsbin &copy; <span id="js-year"></span>  Michael House
 				</div>

@@ -102,9 +102,10 @@ def article( pk ):
 	elif request.method == 'POST':
 		name = request.form.get('annotation',None)
 		add = 'add' in request.form
-		if pk and name:
+		if pk:
 			with session_scope() as session:
 				article = session.query( models.Article ).get( pk )
+
 				if add:
 					try:
 						utilities.summarize(name)

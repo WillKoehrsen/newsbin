@@ -1,8 +1,27 @@
-
-
 // -----------------------------------------------------------------------------
-// Annotation:
-//		a modal component that displays when an x-annotation is clicked
+// implement forEach if we're in IE
+if (!NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = function(fn, scope) {
+        for(var i = 0, len = this.length; i < len; ++i) {
+            fn.call(scope, this[i], i, this);
+        }
+    }
+}
+
+/* -----------------------------------------------------------------------------
+	MODAL
+
+		This immediately invoked function returns a set of handlers that can
+		fill and open/ empty and close the modal window to display annotations:
+
+		1.	Shortcuts the children of the modal window to the modal element
+			itself for conveniance.
+
+		2.	Creates a handler object that contains two functions:
+
+				close: empties and closes the modal window
+				open: fetches data, fills and opens the modal window
+*/
 var modal = (function( target ){
 	target.refs = {};
 	var children = target.getElementsByTagName('div');
@@ -41,7 +60,7 @@ var modal = (function( target ){
 													<div>'+item.value+'</div>\
 												</div>';
 					});
-					
+
 					target.style.display = 'flex';
 				} else {
 					console.log(this.status);
@@ -56,53 +75,82 @@ var modal = (function( target ){
 	return handlers;
 })( document.getElementById('js-modal-annotation') );
 
-var annotations = document.getElementsByClassName('annotation');
-if(annotations){
-	for( var i = 0; i < annotations.length; i++ ){
-		annotations[i].addEventListener("click", function(_event){
-			modal.open(this.getAttribute('name'));
+/* -----------------------------------------------------------------------------
+	ANNOTATIONS
+
+		This immediately invoked function adds an 'onclick'
+		event handler that launches the modal window.
+*/
+(function( annotations ){
+	if(annotations){
+		for( var i = 0; i < annotations.length; i++ ){
+			annotations[i].addEventListener("click", function(_event){
+				modal.open(this.getAttribute('name'));
+			});
+		}
+	}
+})(document.getElementsByClassName('annotation'));
+
+/* -----------------------------------------------------------------------------
+	CONTENT
+
+		Watch the content area of an article for selections and
+		copy the text to the annotation submission.
+*/
+(function( content, input ){
+	if(content){
+		content.addEventListener('mouseup',function(){
+			var selection = window.getSelection();
+			if( !selection.isCollapsed && selection.rangeCount==1 ){
+				var range = selection.getRangeAt(0);;
+				if( input && range ){
+					input.value = range.toString();
+				}
+			}
 		});
 	}
-}
+})(
+	document.getElementById('js-capture-selection'),
+	document.getElementById('js-add-selection')
+);
 
-var content = document.getElementById('js-capture-selection');
-if(content){
-	content.addEventListener('mouseup',function(){
-		var selection = window.getSelection();
-		if( !selection.isCollapsed && selection.rangeCount==1 ){
-			var range = selection.getRangeAt(0);
-			var input = document.getElementById('js-add-selection');
-			if( input && range ){
-				input.value = range.toString();
+/* -----------------------------------------------------------------------------
+	DATE
+
+		Sets the date in the copyright notice
+*/
+(function( block ){
+    if(block){
+        block.innerHTML = (new Date()).getFullYear();
+    }
+})(document.getElementById('js-year'));
+
+/* -----------------------------------------------------------------------------
+	MOBILE MENU
+
+		This bit adds a 'click' eventlistener that toggles the tabs and
+		hides/displays the mobile menu. Tabs define functions to run from
+		handlers with the 'run' attribute.
+*/
+(function( menu, options ){
+	var tabs = [];
+	[].push.apply(tabs, menu.getElementsByTagName('div'));
+
+	var handlers = {
+		open_menu:function(){options.classList.add('open')},
+		close_menu:function(){options.classList.remove('open')},
+	}
+
+	tabs.forEach(function( tab ){
+		tab.addEventListener('click',function( _event ){
+			if(!this.classList.contains('current')){
+				tabs.forEach(function(i){i.classList.remove('current')})
+				this.classList.add('current');
+				handlers[this.getAttribute('run')]();
 			}
-		}
+		})
 	});
-}
-
-menu_tab = document.getElementById('js-tab-menu');
-article_tab = document.getElementById('js-tab-article');
-menu_form = document.getElementById('js-sidebar-anno-menu');
-
-if(menu_tab){
-    menu_tab.addEventListener('click',function(_event){
-        if(this.classList.toggle('current')){
-            article_tab.classList.remove('current');
-            menu_form.classList.add('open');
-        } else {
-            article_tab.classList.add('current');
-            menu_form.classList.remove('open');
-        }
-    });
-}
-
-if(article_tab){
-    article_tab.addEventListener('click',function(_event){
-        if(this.classList.toggle('current')){
-            menu_tab.classList.remove('current');
-            menu_form.classList.remove('open');
-        } else {
-            menu_tab.classList.add('current');
-            menu_form.classList.add('open');
-        }
-    });
-}
+})(
+	document.getElementById('js-mobile-menu'),
+	document.getElementById('js-menu')
+);

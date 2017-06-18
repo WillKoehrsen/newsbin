@@ -37,7 +37,7 @@ class Article(Base):
 
 	def blacklist_name( self, name ):
 		plist = self.get_blacklist()
-		if name not in plist:
+		if name and name not in plist:
 			plist.append( name )
 			self.set_blacklist(plist)
 

@@ -4,8 +4,15 @@
 	animation: fade-enter $time ease-out $delay 1 normal forwards;
 }
 
+@mixin pop-in( $time, $delay ){
+	opacity:0;
+	transform: scale(0.5);
+
+	animation: pop-enter $time ease-out $delay 1 forwards;
+}
+
 /* mobile breakpoints */
-$main_break:500px;
+$mobile_width:500px;
 
 body {
 	padding:0;
@@ -61,7 +68,7 @@ body {
 	.mobile-menu {
 		display:none;
 
-		@media screen and (max-width: 500px) {
+		@media screen and (max-width: $mobile_width) {
 			position:fixed;
 			display:flex;
 
@@ -92,7 +99,7 @@ body {
 		}
 	}
 
-	@media screen and (max-width: 500px) {
+	@media screen and (max-width: $mobile_width) {
 		width:100%;
 		flex-direction:column;
 		overflow:hidden;
@@ -121,7 +128,7 @@ body {
 		margin: 30px 0px 20px 0px;
 	}
 
-	@media screen and (max-width: 500px) {
+	@media screen and (max-width: $mobile_width) {
 		width:90%;
 		margin:0 auto 0 auto;
 		border:none;
@@ -130,19 +137,13 @@ body {
 	}
 }
 
-.open {
-	@media screen and (max-width: 500px) {
-		margin-left:0;
-	}
-}
-
 .side-container {
 	flex:1;
 
-	@media screen and (max-width: 500px) {
+	@media screen and (max-width: $mobile_width) {
 		margin:0 auto 0 auto;
 		position:fixed;
-		top:8vh;
+		top:calc(8vh + 2px);
 		left:0;
 		overflow-y: scroll;
 		overflow-x: hidden;
@@ -158,28 +159,10 @@ body {
 		transition:margin-left 0.5s;
 	}
 
-	.blacklist {
-		min-height:40px;
-		padding:5px;
-		font-size: 0.8em;
-		background-color: white;
-	}
-
-	.annotation-block {
-		@media screen and (max-width: 500px) {
-				width:85%;
-		}
-	}
-
 	div {
-		@media screen and (max-width: 500px) {
+		@media screen and (max-width: $mobile_width) {
 			width:90%;
 		}
-	}
-
-	.sources {
-		min-height:310px;
-		transition:min-height 1s ease-out;
 	}
 
 	.block {
@@ -203,15 +186,8 @@ body {
 			border-right:3px solid rgba(0,0,0,0.25);
 			transition:background-color 0.05s ease, border-right 0.1s ease;
 
-			@include fade-in(0.5s,0.5s);
-
-			input {
-				display:none;
-			}
-
-			&:hover {
-				background-color: white;
-			}
+			input {	display:none; }
+			&:hover { background-color: white; }
 		}
 
 		/* checked x-option */
@@ -234,7 +210,7 @@ body {
 			background-color: white;
 			border-radius:none;
 
-			@media screen and (max-width: 500px) {
+			@media screen and (max-width: $mobile_width) {
 				min-width:10px;
 			}
 		}
@@ -278,7 +254,7 @@ body {
 		}
 
 		&:last-child {
-			@media screen and (max-width: 500px) {
+			@media screen and (max-width: $mobile_width) {
 					padding-bottom: 10px;
 			}
 		}
@@ -290,11 +266,17 @@ body {
 	.information-block {
 		display:none;
 
-		@media screen and (max-width: 500px) {
+		@media screen and (max-width: $mobile_width) {
 			display:block;
 		}
 	}
 
+}
+
+.open {
+	@media screen and (max-width: $mobile_width) {
+		margin-left:0;
+	}
 }
 
 .titlecard {
@@ -303,6 +285,7 @@ body {
 	background-color: white;
 	box-shadow: 2px 2px 5px rgba(0,0,0,0.20);
 	margin-bottom:10px;
+	@include fade-in(0.2s,0.1s);
 
 	.title-link {
 		display:block;
@@ -334,7 +317,7 @@ body {
 			color:$text_color;
 		}
 
-		@media screen and (max-width: 500px) {
+		@media screen and (max-width: $mobile_width) {
 			display:none;
 		}
 	}
@@ -362,6 +345,12 @@ body {
 
 /* animations */
 @keyframes fade-enter {
-  0% { opacity: 0; margin:5px 0 5px 0;}
-  100% { opacity: 1; margin:none;}
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes pop-enter {
+	0%		{ opacity:0; transform: scale(0.5); }
+	80%		{ opacity:1; transform: scale(1.02); }
+	100%	{ opacity:1; transform: scale(1); }
 }

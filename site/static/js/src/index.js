@@ -88,7 +88,7 @@ var options = (function( buttons ){
 })(document.getElementsByClassName('option-item'));
 
 /* -----------------------------------------------------------------------------
-	ANONYMOUS
+	SAVE INPUTS
 
 		This immediately invoked anonymous function operates over inputs
 		in the left-side menu of the index and about pages and does the
@@ -121,7 +121,7 @@ var options = (function( buttons ){
 })(document.querySelectorAll('input[type="text"], input[type="number"], select'));
 
 /* -----------------------------------------------------------------------------
-	ANONYMOUS
+	DATE
 
 		Sets the date in the copyright notice
 */
@@ -132,11 +132,12 @@ var options = (function( buttons ){
 })(document.getElementById('js-year'));
 
 /* -----------------------------------------------------------------------------
-	ANONYMOUS
+	HEIGHT ANIMATION
 
 		Waits a moment, and then changes the min height of
         the sources block so that the tranition plays.
 */
+/*
 (function( target ){
     if(target){
         setTimeout(function(){
@@ -144,3 +145,33 @@ var options = (function( buttons ){
         }, 500);
     }
 })(document.getElementById('js-fit-height'));
+*/
+/* -----------------------------------------------------------------------------
+	MOBILE MENU
+
+		This bit adds a 'click' eventlistener that toggles the tabs and
+		hides/displays the mobile menu. Tabs define functions to run from
+		handlers with the 'run' attribute.
+*/
+(function( menu, options ){
+	var tabs = [];
+	[].push.apply(tabs, menu.getElementsByTagName('div'));
+
+	var handlers = {
+		open_menu:function(){options.classList.add('open')},
+		close_menu:function(){options.classList.remove('open')},
+	}
+
+	tabs.forEach(function( tab ){
+		tab.addEventListener('click',function( _event ){
+			if(!this.classList.contains('current')){
+				tabs.forEach(function(i){i.classList.remove('current')})
+				this.classList.add('current');
+				handlers[this.getAttribute('run')]();
+			}
+		})
+	});
+})(
+	document.getElementById('js-mobile-menu'),
+	document.getElementById('js-menu')
+);
