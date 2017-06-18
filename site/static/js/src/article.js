@@ -205,3 +205,12 @@ var annotations = (function( annotations ){
         });
     }
 })(document.getElementById('eye-toggle'));
+
+
+(function( elements ){
+    for(var i=0; i<elements.length; i++){
+        var item = elements[i];
+        var msg = item.getAttribute('tooltip');
+        console.log(msg);
+    }
+})(document.querySelectorAll('[tooltip]'));
