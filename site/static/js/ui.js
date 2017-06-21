@@ -8,24 +8,24 @@ var tooltips = (function( targets ){
                 var popup = document.createElement('div');
                 tooltip = popup;
                 popup.classList.add("tooltip");
-                popup.innerHTML = element.getAttribute('tooltip');
+                popup.innerHTML = _event.target.getAttribute('tooltip');
                 document.body.appendChild(popup);
 
                 // move to where the tooltip should display
-                var reference = element.getBoundingClientRect();
+                var reference = _event.target.getBoundingClientRect();
                 var right_ref = parseInt(reference.right);
                 var left_ref = parseInt(reference.left);
 
                 if(left_ref < window.innerWidth/2){
-                    popup.style.left = right_ref+offset+'px'
+                    popup.style.left = right_ref+window.pageXOffset+offset+'px'
                     popup.classList.add('left');
                 }
                 else {
-                    popup.style.left = left_ref-parseInt(popup.offsetWidth)-offset+'px'
+                    popup.style.left = left_ref-parseInt(popup.offsetWidth)+window.pageXOffset-offset+'px'
                     popup.classList.add('right');
                 }
 
-                popup.style.top = parseInt(reference.top) + 'px';
+                popup.style.top = parseInt(reference.top) + window.pageYOffset + 'px';
             });
 
             element.addEventListener('mouseout',function( _event ){
