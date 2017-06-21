@@ -56,12 +56,12 @@ var modal = (function( target ){
 					if(response.slug){ refs.links.innerHTML += '<a href="http://www.politifact.com/personalities/'+response.slug+'" target="_blank">on politifact</a>'; }
 
 					response.data_table.forEach(function( item ){
-						refs.data.innerHTML += '<div class="modal-data-item">\
+						refs.data.innerHTML += '<div class="modal-data-item" tooltip="'+item.tooltip+'">\
 													<div>'+item.key+'</div>\
 													<div>'+item.value+'</div>\
 												</div>';
-					});
-
+                        tooltips.add(refs.data.lastChild);
+                    });
 					target.style.display = 'flex';
 				} else {
 					console.log(this.status);
@@ -205,12 +205,3 @@ var annotations = (function( annotations ){
         });
     }
 })(document.getElementById('eye-toggle'));
-
-
-(function( elements ){
-    for(var i=0; i<elements.length; i++){
-        var item = elements[i];
-        var msg = item.getAttribute('tooltip');
-        console.log(msg);
-    }
-})(document.querySelectorAll('[tooltip]'));

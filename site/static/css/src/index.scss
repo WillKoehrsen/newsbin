@@ -6,7 +6,7 @@
 
 @mixin pop-in( $time, $delay ){
 	opacity:0;
-	transform: scale(0.5);
+	transform: scale(0.2);
 
 	animation: pop-enter $time ease-out $delay 1 forwards;
 }
@@ -193,7 +193,7 @@ body {
 		/* checked x-option */
 		.mark {
 			border-right:3px solid #0d930f;
-			background-color: rgba(0,0,0,0.05);
+			background-color: rgba(0,0,0,0.03);
 		}
 
 		.search-bar, .result-bar, .category-bar {
@@ -343,6 +343,19 @@ body {
 
 }
 
+.tooltip {
+	background-color: white;
+	border:1px solid grey;
+	padding:5px;
+	position:absolute;
+
+	box-shadow: 3px 3px 5px rgba(0,0,0,0.1);
+	font-size:0.7em;
+	color:#4f4f4f;
+
+	@include pop-in(0.2s,0.0s);
+}
+
 /* animations */
 @keyframes fade-enter {
   0% { opacity: 0; }
@@ -350,7 +363,7 @@ body {
 }
 
 @keyframes pop-enter {
-	0%		{ opacity:0; transform: scale(0.5); }
-	80%		{ opacity:1; transform: scale(1.02); }
+	0%		{ opacity:0; transform: scale(0.2); }
+	80%		{ opacity:1; transform: scale(1.1); }
 	100%	{ opacity:1; transform: scale(1); }
 }

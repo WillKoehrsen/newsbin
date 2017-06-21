@@ -36,7 +36,7 @@
 
 			<form action="/" method="get" class="sub-container side-container" id="js-menu">
 				<div class="block sources" id="js-fit-height">
-					<div class="header">Sources</div>
+					<div class="header" tooltip="filter news by the source">Sources</div>
 					<label id="all_label" for="all_check" class="option-item">All<input type="checkbox" id="all_check" name="all" checked></label>
 					<label id="cnn_label" for="cnn_check" class="option-item">CNN<input type="checkbox" id="cnn_check" name="cnn" checked></label>
 					<label id="cnbc_label" for="cnbc_check" class="option-item">CNBC<input type="checkbox" id="cnbc_check" name="cnbc" checked></label>
@@ -49,7 +49,7 @@
 				<div class="block">
 					<div class="header">Categories</div>
 					<div class ="category-bar">
-						<select name="category" class="category-input" id="category-input">
+						<select name="category" class="category-input" id="category-input" tooltip="filter news by category">
 							<option value="all">All</option>
 							{% for option in categories %}
 							<option value="{{ option|lower }}">{{ option|capitalize }}</option>
@@ -61,10 +61,10 @@
 				<div class="block">
 					<div class="header">Search</div>
 					<div class="search-bar">
-						<input class="search-input" id="search-input" type="text" name="search" placeholder="Search">
+						<input class="search-input" id="search-input" type="text" name="search" placeholder="Search" tooltip="search for keywords in the title or article">
 					</div>
 					<div class="result-bar">
-						<input class="count-input" id="count-input" type="number" placeholder="Results (max 1000)" name="count">
+						<input class="count-input" id="count-input" type="number" placeholder="Results (max 1000)" name="count" tooltip="number of results to fetch">
 					</div>
 				</div>
 
@@ -129,6 +129,7 @@
 			</div>
 		</div>
 		<!-- External Javascript -->
+		<script src="/static/js/ui.js"></script>
 		<script src="/static/js/index.js"></script>
 		<script src="/static/js/analytics.js"></script>
 		<!-- End External Javascript -->
