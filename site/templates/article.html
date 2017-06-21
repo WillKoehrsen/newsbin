@@ -34,7 +34,7 @@
 
 		<div class="container">
 
-			<div class="mobile-menu" id="js-mobile-menu">
+			<div class="mobile-menu" id="js-mobile-menu" aria-hidden="true">
 				<div run="open_menu">
 					Menu
 				</div>
@@ -45,7 +45,7 @@
 
 			<div class="sub-container side-container" id="js-menu">
 
-				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off">
+				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off" role="form">
 					<div class="header">Annotate</div>
 
 					<svg class="eye-toggle active-toggle" id="eye-toggle" xmlns="http://www.w3.org/2000/svg"
@@ -57,42 +57,45 @@
 						stroke-width="2"
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						tooltip="toggle annotations on and off">
+						tooltip="toggle annotations on and off"
+						role="button"
+						aria-label="toggle annotations on and off">
 						<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
 						<circle cx="12" cy="12" r="3"/>
 					</svg>
 
 
 					<input class="annotation-input" type="text" name="annotation" id="js-add-selection"
-					tooltip="<b>add</b> key phrases like 'Panama Canal' to<br/>annotate the article with information from <br/>wikipedia, or <b>remove</b> to blacklist inaccurate<br/>annotations">
+						aria-label="add annotations to this article"
+						tooltip="<b>add</b> key phrases like 'Panama Canal' to<br/>annotate the article with information from <br/>wikipedia, or <b>remove</b> to blacklist inaccurate<br/>annotations">
 					<input type="submit" class="item button" name="add" value="Add">
 					<input type="submit" class="item button" name="remove" value="Remove">
 				</form>
 
 				<div class="block">
 					<div class="header">Blacklist</div>
-					<div class="blacklist{{ ' fadelist' if not blacklist }}">{{ blacklist if blacklist else 'nothing here' }}</div>
+					<div class="blacklist{{ ' fadelist' if not blacklist }}" aria-label="blacklisted annotations">{{ blacklist if blacklist else 'nothing here' }}</div>
 				</div>
 
-				<!-- only displays on mobile -->
-				<div class="block information-block">
+				<!-- only displays on mobile, and hidden to screen readers -->
+				<div class="block information-block" aria-hidden="true">
 					<div class="header">Information</div>
 					<table>
 						<tr>
 							<td>Source:</td>
-							<td><a href="{{ article.link }}" target="_blank">{{ article.source }}</a></td>
+							<td aria-label="news source"><a href="{{ article.link }}" target="_blank">{{ article.source }}</a></td>
 						</tr>
 						<tr>
 							<td>Author(s):</td>
-							<td>{{ article.author if article.author else 'unknown' }}</td>
+							<td aria-label="article author">{{ article.author if article.author else 'unknown' }}</td>
 						</tr>
 						<tr>
 							<td>Fetched:</td>
-							<td>{{ article.fetched.strftime('%Y-%m-%d') }}</td></tr>
+							<td aria-label="date fetched">{{ article.fetched.strftime('%Y-%m-%d') }}</td></tr>
 					</table>
 				</div>
 
-				<div class="block">
+				<div class="block" role="navigation">
 					<div class="header">Navigation</div>
 					<a href="/" class="item">Main</a>
 					<a href="/about" class="item">About</a>
@@ -101,20 +104,20 @@
 
 			</div>
 
-			<div class="sub-container main-container article">
-				<div class="article-title">{{ article.title }}</div>
-				<table class="information">
+			<div class="sub-container main-container article" role="main">
+				<div class="article-title" aria-label="article title">{{ article.title }}</div>
+				<table class="information" aria-label="article information">
 					<tr>
-						<td>original: <a href="{{ article.link }}" target="_blank">link</a></td>
+						<td>original: <a href="{{ article.link }}" target="_blank" aria-label="original article">link</a></td>
 						<td>author: {{ article.author }}</td>
 						<td>source: {{ article.source }}</td>
 						<td>fetched: {{ article.fetched.strftime('%Y-%m-%d') }}</td>
 					</tr>
 				</table>
-				<div class="article-content" id="js-capture-selection">
+				<div class="article-content" id="js-capture-selection" aria-label="article content">
 					{{ article.content|safe }}
 				</div>
-				<table class="information">
+				<table class="information" aria-hidden="true">
 					<tr>
 						<td>original: <a href="{{ article.link }}" target="_blank">link</a></td>
 						<td>id: {{ article.id }}</td>
@@ -122,7 +125,7 @@
 						<td></td>
 					</tr>
 				</table>
-				<div class="footer">
+				<div class="footer" role="contentinfo">
 					newsbin &copy; <span id="js-year"></span>  Michael House
 				</div>
 			</div>

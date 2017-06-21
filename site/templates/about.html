@@ -25,7 +25,7 @@
 
 		<div class="container">
 
-			<div class="mobile-menu" id="js-mobile-menu">
+			<div class="mobile-menu" id="js-mobile-menu" aria-hidden="true">
 				<div run="open_menu">
 					Menu
 				</div>
@@ -34,22 +34,22 @@
 				</div>
 			</div>
 
-			<form action="/" method="get" class="sub-container side-container" id="js-menu">
-				<div class="block sources" id="js-fit-height">
+			<form action="/" method="get" class="sub-container side-container" id="js-menu" role="form">
+				<div class="block sources" id="js-fit-height" role="menu" aria-label="news source selection">
 					<div class="header" tooltip="filter news by the source">Sources</div>
-					<label id="all_label" for="all_check" class="option-item">All<input type="checkbox" id="all_check" name="all" checked></label>
-					<label id="cnn_label" for="cnn_check" class="option-item">CNN<input type="checkbox" id="cnn_check" name="cnn" checked></label>
-					<label id="cnbc_label" for="cnbc_check" class="option-item">CNBC<input type="checkbox" id="cnbc_check" name="cnbc" checked></label>
-					<label id="foxnews_label" for="foxnews_check" class="option-item">Fox News<input type="checkbox" id="foxnews_check" name="foxnews" checked></label>
-					<label id="nytimes_label" for="nytimes_check" class="option-item">New York Times<input type="checkbox" id="nytimes_check" name="nytimes" checked></label>
-					<label id="reuters_label" for="reuters_check" class="option-item">Reuters<input type="checkbox" id="reuters_check" name="reuters" checked></label>
-					<label id="washingtonpost_label" for="washingtonpost_check" class="option-item">Washington Post<input type="checkbox" id="washingtonpost_check" name="reuters" checked></label>
+					<label id="all_label" for="all_check" class="option-item" role="menuitem">All<input type="checkbox" id="all_check" name="all" checked></label>
+					<label id="cnn_label" for="cnn_check" class="option-item" role="menuitem">CNN<input type="checkbox" id="cnn_check" name="cnn" checked></label>
+					<label id="cnbc_label" for="cnbc_check" class="option-item" role="menuitem">CNBC<input type="checkbox" id="cnbc_check" name="cnbc" checked></label>
+					<label id="foxnews_label" for="foxnews_check" class="option-item" role="menuitem">Fox News<input type="checkbox" id="foxnews_check" name="foxnews" checked></label>
+					<label id="nytimes_label" for="nytimes_check" class="option-item" role="menuitem">New York Times<input type="checkbox" id="nytimes_check" name="nytimes" checked></label>
+					<label id="reuters_label" for="reuters_check" class="option-item" role="menuitem">Reuters<input type="checkbox" id="reuters_check" name="reuters" checked></label>
+					<label id="washingtonpost_label" for="washingtonpost_check" class="option-item" role="menuitem">Washington Post<input type="checkbox" id="washingtonpost_check" name="reuters" checked></label>
 				</div>
 
 				<div class="block">
 					<div class="header">Categories</div>
 					<div class ="category-bar">
-						<select name="category" class="category-input" id="category-input" tooltip="filter news by category">
+						<select name="category" class="category-input" id="category-input" tooltip="filter news by category" aria-label="news category selection">
 							<option value="all">All</option>
 							{% for option in categories %}
 							<option value="{{ option|lower }}">{{ option|capitalize }}</option>
@@ -61,10 +61,10 @@
 				<div class="block">
 					<div class="header">Search</div>
 					<div class="search-bar">
-						<input class="search-input" id="search-input" type="text" name="search" placeholder="Search" tooltip="search for keywords in the title or article">
+						<input class="search-input" id="search-input" type="text" name="search" placeholder="Search" tooltip="search for keywords in the title or article" role="search">
 					</div>
 					<div class="result-bar">
-						<input class="count-input" id="count-input" type="number" placeholder="Results (max 1000)" name="count" tooltip="number of results to fetch">
+						<input class="count-input" id="count-input" type="number" placeholder="Results (max 1000)" name="count" tooltip="number of results to fetch" aria-label="number of results to fetch">
 					</div>
 				</div>
 
@@ -72,7 +72,7 @@
 					<input class="search-submit" type="submit" value="Apply">
 				</div>
 
-				<div class="block">
+				<div class="block" role="navigation">
 					<div class="header">Navigation</div>
 					<a href="/" class="item" id="js-check-submit">Main</a>
 					<a href="https://github.com/mjhouse/newsbin" target="_blank" class="item">Github</a>
@@ -80,9 +80,9 @@
 
 			</form>
 
-			<div class="sub-container main-container about">
+			<div class="sub-container main-container about" role="main">
 				<div class="title">newsbin</div>
-				<div class="content">
+				<div class="content" aria-label="about page content">
 					<p>
 						newsbin pulls articles from hundreds of rss feeds provided by
 						major news outlets, and fetches the articles into a single,
@@ -115,7 +115,7 @@
 						you can take a look at open issues on github, and if you want
 						to contribute, you can send me an email.
 					</p>
-					<p class="footer">
+					<p style="text-align:right;">
 						<a href="https://github.com/mjhouse/newsbin/issues" target="_blank">Github Issues</a>
 						<a href="mailto:michaelhouse@gmx.us">michaelhouse@gmx.us</a>
 					</p>
@@ -123,7 +123,7 @@
 						-blackstampede
 					</p>
 				</div>
-				<div class="footer">
+				<div class="footer" role="contentinfo">
 					newsbin &copy; <span id="js-year"></span> Michael House
 				</div>
 			</div>
