@@ -71,6 +71,7 @@ body {
 		@media screen and (max-width: $mobile_width) {
 			position:fixed;
 			display:flex;
+			z-index:1;
 
 			height:8vh;
 			width:100%;
@@ -151,6 +152,7 @@ body {
 		width:90vw;
 		background-color: #faf8f6;
 		align-items: center;
+		z-index:1;
 
 		border:1px solid grey;
 		box-shadow:2px 2px 5px rgba(0,0,0,0.25);
