@@ -1,3 +1,19 @@
+
+/* -----------------------------------------------------------------------------
+	TOOLTIPS
+
+		This immediately invoked function adds event listeners that create
+        and destroy tooltips on elements with the 'tooltip="<message>"'
+        attribute/value. They have the following features.
+
+        1.  all tooltips have the class 'tooltip'
+
+        2.  tooltips are oriented relative to the target element
+
+        3.  if the left side of the target element is to the right of
+            the viewport center, then the tooltip will be on the left,
+            otherwise it will default to the right.
+*/
 var tooltips = (function( targets ){
     // function that actually adds the tooltip
     function make_tooltip( element ){
@@ -50,3 +66,14 @@ var tooltips = (function( targets ){
 
     return handler;
 })([...document.querySelectorAll('[tooltip]')]);
+
+/*
+(function( item ){
+    item.addEventListener('click',function( _event ){
+        if(sessionStorage.length > 0){
+            console.log('items in session');
+            _event.preventDefault();
+        }
+    });
+})(document.getElementById('js-check-submit'));
+*/
