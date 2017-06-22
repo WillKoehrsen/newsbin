@@ -70,7 +70,7 @@ $mobile_width:500px;
 /* Article Page */
 .article {
 	background-color: white;
-	height:auto;
+	display:block;
 
 	@media screen and (max-width: $mobile_width) {
 		padding-top: 8vh;
