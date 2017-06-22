@@ -164,7 +164,7 @@ var options = (function( buttons ){
 
     window.addEventListener('touchmove',function( _event ){
         if(options.classList.contains('open')){
-            //_event.preventDefault();
+            _event.preventDefault();
         }
     });
 
