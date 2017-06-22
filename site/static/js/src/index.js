@@ -162,7 +162,7 @@ var options = (function( buttons ){
 		close_menu:function(){options.classList.remove('open')},
 	}
 
-    window.addEventListener('touchmove',function( _event ){
+    document.addEventListener('touchmove',function( _event ){
         if(options.classList.contains('open')){
             _event.preventDefault();
         }
