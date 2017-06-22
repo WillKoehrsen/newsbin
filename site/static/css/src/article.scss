@@ -70,6 +70,7 @@ $mobile_width:500px;
 /* Article Page */
 .article {
 	background-color: white;
+	min-height:100vh;
 
 	@media screen and (max-width: $mobile_width) {
 		padding-top: 8vh;
@@ -86,11 +87,6 @@ $mobile_width:500px;
 
 	.article-content {
 		padding:0 10px 0 10px;
-		min-height:200px;
-
-		p {
-			display:block;
-		}
 
 		@media screen and (max-width: $mobile_width) {
 			font-size:1.1em;
