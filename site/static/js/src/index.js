@@ -162,12 +162,6 @@ var options = (function( buttons ){
 		close_menu:function(){options.classList.remove('open')},
 	}
 
-    document.addEventListener('touchmove',function( _event ){
-        if(options.classList.contains('open')){
-            _event.preventDefault();
-        }
-    });
-
 	tabs.forEach(function( tab ){
 		tab.addEventListener('click',function( _event ){
 			if(!this.classList.contains('current')){
