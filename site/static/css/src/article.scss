@@ -86,6 +86,7 @@ $mobile_width:500px;
 
 	.article-content {
 		padding:0 10px 0 10px;
+		height:auto;
 
 		@media screen and (max-width: $mobile_width) {
 			font-size:1.1em;
