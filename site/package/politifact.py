@@ -33,10 +33,17 @@ def get_slug( name ):
 	results = sorted([ item for item in matches( name, slugs ) if item ],key=lambda x: x[1], reverse=True)
 	return results[0][0] if results else None
 
-def get_rating( name, count=5 ):
+#def get_rating( name, count=5 ):
+def get_rating( **kwargs ):
 	"""get slug, fetch last <count> statements and calculate score"""
+	name = kwargs.get('name',None)
+	slug = kwargs.get('slug',None)
+	count = kwargs.get('count',5)
 	try:
-		slug = get_slug( name )
+
+		if not slug:
+			slug = get_slug( name )
+
 		if slug:
 			url = 'http://www.politifact.com/api/statements/truth-o-meter/people/{}/json/?n={}'.format(slug,count)
 			data = requests.get(url).json()

@@ -4,14 +4,16 @@ import regex
 import os
 import json
 import datetime
+import logging
+
 from sqlalchemy import literal
 
 from package import filters, utilities
 from package import models, session_scope
-from package import log
 from package import politifact
 from package import defaults
 
+log = logging.getLogger('newsbin.site')
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
@@ -73,7 +75,7 @@ def article( pk ):
 					blacklist = ''
 				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now())
 			except Exception as e:
-				log.exception(e)
+				site_log.exception(e)
 				raise
 
 	elif request.method == 'POST':
@@ -87,7 +89,7 @@ def article( pk ):
 					try:
 						utilities.summarize(name)
 					except Exception as e:
-						log.exception(e)
+						site_log.exception(e)
 					article.unblacklist_name( name )
 				else:
 					article.blacklist_name(name)
@@ -95,7 +97,7 @@ def article( pk ):
 				article = utilities.annotate( article, session )
 				return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
 		else:
-			log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
+			site_log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
 			return abort(404)
 	else:
 		return abort(404)
@@ -106,14 +108,21 @@ def annotations():
 	with session_scope() as session:
 		try:
 			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
-			rating, slug = politifact.get_rating(annotation.name)
+			slug = annotation.slug
+			if not slug:
+				rating, slug = politifact.get_rating(name=annotation.name)
+				if slug: annotation.update(slug=slug)
+			else:
+				rating, slug = politifact.get_rating(name=annotation.name,slug=slug)
 		except Exception as e:
 			try:
 				annotation = utilities.summarize(name)
 				if annotation.name:
-					rating, slug = politifact.get_rating(annotation.name)
+					rating, slug = politifact.get_rating(name=annotation.name)
+					print(slug)
+					if slug: annotation.update(slug=slug)
 			except Exception as e:
-				log.exception(e)
+				site_log.exception(e)
 				return abort(404)
 
 		table_items = []

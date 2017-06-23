@@ -10,14 +10,13 @@ from configparser import ConfigParser, ExtendedInterpolation
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# set the path to the root directory so that we can import from shared
-root = os.path.dirname( os.path.dirname( os.path.dirname( __file__ ) ) )
-sys.path.insert( 1, root )
-
 # to simplify the settings portion of config
 from types import SimpleNamespace
 from contextlib import contextmanager
-from shared import models, filters, defaults
+
+# set the path to the root directory
+root = os.path.dirname( os.path.dirname( os.path.dirname( __file__ ) ) )
+sys.path.insert( 1, root )
 
 # get the production environment variable
 production = os.environ.get('PRODUCTION',False)
@@ -26,18 +25,39 @@ production = os.environ.get('PRODUCTION',False)
 config = ConfigParser( interpolation=ExtendedInterpolation() )
 config.read( os.path.join( root, 'config/newsbin.conf' ) )
 
-if production:
-    settings = SimpleNamespace( **config['production'] )
+settings = SimpleNamespace( **config['production'] ) if production else SimpleNamespace( **config['settings'] )
 
-    # attach to the database specified in the config file
-    db_engine = create_engine( settings.database )
-else:
-    settings = SimpleNamespace( **config['settings'] )
-
-    # attach to the database specified in the config file
-    db_engine = create_engine( settings.database )
-
+# attach to the database specified in the config file
+db_engine = create_engine( settings.database )
 session_generator = sessionmaker(bind=db_engine)
+
+# ------------------------------------------------------------------------------
+# init the log
+site_log = logging.getLogger("newsbin.site")
+site_log.setLevel(logging.DEBUG)
+
+eng_log = logging.getLogger("newsbin.engine")
+eng_log.setLevel(logging.DEBUG)
+
+# format messages for log
+_format = logging.Formatter('[%(asctime)s] %(levelname)s:  %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
+
+# create the file logging handler for the site
+file_s = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_site.log' ) )
+file_s.setFormatter(_format)
+
+# create the file logging handler for the engine
+file_e = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_engine.log' ) )
+file_e.setFormatter(_format)
+
+# create the console logging handler
+console_h = logging.StreamHandler()
+console_h.setFormatter(_format)
+
+# add handlers to log object
+site_log.addHandler(file_s)
+eng_log.addHandler(file_e)
+eng_log.addHandler(console_h)
 
 @contextmanager
 def session_scope():
@@ -51,18 +71,3 @@ def session_scope():
         raise
     finally:
         session.close()
-
-# ------------------------------------------------------------------------------
-# init the log
-log = logging.getLogger("newsbin.site")
-log.setLevel(logging.DEBUG)
-
-# format messages for log
-_format = logging.Formatter('[%(asctime)s] %(levelname)s:  %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
-
-# create the file logging handler
-file_h = logging.FileHandler( os.path.join( settings.logdir, 'newsbin_site.log' ) )
-file_h.setFormatter(_format)
-
-# add handlers to log object
-log.addHandler(file_h)

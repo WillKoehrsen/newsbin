@@ -62,10 +62,15 @@ class Annotation(Base):
 	id = Column(Integer, primary_key=True)
 
 	name = Column(String(250), nullable=True, unique=True)
+	slug = Column(String(250), nullable=True, unique=True)
 	image = Column(String(250), nullable=True)
 	summary = Column(Text, nullable=True)
 
 	def __init__( self, *args, **kwargs ):
+		for key, value in kwargs.items():
+			setattr(self, key, value)
+
+	def update( self, *args, **kwargs ):
 		for key, value in kwargs.items():
 			setattr(self, key, value)
 
