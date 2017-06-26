@@ -21,7 +21,7 @@ sources = [
 	('cnbc','http://www.cnbc.com/id/15839135/device/rss/rss.html','finance'),
 	('cnbc','http://www.cnbc.com/id/100370673/device/rss/rss.html','opinion,politics,economy'),
 	('cnbc','http://www.cnbc.com/id/20910258/device/rss/rss.html','finance'),
-	('cnbc','http://www.cnbc.com/id/10000664/device/rss/rss.html','technology'),
+	('cnbc','http://www.cnbc.com/id/10000664/device/rss/rss.html','finance,technology'),
 	('cnbc','http://www.cnbc.com/id/19854910/device/rss/rss.html','technology'),
 	('cnbc','http://www.cnbc.com/id/10000113/device/rss/rss.html','politics'),
 	('cnbc','http://www.cnbc.com/id/10000108/device/rss/rss.html','health'),

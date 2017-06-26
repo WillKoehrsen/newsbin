@@ -9,7 +9,7 @@ import requests
 import wikipedia
 from wikipedia.exceptions import PageError
 
-from shared.models import Annotation, Article
+from package.models import Annotation, Article
 from . import session_scope
 
 def politifact_exists( name ):
