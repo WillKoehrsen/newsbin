@@ -101,12 +101,49 @@ cnbc = Filter(css='div[itemprop=articleBody]>p, .article-body>p')
 nytimes = Filter(css='.story-body-text.story-content')
 washpo = Filter(css='article[itemprop=articleBody]>p, .row .span8>p:not(.interstitial-link), article.pg-article>p:not(.interstitial-link)')
 reuters = Filter(css='#article-text>p, #article-text>.article-prime')
-foxnews = Filter(css='.article-text>p')
+foxnews = Filter(css='.article-text>p, .article-body>p')
 
 if __name__=='__main__':
-    url = 'http://feeds.reuters.com/~r/reuters/technologyNews/~3/wNCD-j_Snc0/us-facebook-television-idUSKBN19H0GJ'
-    doc = requests.get(url).text
-    f = reuters(doc,url=url)
-    print('<style>p{ width:500px; }</style>')
-    for p in f:
-        print('<p>{}</p>\n'.format(p))
+    import defaults
+    import feedparser
+
+    sourcelist = {
+        'foxnews':foxnews,
+    }
+
+    limit = 20
+    count = 0
+    links = {}
+    for source, feed, tags in defaults.sources:
+        if source not in links:
+            links[source] = []
+
+        if source in sourcelist:
+            data = feedparser.parse(feed)
+            for item in data['items']:
+                links[source].append( (item['link'],item['title'],'item{}'.format(count)) )
+                count += 1
+
+    with open('/home/mhouse/Projects/python/output.html','w') as out:
+        out.write('<style>div{ width:500px; margin:10px auto 10px auto; }</style>')
+
+        out.write('<div>')
+        for source in links:
+            if source in sourcelist:
+                out.write('<h1>{}</h1>'.format(source))
+                for idx, item in enumerate(links[source]):
+                    link, title, tag = item
+                    if idx <= limit:
+                        out.write( '<a href="#{}">{}</a><br/><br/>'.format(tag,title) )
+
+        out.write('</div>')
+        out.write('<br/><hr/><br/>')
+
+        for source in links:
+            if source in sourcelist:
+                for idx, item in enumerate(links[source]):
+                    link, title, tag = item
+                    if idx <= limit:
+                        doc = requests.get(link).text
+                        content = ''.join([ '<p>{}</p>'.format(p) for p in sourcelist[source]( doc, link ) ])
+                        out.write('<div><a name="{}"></a><hr/><a href="{}" target="_blank"><h3>{}</h3></a>{}<hr/></div>'.format(tag,link,title,content))
