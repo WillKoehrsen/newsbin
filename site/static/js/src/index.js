@@ -132,21 +132,6 @@ var options = (function( buttons ){
 })(document.getElementById('js-year'));
 
 /* -----------------------------------------------------------------------------
-	HEIGHT ANIMATION
-
-		Waits a moment, and then changes the min height of
-        the sources block so that the tranition plays.
-*/
-/*
-(function( target ){
-    if(target){
-        setTimeout(function(){
-            target.style.minHeight = "10px";
-        }, 500);
-    }
-})(document.getElementById('js-fit-height'));
-*/
-/* -----------------------------------------------------------------------------
 	MOBILE MENU
 
 		This bit adds a 'click' eventlistener that toggles the tabs and

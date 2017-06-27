@@ -1,14 +1,11 @@
 import threading
 import requests
-import time
 import os
 import feedparser
 import logging
 import signal
-import sys
 
-from datetime import timedelta, datetime
-from pprint import PrettyPrinter
+from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 
 # ------------------------------------------------------------------------------
@@ -79,13 +76,15 @@ class NewsbinEngine:
 				# it to the database
 				with session_scope() as session:
 					# set initial values based off the rss item
-					article = models.Article( title=item['title'], link=item['link'], filter=sfilter, source=source, category=category )
+					article = models.Article( title=item['title'], link=item['link'], source=source, category=category )
 
 					# fetch and filter the article, and then update
 					# with additional information (content, for one)
 					response = requests.get( article.link, verify=False )
-					content = article.filter.process( response.text )
-					article.update( **content )
+					content = sfilter( response.text, url=article.link )
+
+					article.content = '\n'.join([ '<p>{}</p>'.format(p) for p in content if p ])
+					article.fetched = datetime.now()
 
 					# if there is a title and some sort of content,
 					# try to add it to the database
@@ -105,7 +104,7 @@ class NewsbinEngine:
 		source, feed, categories = item
 
 		try:
-			sfilter = filters.lookup( source )
+			sfilter = filters.sources.get( source )
 			rss = feedparser.parse(feed)
 			for item in rss['items']:
 

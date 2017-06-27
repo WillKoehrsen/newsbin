@@ -19,7 +19,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def index():
 	options = request.values.to_dict()
-	sources = filters.all()
+	sources = filters.sources.keys()
 
 	# count defaults to 100 if empty or not given
 	count = int(options.get('count',100) or 100)
@@ -68,9 +68,9 @@ def article( pk ):
 		with session_scope() as session:
 			try:
 				article = session.query( models.Article ).get( pk )
-				article = utilities.annotate( article, session )
+				#article = utilities.annotate( article, session )
 				if article.blacklist:
-					blacklist = article.blacklist.replace(';',',')
+					blacklist = article.blacklist.replace(';',', ')
 				else:
 					blacklist = ''
 				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now())
@@ -94,13 +94,27 @@ def article( pk ):
 				else:
 					article.blacklist_name(name)
 
-				article = utilities.annotate( article, session )
+				#article = utilities.annotate( article, session )
 				return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
 		else:
 			site_log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
 			return abort(404)
 	else:
 		return abort(404)
+
+@app.route('/article/<int:pk>/annotate', methods=['GET'])
+def annotate( pk ):
+	try:
+		with session_scope() as session:
+			article = session.query( models.Article ).get( pk )
+			annotations = session.query( models.Annotation ).filter( literal(article.content).contains(models.Annotation.name)).all()
+			names = [ a.name for a in annotations if a.name not in article.get_blacklist() ]
+			return make_response( json.dumps(names) )
+	except Exception as e:
+		print(e)
+
+	return make_response()
+
 
 @app.route('/annotations', methods=['GET'])
 def annotations():

@@ -82,34 +82,47 @@ var modal = (function( target ){
 		This immediately invoked function adds an 'onclick'
 		event handler that launches the modal window.
 */
-var annotations = (function( annotations ){
-	if(annotations){
-        var active = true;
-
-		for( var i = 0; i < annotations.length; i++ ){
-			annotations[i].addEventListener("click", function(_event){
-				if(active){ modal.open(this.getAttribute('name')); }
-			});
-		}
-
-        var handlers = {
-            disable:function(){
-                active = false;
-                for( var i = 0; i < annotations.length; i++ ){
-                    annotations[i].classList.remove('highlight');
-        		}
-            },
-            enable:function(){
-                active = true;
-                for( var i = 0; i < annotations.length; i++ ){
-                    annotations[i].classList.add('highlight');
-        		}
-            },
+var annotations = (function(){
+    var active = true;
+    function open_modal( _event ){
+        if(active){
+            modal.open(this.getAttribute('name'));
         }
-        handlers.enable();
-        return handlers;
-	}
-})(document.getElementsByClassName('annotation'));
+    }
+
+    var handlers = {
+
+        disable:function(){
+            active = false;
+            var annotations = document.getElementsByClassName('annotation')
+            for( var i = 0; i < annotations.length; i++ ){
+                annotations[i].classList.remove('highlight');
+    		}
+        },
+        enable:function(){
+            active = true;
+            var annotations = document.getElementsByClassName('annotation')
+            for( var i = 0; i < annotations.length; i++ ){
+                annotations[i].classList.add('highlight');
+    		}
+        },
+        refresh:function(){
+            var annotations = document.getElementsByClassName('annotation')
+            var toggle = document.getElementById('eye-toggle');
+            for( var i = 0; i < annotations.length; i++ ){
+                var anno = annotations[i];
+                anno.removeEventListener('click', open_modal, false);
+                anno.addEventListener("click", open_modal);
+                if(toggle.classList.contains('active-toggle')){
+                    anno.classList.add('highlight');
+                }
+            }
+        },
+    }
+    handlers.refresh();
+    handlers.enable();
+    return handlers;
+})();
 
 /* -----------------------------------------------------------------------------
 	CONTENT
@@ -130,7 +143,7 @@ var annotations = (function( annotations ){
 		});
 	}
 })(
-	document.getElementById('js-capture-selection'),
+	document.getElementById('js-article-content'),
 	document.getElementById('js-add-selection')
 );
 
@@ -205,3 +218,54 @@ var annotations = (function( annotations ){
         });
     }
 })(document.getElementById('eye-toggle'));
+
+/* -----------------------------------------------------------------------------
+	ANNOTATE ARTICLE
+
+		This fetches and wraps annotations in the article.
+*/
+(function( target ){
+
+	function annotate( element, values ){
+		if(element.tagName!='A'){
+			var content = '';
+			for( var i = 0; i < element.childNodes.length; i++ ){
+				var node = element.childNodes[i];
+				switch( node.nodeType ){
+					case 1:
+						node.innerHTML = annotate( node, values );
+						content += node.outerHTML;
+						break;
+					case 3:
+                        var regex = new RegExp(values.join('|'),'g');
+						content += node.nodeValue.replace(regex,function( value, index, text ){
+							return '<span class="annotation" name="' + value + '">' + value + '</span>';
+						});
+						break;
+					default:
+						break;
+				}
+			}
+			return content;
+		}
+		else {
+			return element.outerHTML;
+		}
+	}
+
+    var handle = new XMLHttpRequest();
+
+    handle.onload = function(){
+        if(this.status==200){
+            try {
+                var response = JSON.parse(this.responseText);
+                values = response
+                target.innerHTML = annotate( target, values );
+                annotations.refresh();
+            } catch(err){ console.log(err); }
+        }
+    }
+
+    handle.open("GET", '/article/' + DATA.id + '/annotate', true);
+    handle.send();
+})(document.getElementById('js-article-content'));

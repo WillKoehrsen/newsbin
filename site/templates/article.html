@@ -114,7 +114,7 @@
 						<td>fetched: {{ article.fetched.strftime('%Y-%m-%d') }}</td>
 					</tr>
 				</table>
-				<div class="article-content" id="js-capture-selection" aria-label="article content">
+				<div class="article-content" id="js-article-content" aria-label="article content">
 					{{ article.content|safe }}
 				</div>
 				<table class="information" aria-hidden="true">
@@ -130,6 +130,13 @@
 				</div>
 			</div>
 		</div>
+
+		<script>
+			DATA = {
+				id:{{ article.id }},
+			}
+		</script>
+
 		<!-- External Javascript -->
 		<script src="/static/js/ui.js"></script>
 		<script src="/static/js/article.js"></script>

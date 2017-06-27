@@ -1,140 +1,156 @@
-import regex
 import requests
-import sys
-
+from lxml import html
+from lxml import etree
+from lxml.cssselect import CSSSelector
 from unidecode import unidecode
-from bs4 import BeautifulSoup
-from datetime import datetime
-from dateutil.parser import parse
 
-# -------------------------------
-# ADD FILTERS FOR:
-#	The Economist				http://www.economist.com/rss
-#	BBC							http://www.bbc.com/news/10628494
-# 	Wall Street Journal			http://www.wsj.com/public/page/rss_news_and_feeds.html
-
+# ------------------------------------------------------------------------------
+# Filter Class
+#   This class is used to pick article content out of
+#   webpages with a css selector.
 class Filter:
-	source_name = ''
 
-	content_selectors = ()
-	author_selectors = ()
-	date_selectors = ()
+    def __init__( self, *args, **kwargs ):
+        """Filter article text from news websites.
 
-	def process( self, content ):
-		soup = BeautifulSoup(content, 'html.parser')
-		result = {'keywords':'','author':'','content':'','fetched':datetime.utcnow()}
+        This class should be initialized with a string containing a comma separated
+        series of valid CSS3 selectors that represent the top-level blocks from which
+        to capture plain text.
 
-		for selector in self.content_selectors:
-			matches = soup.select( selector )
-			if matches:
-				for match in matches:
-					result['content'] += '{}\n\n'.format( unidecode( match.text ) )
-				break
+        Keyword arguments:
+            (str)   css:            CSS3 selector   (required)
+            (tuple) whitelist:      HTML tags       (optional)
+            (tuple) attr_whitelist: Attribute names (optional)
 
-		for selector in self.author_selectors:
-			matches = soup.select( selector )
-			if matches:
-				result['author'] = unidecode( matches[0]['content'] ).strip()
-				break
+        """
 
-		result['content'] = result['content'].strip()
-		return result
+        # we need css selectors in order to parse articles
+        self.css = CSSSelector( kwargs['css'] )
+
+        # the whitelist is for child elements we want to retain
+        # html for
+        self.whitelist = kwargs.get('whitelist',('a','b','i','em','cite','br'))
+
+        # attribute whitelist- other attributes on whitelisted
+        # elements are discarded by __process
+        self.attr_whitelist = kwargs.get('attr_whitelist',('href'))
+
+    def __call__( self, document, url ):
+        """Filter article content from raw html"""
+        # turn the raw html into an etree
+        root = html.fromstring(document)
+        root.make_links_absolute(url)
+
+        content = []
+
+        # if we have a selector and a whitelist
+        # then we can work.
+        if self.css and self.whitelist:
+
+            # get each matching block that we want
+            # the text from
+            for block in self.css(root):
+
+                # parse out the text and whitelisted html
+                para = self.__parse(block)
+
+                # if we got something, keep it
+                if para: content.append( para )
+
+        # return a list of paragraphs
+        return content
+
+    def __parse( self, block ):
+        """Parse a single top-level block"""
+
+        # if there is leading text, get it, otherwise empty
+        if block.text:
+            result = unidecode(block.text)
+        else:
+            result = ''
+
+        # for each child element in the block-
+        for child in block:
+
+            # if we want to keep the html, then strip the attributes (__process)
+            # and convert to a string.
+            if child.tag in self.whitelist:
+                result += unidecode( etree.tostring( self.__process(child), with_tail=False, encoding='unicode', method='html' ) )
+            else:
+                result += child.text_content()
+
+            # if there is trailing text, decode and append it
+            if child.tail and child.tail.strip():
+                result += unidecode( child.tail )
+
+        return result.strip()
+
+    def __subparse( self, element ):
+        pass
+
+    def __process( self, element ):
+        """Process attributes of a link"""
+
+        # if we haven't determined that we want
+        # the attribute, get rid of it.
+        for attr in element.attrib:
+            if attr not in self.attr_whitelist:
+                element.attrib.pop(attr)
+
+        # return the element
+        return element
 
 # ------------------------------------------------------------------------------
-# cnn filter
-class CNN( Filter ):
-	source_name = 'cnn'
+# Custom filters
+#   Add new filters by finding the css selector necessary
+#   to pick out the top-level blocks of the article text.
+sources = {
+    'cnn':Filter(css='.zn-body__paragraph, #storytext p'),
+    'cnbc':Filter(css='div[itemprop=articleBody]>p, .article-body>p'),
+    'nytimes':Filter(css='.story-body-text.story-content'),
+    'washpo':Filter(css='article[itemprop=articleBody]>p, .row .span8>p:not(.interstitial-link), article.pg-article>p:not(.interstitial-link)'),
+    'reuters':Filter(css='#article-text>p, #article-text>.article-prime'),
+    'foxnews':Filter(css='.article-text>p, .article-body>p')
+}
 
-	content_selectors = (
-		'.zn-body__paragraph',
-		'#storytext p'
-	)
-
-	author_selectors = (
-		'meta[itemprop=author]',
-		'meta[name=author]'
-	)
-
-# ------------------------------------------------------------------------------
-# cnbc filter
-class CNBC( Filter ):
-	source_name = 'cnbc'
-
-	content_selectors = (
-		'div[itemprop="articleBody"] p',
-		'.article-body p',
-	)
-
-	author_selectors = (
-		'meta[name=author]',
-	)
-
-# ------------------------------------------------------------------------------
-# nyt filter
-class NYTimes( Filter ):
-	source_name = 'nytimes'
-
-	content_selectors = (
-		'.story-body-text.story-content',
-	)
-
-	author_selectors = (
-		'meta[name=author]',
-	)
-
-class WashingtonPost( Filter ):
-	source_name = 'washingtonpost'
-
-	content_selectors = (
-		'article[itemprop=articleBody] p',
-	)
-
-	author_selectors = (
-	)
-
-class Reuters( Filter ):
-	source_name = 'reuters'
-
-	content_selectors = (
-		'#article-text p',
-	)
-
-	author_selectors = (
-		'meta[name=Author]',
-	)
-
-class FoxNews( Filter ):
-	source_name = 'foxnews'
-
-	content_selectors = (
-		'.article-text p',
-	)
-
-	author_selectors = (
-		'meta[name="dc.creator"]',
-	)
-
-def all():
-	return [ child.source_name for child in Filter.__subclasses__() if child.source_name ]
-
-def string():
-	return '|'.join([ child.source_name for child in Filter.__subclasses__() if child.source_name ])
-
-def lookup( clsname ):
-	for child in Filter.__subclasses__():
-		if child.source_name == clsname:
-			return child()
-
-def exists( clsname ):
-	for child in Filter.__subclasses__():
-		if child.source_name == clsname:
-			return True
-	return False
 
 if __name__=='__main__':
-	response = requests.get( 'http://www.cnbc.com/2017/03/22/trump-sees-obamacare-replacement-passing-house-vote-needs-to-happen.html' )
-	test = CNBC()
-	result = test.process( response.content )
-	print(result['author'])
-	print(result['keywords'])
-	print(result['content'])
+    import defaults
+    import feedparser
+
+    limit = 20
+    count = 0
+    links = {}
+    for source, feed, tags in defaults.sources:
+        if source not in links:
+            links[source] = []
+
+        if source in sources:
+            data = feedparser.parse(feed)
+            for item in data['items']:
+                links[source].append( (item['link'],item['title'],'item{}'.format(count)) )
+                count += 1
+
+    with open('/home/mhouse/Projects/python/output.html','w') as out:
+        out.write('<style>div{ width:500px; margin:10px auto 10px auto; }</style>')
+
+        out.write('<div>')
+        for source in links:
+            if source in sources:
+                out.write('<h1>{}</h1>'.format(source))
+                for idx, item in enumerate(links[source]):
+                    link, title, tag = item
+                    if idx <= limit:
+                        out.write( '<a href="#{}">{}</a><br/><br/>'.format(tag,title) )
+
+        out.write('</div>')
+        out.write('<br/><hr/><br/>')
+
+        for source in links:
+            if source in sourcelist:
+                for idx, item in enumerate(links[source]):
+                    link, title, tag = item
+                    if idx <= limit:
+                        doc = requests.get(link).text
+                        content = ''.join([ '<p>{}</p>'.format(p) for p in sourcelist[source]( doc, link ) ])
+                        out.write('<div><a name="{}"></a><hr/><a href="{}" target="_blank"><h3>{}</h3></a>{}<hr/></div>'.format(tag,link,title,content))
