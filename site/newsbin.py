@@ -82,20 +82,23 @@ def article( pk ):
 		name = request.form.get('annotation',None)
 		add = 'add' in request.form
 		if pk:
-			with session_scope() as session:
-				article = session.query( models.Article ).get( pk )
+			try:
+				with session_scope() as session:
+					article = session.query( models.Article ).get( pk )
 
-				if add:
-					try:
-						utilities.summarize(name)
-					except Exception as e:
-						site_log.exception(e)
-					article.unblacklist_name( name )
-				else:
-					article.blacklist_name(name)
+					if add:
+						try:
+							utilities.summarize(name)
+						except Exception as e:
+							site_log.exception(e)
+						article.unblacklist_name( name )
+					else:
+						article.blacklist_name(name)
 
-				#article = utilities.annotate( article, session )
-				return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
+					#article = utilities.annotate( article, session )
+					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
+			except Exception as e:
+				site_log.exception(e)
 		else:
 			site_log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
 			return abort(404)
