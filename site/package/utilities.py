@@ -59,7 +59,7 @@ def annotate( article, session ):
 
 def summarize( name ):
 	try:
-		summary = wikipedia.summary(name)
+		summary = wikipedia.summary(name.strip())
 		if summary:
 			with session_scope() as session:
 				summary = '\n\n'.join([ p for p in summary.split('\n') if p ])
