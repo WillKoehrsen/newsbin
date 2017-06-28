@@ -111,9 +111,8 @@ def annotate( pk ):
 			names = [ a.name for a in annotations if a.name not in article.get_blacklist() ]
 			return make_response( json.dumps(names) )
 	except Exception as e:
-		print(e)
-
-	return make_response()
+		site_log.exception('during annotate: '.format(e))
+	return abort(404)
 
 
 @app.route('/annotations', methods=['GET'])

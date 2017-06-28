@@ -25,7 +25,7 @@ var tooltips = (function( targets ){
                 tooltip = popup;
                 popup.classList.add("tooltip");
                 var msg = _event.target.getAttribute('tooltip');
-                if(msg.trim()){
+                if(msg){
                     popup.innerHTML = msg;
                     document.body.appendChild(popup);
 
@@ -48,9 +48,10 @@ var tooltips = (function( targets ){
             });
 
             element.addEventListener('mouseout',function( _event ){
-                if(tooltip){
+                if(tooltip && tooltip.parentNode){
                     tooltip.parentNode.removeChild(tooltip);
                 }
+                tooltip = null;
             });
     }
 
