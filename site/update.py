@@ -29,5 +29,18 @@ def update_annotations():
 			except Exception as e:
 				print(e)
 
+def fetch():
+	response = requests.get('https://api.github.com/repos/mjhouse/newsbin/commits')
+	data = json.loads(response.text)
+	commits = []
+	for block in data:
+		commit = {
+			'author':block['commit']['author']['name'],
+			'message':block['commit']['message'],
+			'date':parse(block['commit']['author']['date'])
+		}
+		commits.append(commit)
+	pp.pprint(commits)
+
 if __name__=='__main__':
 	update_annotations()
