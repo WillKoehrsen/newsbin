@@ -75,7 +75,7 @@ def article( pk ):
 					blacklist = ''
 				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now())
 			except Exception as e:
-				site_log.exception(e)
+				log.exception(e)
 				raise
 
 	elif request.method == 'POST':
@@ -90,7 +90,7 @@ def article( pk ):
 						try:
 							utilities.summarize(name)
 						except Exception as e:
-							site_log.exception(e)
+							log.exception(e)
 						article.unblacklist_name( name )
 					else:
 						article.blacklist_name(name)
@@ -98,9 +98,9 @@ def article( pk ):
 					#article = utilities.annotate( article, session )
 					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
 			except Exception as e:
-				site_log.exception(e)
+				log.exception(e)
 		else:
-			site_log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
+			log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
 			return abort(404)
 	else:
 		return abort(404)
@@ -114,7 +114,7 @@ def annotate( pk ):
 			names = [ a.name for a in annotations if a.name not in article.get_blacklist() ]
 			return make_response( json.dumps(names) )
 	except Exception as e:
-		site_log.exception('during annotate: '.format(e))
+		log.exception('during annotate: '.format(e))
 	return abort(404)
 
 
@@ -138,7 +138,7 @@ def annotations():
 					print(slug)
 					if slug: annotation.update(slug=slug)
 			except Exception as e:
-				site_log.exception(e)
+				log.exception(e)
 				return abort(404)
 
 		table_items = []
