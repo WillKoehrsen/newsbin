@@ -68,7 +68,6 @@ def article( pk ):
 		with session_scope() as session:
 			try:
 				article = session.query( models.Article ).get( pk )
-				#article = utilities.annotate( article, session )
 				if article.blacklist:
 					blacklist = article.blacklist.replace(';',', ')
 				else:
@@ -87,15 +86,10 @@ def article( pk ):
 					article = session.query( models.Article ).get( pk )
 
 					if add:
-						try:
-							utilities.summarize(name)
-						except Exception as e:
-							log.exception(e)
+						utilities.summarize(name)
 						article.unblacklist_name( name )
 					else:
 						article.blacklist_name(name)
-
-					#article = utilities.annotate( article, session )
 					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
 			except Exception as e:
 				log.exception(e)
@@ -111,11 +105,15 @@ def annotate( pk ):
 		with session_scope() as session:
 			article = session.query( models.Article ).get( pk )
 			annotations = session.query( models.Annotation ).filter( literal(article.content).contains(models.Annotation.name)).all()
-			names = [ a.name for a in annotations if a.name not in article.get_blacklist() ]
-			return make_response( json.dumps(names) )
+			data = {
+				'annotations':[ a.name for a in annotations if a.name not in article.get_blacklist() ],
+				'blacklist':article.get_blacklist(),
+			}
+			return make_response( json.dumps(data) )
 	except Exception as e:
-		log.exception('during annotate: '.format(e))
-	return abort(404)
+		log.exception('at /article/<int:pk>/annotate: '.format(e))
+		return abort(404)
+
 
 
 @app.route('/annotations', methods=['GET'])
@@ -135,7 +133,6 @@ def annotations():
 				annotation = utilities.summarize(name)
 				if annotation.name:
 					rating, slug = politifact.get_rating(name=annotation.name)
-					print(slug)
 					if slug: annotation.update(slug=slug)
 			except Exception as e:
 				log.exception(e)

@@ -58,15 +58,15 @@ def annotate( article, session ):
 	return article
 
 def summarize( name ):
-	summary = wikipedia.summary(name)
-	if summary:
-		summary = '\n\n'.join([ p for p in summary.split('\n') if p ])
-		image_url = get_thumbnail( name )
-		annotation = Annotation(name=name,summary=summary,image=image_url)
-		with session_scope() as session:
-			try:
+	try:
+		summary = wikipedia.summary(name)
+		if summary:
+			with session_scope() as session:
+				summary = '\n\n'.join([ p for p in summary.split('\n') if p ])
+				image_url = get_thumbnail( name )
+				annotation = Annotation(name=name,summary=summary,image=image_url)
 				session.add( annotation )
-				session.commit()
-			except:
-				session.rollback()
-		return annotation
+				return annotation
+	except Exception as e:
+		print(e)
+		return None

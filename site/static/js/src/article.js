@@ -259,8 +259,7 @@ var annotations = (function(){
         if(this.status==200){
             try {
                 var response = JSON.parse(this.responseText);
-                values = response
-                target.innerHTML = annotate( target, values );
+                target.innerHTML = annotate( target, response.annotations );
                 annotations.refresh();
             } catch(err){ console.log(err); }
         }
