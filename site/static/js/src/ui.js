@@ -64,20 +64,9 @@ var tooltips = (function( targets ){
         }
     }
 
-    targets.forEach(function( target ){
+    for( var i = 0; i < targets.length; i++ ){
         make_tooltip( target );
-    });
+    }
 
     return handler;
-})([...document.querySelectorAll('[tooltip]')]);
-
-/*
-(function( item ){
-    item.addEventListener('click',function( _event ){
-        if(sessionStorage.length > 0){
-            console.log('items in session');
-            _event.preventDefault();
-        }
-    });
-})(document.getElementById('js-check-submit'));
-*/
+})(document.querySelectorAll('[tooltip]'));
