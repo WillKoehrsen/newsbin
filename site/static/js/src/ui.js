@@ -65,7 +65,7 @@ var tooltips = (function( targets ){
     }
 
     for( var i = 0; i < targets.length; i++ ){
-        make_tooltip( target );
+        make_tooltip( targets[i] );
     }
 
     return handler;
