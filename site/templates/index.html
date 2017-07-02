@@ -14,7 +14,7 @@
 	</head>
 	<body>
 		<noscript class="noscript-notification">
-			some site functionality won't be available without <a href="http://www.enable-javascript.com/" target="_blank">javascript</a> enabled.
+			some site functionality won't be available without <a href="http://www.enable-javascript.com/" target="_blank" rel="noopener">javascript</a> enabled.
 			<style>
 				.container {
 					margin-top:40px;
@@ -32,51 +32,7 @@
 				</div>
 			</div>
 
-			<form action="/" method="get" class="sub-container side-container" id="js-menu" role="form">
-				<div class="block sources" id="js-fit-height" role="menu" aria-label="news source selection">
-					<div class="header" tooltip="filter news by the source">Sources</div>
-					<label id="all_label" for="all_check" class="option-item" role="menuitem">All<input type="checkbox" id="all_check" name="all" checked></label>
-					<label id="cnn_label" for="cnn_check" class="option-item" role="menuitem">CNN<input type="checkbox" id="cnn_check" name="cnn" checked></label>
-					<label id="cnbc_label" for="cnbc_check" class="option-item" role="menuitem">CNBC<input type="checkbox" id="cnbc_check" name="cnbc" checked></label>
-					<label id="foxnews_label" for="foxnews_check" class="option-item" role="menuitem">Fox News<input type="checkbox" id="foxnews_check" name="foxnews" checked></label>
-					<label id="nytimes_label" for="nytimes_check" class="option-item" role="menuitem">New York Times<input type="checkbox" id="nytimes_check" name="nytimes" checked></label>
-					<label id="reuters_label" for="reuters_check" class="option-item" role="menuitem">Reuters<input type="checkbox" id="reuters_check" name="reuters" checked></label>
-					<label id="washingtonpost_label" for="washingtonpost_check" class="option-item" role="menuitem">Washington Post<input type="checkbox" id="washingtonpost_check" name="washpo" checked></label>
-				</div>
-
-				<div class="block">
-					<div class="header">Categories</div>
-					<div class ="category-bar">
-						<select name="category" class="category-input" id="category-input" tooltip="filter news by category" aria-label="news category selection">
-							<option value="all">All</option>
-							{% for option in categories %}
-							<option value="{{ option|lower }}">{{ option|capitalize }}</option>
-							{% endfor %}
-						</select>
-					</div>
-				</div>
-
-				<div class="block">
-					<div class="header">Search</div>
-					<div class="search-bar">
-						<input class="search-input" id="search-input" type="text" name="search" placeholder="Search" tooltip="search for keywords in the title or article" role="search">
-					</div>
-					<div class="result-bar">
-						<input class="count-input" id="count-input" type="number" placeholder="Results (max 1000)" name="count" tooltip="number of results to fetch" aria-label="number of results to fetch">
-					</div>
-				</div>
-
-				<div class="block">
-					<input class="search-submit" type="submit" value="Apply">
-				</div>
-
-				<div class="block" role="navigation">
-					<div class="header">Navigation</div>
-					<a href="/about" class="item">About</a>
-					<a href="https://github.com/mjhouse/newsbin" target="_blank" class="item">Github</a>
-				</div>
-
-			</form>
+			{% include 'menu.html' %}
 
 			<div class="sub-container main-container" id="js-titlecard-list" role="main">
 				{% for article in articles %}
@@ -84,17 +40,19 @@
 							<a href="/article/{{ article.id }}" class="title-link">{{ article.title }}</a>
 							<table class="information">
 								<tr>
-									<td><a href="{{ article.link }}" target="_blank">on {{ article.source }}</a></td>
-									<td>author: {{ article.author if article.author  else 'unknown' }}</td>
+									<td>on <a href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_label() }}</a></td>
 									<td>fetched: {{ article.fetched.strftime('%Y-%m-%d') }}</td>
+									<td></td>
+									<td></td>
 								</tr>
 							</table>
 						</div>
 				{% endfor %}
-				<div class="footer" role="contentinfo">
-					newsbin &copy; <span id="js-year"></span> Michael House
-				</div>
 			</div>
+
+			<!--<div class="footer" role="contentinfo">
+				newsbin &copy; <span id="js-year"></span> Michael House
+			</div>-->
 
 		</div>
 

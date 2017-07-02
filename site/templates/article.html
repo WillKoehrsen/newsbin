@@ -15,7 +15,7 @@
 	</head>
 	<body>
 		<noscript class="noscript-notification">
-			some site functionality won't be available without <a href="http://www.enable-javascript.com/" target="_blank">javascript</a> enabled.
+			some site functionality won't be available without <a href="http://www.enable-javascript.com/" target="_blank" rel="noopener">javascript</a> enabled.
 			<style>
 				.container {
 					margin-top:40px;
@@ -83,23 +83,12 @@
 					<table>
 						<tr>
 							<td>Source:</td>
-							<td aria-label="news source"><a href="{{ article.link }}" target="_blank">{{ article.source }}</a></td>
-						</tr>
-						<tr>
-							<td>Author(s):</td>
-							<td aria-label="article author">{{ article.author if article.author else 'unknown' }}</td>
+							<td aria-label="news source"><a href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_label() }}</a></td>
 						</tr>
 						<tr>
 							<td>Fetched:</td>
 							<td aria-label="date fetched">{{ article.fetched.strftime('%Y-%m-%d') }}</td></tr>
 					</table>
-				</div>
-
-				<div class="block" role="navigation">
-					<div class="header">Navigation</div>
-					<a href="/" class="item">Main</a>
-					<a href="/about" class="item">About</a>
-					<a href="https://github.com/mjhouse/newsbin" target="_blank" class="item">Github</a>
 				</div>
 
 			</div>
@@ -108,10 +97,10 @@
 				<div class="article-title" aria-label="article title">{{ article.title }}</div>
 				<table class="information" aria-label="article information">
 					<tr>
-						<td>original: <a href="{{ article.link }}" target="_blank" aria-label="original article">link</a></td>
-						<td>author: {{ article.author }}</td>
-						<td>source: {{ article.source }}</td>
+						<td>on <a href="{{ article.link }}" target="_blank" rel="noopener" aria-label="original article">{{ article.get_label() }}</a></td>
 						<td>fetched: {{ article.fetched.strftime('%Y-%m-%d') }}</td>
+						<td></td>
+						<td></td>
 					</tr>
 				</table>
 				<div class="article-content" id="js-article-content" aria-label="article content">
@@ -119,7 +108,7 @@
 				</div>
 				<table class="information" aria-hidden="true">
 					<tr>
-						<td>original: <a href="{{ article.link }}" target="_blank">link</a></td>
+						<td>on <a href="{{ article.link }}" target="_blank" rel="noopener" aria-label="original article">{{ article.get_label() }}</a></td>
 						<td>id: {{ article.id }}</td>
 						<td></td>
 						<td></td>

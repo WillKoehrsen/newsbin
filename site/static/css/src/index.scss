@@ -11,10 +11,6 @@
 	animation: pop-enter $time ease-out $delay 1 forwards;
 }
 
-@font-face {
-  font-family: 'Open Sans';
-  src: url('/static/font/Open_Sans/OpenSans-Regular.ttf')  format('truetype');
-}
 
 /* mobile breakpoints */
 $mobile_width:500px;
@@ -22,8 +18,7 @@ $mobile_width:500px;
 body {
 	padding:0;
 	margin:0;
-	font-family: 'Open Sans', sans-serif;
-	/*
+
 	font-family: -apple-system,
 			 BlinkMacSystemFont,
 			 "Segoe UI",
@@ -34,7 +29,7 @@ body {
 			 "Open Sans",
 			 "Helvetica Neue",
 			 sans-serif;
-	*/
+
 	background-color: #faf8f6;
 }
 
@@ -126,8 +121,6 @@ body {
 .main-container {
 	flex:4;
 	padding:0 10px 0px 10px;
-	border-right:1px solid lightgrey;
-	border-left:1px solid lightgrey;
 	margin-left: 5px;
 
 	.footer {
@@ -203,15 +196,15 @@ body {
 		/* checked x-option */
 		.mark {
 			border-right:3px solid #0d930f;
-			background-color: rgba(0,0,0,0.03);
+			background-color: white;
 		}
 
-		.search-bar, .result-bar, .category-bar {
+		.search-bar, .category-bar {
 			padding:5px 3px 5px 5px;
 			text-align: center;
 		}
 
-		.search-input, .count-input, .category-input {
+		.search-input, .category-input {
 			padding:3px;
 			border:1px solid lightgrey;
 			width:95%;
@@ -226,8 +219,8 @@ body {
 		}
 
 		.search-submit {
-			height:35px;
-			line-height:35px;
+			height:40px;
+			line-height:30px;
 			background-color:#388E3C;
 			color:white;
 			width:100%;
@@ -238,6 +231,7 @@ body {
 			border:none;
 			cursor:pointer;
 			transition: all .2s ease-in-out;
+			padding:5px 0 5px 0;
 
 			/* to stop safari from trying to style my buttons */
 			-webkit-appearance:none;
@@ -289,9 +283,18 @@ body {
 	}
 }
 
+.the-end {
+	font-size: 1.25em;
+	color:grey;
+	text-align: center;
+	height:200px;
+	display:flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .titlecard {
 	border-radius:3px;
-	border: 1px solid rgba(0,0,0,0.7);
 	padding:10px;
 	background-color: white;
 	box-shadow: 2px 2px 5px rgba(0,0,0,0.20);

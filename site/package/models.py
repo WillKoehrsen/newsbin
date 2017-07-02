@@ -3,6 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 import json
 
+from package import defaults
+
 # ------------------------------------------------------------------------------
 # HOUSEKEEPING
 Base = declarative_base()
@@ -45,8 +47,10 @@ class Article(Base):
 		plist = [ n for n in self.get_blacklist() if n != name ]
 		self.set_blacklist( plist )
 
-	def serialize( self ):
-		variables = { str(key):str(value) for key,value in vars( self ).items() if not key.startswith('_') }
+	def serialize( self, **kwargs ):
+		excludes = kwargs.get('exclude',())
+		variables = { str(key):str(value) for key,value in vars( self ).items() if not key.startswith('_') and not key in excludes }
+		variables['label'] = self.get_label()
 		return json.dumps( variables )
 
 	def deserialize( self, variables ):
@@ -56,6 +60,9 @@ class Article(Base):
 				self.__setattr__( key, value )
 		except ValueError as e:
 			raise
+
+	def get_label( self ):
+		return defaults.labels.get(self.source,None)
 
 class Annotation(Base):
 	__tablename__ = 'annotations'

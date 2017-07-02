@@ -160,3 +160,95 @@ var options = (function( buttons ){
 	document.getElementById('js-mobile-menu'),
 	document.getElementById('js-menu')
 );
+
+/* -----------------------------------------------------------------------------
+	INFINITE SCROLL
+
+		When the viewer gets close to the bottom of the page, we add new content
+*/
+(function( list ){
+    // function-global variables
+    var articles = []
+    var fetching = false;
+    var page = parseInt(window.location.pathname.replace('/','')) || 0;
+    var the_end = false;
+    var end_msg = 'no more articles here, sorry :/';
+
+    // functions
+    function fetch_next_page(){
+        if(!fetching){
+            fetching = true;
+            page = page+1;
+            var handle = new XMLHttpRequest();
+            handle.onload = function(){
+                if(this.status==200){
+                    var response = JSON.parse(this.responseText);
+                    for( var i = 0; i < response.length; i++ ){
+                        var article = JSON.parse(response[i]);
+                        astr =  '<a href="/article/'+ article.id +'" class="title-link">'+ article.title +'</a>' +
+                                '<table class="information">' +
+                                    '<tr>'+
+                                        '<td><a href="'+ article.link +'" target="_blank" rel="noopener">on '+ article.label +'</a></td>' +
+                                        '<td>fetched: '+ article.fetched.split(' ')[0] +'</td>' +
+                                        '<td></td><td></td>'
+                                    '</tr>' +
+                                '</table>';
+                        aobj = document.createElement('div');
+                        aobj.classList.add("titlecard");
+                        aobj.innerHTML = astr;
+                        articles.push(aobj);
+                    }
+                    update_url( page );
+                }
+                else {
+                    var endblock = document.createElement('div');
+                    endblock.classList.add('the-end');
+                    endblock.innerHTML = end_msg;
+                    list.appendChild(endblock);
+                    the_end = true;
+                }
+
+                fetching = false;
+            }
+            handle.open("GET", '/titles/' + page, true);
+            handle.send();
+        }
+    }
+
+    function update_url( num ){
+        var sobj = {};
+        history.replaceState(sobj, "page " + num, num + window.location.search);
+    }
+
+    function load_next_card(){
+        if(!the_end){
+            if(articles.length == 0){
+                fetch_next_page();
+            }
+            // we have articles we can insert
+            var timed = window.setInterval(function(){
+                if(articles.length > 0){
+                    var article = articles.shift();
+                    list.appendChild(article);
+                }
+                else {
+                    window.clearInterval(timed);
+                }
+            },250);
+        }
+    }
+
+    function get_scroll_position(){
+        var pos     = window.pageYOffset + window.innerHeight;
+        var bottom  = document.body.offsetHeight;
+        return bottom-pos;
+    }
+
+    // triggering event
+	window.addEventListener('scroll',function( _event ){
+        var remaining = get_scroll_position();
+        if(remaining<100){
+            load_next_card();
+        }
+    });
+})(document.getElementById('js-titlecard-list'));

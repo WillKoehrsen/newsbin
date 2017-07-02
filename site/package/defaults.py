@@ -117,8 +117,8 @@ sources = [
 labels = {
 	'cnn':'CNN',
 	'cnbc':'CNBC',
-	'nytimes':'New York Times',
-	'washpo':'Washington Post',
+	'nytimes':'The New York Times',
+	'washpo':'The Washington Post',
 	'reuters':'Reuters',
 	'foxnews':'Fox News',
 }

@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template, make_response, abort
+from flask import Flask, request, render_template, make_response, abort, redirect
+from flask import session as user_data
 
 import regex
 import os
@@ -15,30 +16,29 @@ from package import defaults
 
 log = logging.getLogger('newsbin.site')
 app = Flask(__name__)
+app.secret_key = 'DEVELOPMENT'
 
 @app.route('/', methods=['GET'])
-def index():
+@app.route('/<int:page>', methods=['GET'])
+def index( page=0 ):
 	options = request.values.to_dict()
 	sources = filters.sources.keys()
 
-	# count defaults to 100 if empty or not given
-	count = int(options.get('count',100) or 100)
-
-	# if there are no sources in arguments, all sources are set
-	if set(sources).isdisjoint(set(options)):
-		options.update({ key:'on' for key in sources })
+	page_size = 20
+	end = page*page_size + page_size
 
 	with session_scope() as session:
 		category = options.get('category','all')
-		search, pattern = options.get('search',''), None
-		if search.startswith('re:'): pattern = regex.compile( search.split(':',1)[1] )
+		search = options.get('search','')
+		sources = [ s for s in sources if s in options ] or list(sources)
+
 
 		# the base query is just a filter to make sure the sources are
 		# what was requested and orders them by date. Note that we don't
 		# care about the 'all' option- it's just a javascript hook to set
 		# the other values in the search form.
 		articles = session.query( models.Article )\
-			.filter( models.Article.source.in_(options) )\
+			.filter( models.Article.source.in_(sources) )\
 			.order_by( models.Article.fetched.desc() )
 
 		# if they have selected a category, add a filter that tests to make sure that category is
@@ -46,15 +46,19 @@ def index():
 		if category != 'all':
 			articles = articles.filter( models.Article.category.contains(category) )
 
-		# if there is a regular expression, we have to fetch all of the articles and then apply the pattern
-		# this is probably really slow, but it won't happen often. A regular search term will use the sqlalchemy
-		# query api, which is probably a lot faster.
-		if pattern:
-			articles = [ a for a in articles.all() if pattern.search(a.title) or pattern.search(a.content) ][:count]
-		else:
-			articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
-				.slice(0,count)\
-				.all()
+		# check for the search string in the title and content and then execute the query
+		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
+			.slice(0,end)\
+			.all()
+
+		data = {
+			'page':0,
+			'category':category,
+			'search':search,
+			'sources':sources,
+		}
+		user_data.clear()
+		user_data['last_search'] = data
 
 		return render_template('index.html', articles=articles, categories=defaults.default_categories(), date=datetime.datetime.now())
 
@@ -62,6 +66,41 @@ def index():
 	# couldn't get a session for some reason
 	return abort(404)
 
+@app.route('/titles/<int:page>', methods=['GET'])
+def titles( page ):
+	page_size = 20
+	start = page*page_size
+	end = start + page_size
+	sources = filters.sources.keys()
+	options = user_data['last_search']
+
+	with session_scope() as session:
+		category = options.get('category','all')
+		search = options.get('search','')
+		sources = options.get('sources',None) or sources
+
+		articles = session.query( models.Article )\
+			.filter( models.Article.source.in_(sources) )\
+			.order_by( models.Article.fetched.desc() )
+
+		if category != 'all':
+			articles = articles.filter( models.Article.category.contains(category) )
+
+		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
+			.slice(start,end)\
+			.all()
+
+		data = [ a.serialize(exclude=('content')) for a in articles ]
+		if data:
+			return make_response( json.dumps(data) )
+
+	return abort(404)
+
+# ------------------------------------------------------------------------------
+# ANNOTATIONS
+# 	This view returns articles complete with the article
+#	blacklist. If called as POST, this view is used to
+#	submit new annotations for consideration.
 @app.route('/article/<int:pk>', methods=['GET','POST'])
 def article( pk ):
 	if request.method == 'GET':
@@ -99,6 +138,11 @@ def article( pk ):
 	else:
 		return abort(404)
 
+# ------------------------------------------------------------------------------
+# ANNOTATIONS
+# 	These routes handle fetching info about annotations
+#		1. annotate:		fetch annotations for article
+#		2. annotations: 	get annotation data for modal
 @app.route('/article/<int:pk>/annotate', methods=['GET'])
 def annotate( pk ):
 	try:
