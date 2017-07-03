@@ -47,15 +47,18 @@ class Filter:
         # then we can work.
         if self.css and self.whitelist:
 
-            # get each matching block that we want
-            # the text from
-            for block in self.css(root):
+            try:
+                # get each matching block that we want
+                # the text from
+                for block in self.css(root):
 
-                # parse out the text and whitelisted html
-                para = self.__parse(block)
+                    # parse out the text and whitelisted html
+                    para = self.__parse(block)
 
-                # if we got something, keep it
-                if para: content.append( para )
+                    # if we got something, keep it
+                    if para: content.append( para )
+            except Exception as e:
+                log.warning('{} in filter at: {}'.format(type(e),url))
 
         # return a list of paragraphs
         return content
@@ -96,6 +99,10 @@ class Filter:
         for attr in element.attrib:
             if attr not in self.attr_whitelist:
                 element.attrib.pop(attr)
+
+        if element.tag == 'a':
+            element.attrib['target'] = '_blank'
+            element.attrib['rel'] = 'noopener'
 
         # return the element
         return element
