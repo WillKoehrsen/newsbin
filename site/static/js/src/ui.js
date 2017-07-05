@@ -70,3 +70,14 @@ var tooltips = (function( targets ){
 
     return handler;
 })(document.querySelectorAll('[tooltip]'));
+
+function expand( element ){
+    element.classList.toggle('active');
+    var others = document.getElementsByClassName('active');
+    for(var i = 0; i < others.length; i++ ){
+        var item = others[i];
+        if(item!=element){
+            item.classList.remove('active');
+        }
+    }
+}

@@ -10,82 +10,92 @@ if (!NodeList.prototype.forEach) {
 
 /* -----------------------------------------------------------------------------
 	OPTIONS
-		This immediately invoked function operates over options in the left side
-		menu of the index and about pages and does the following:
-
-		1.	Shortcuts the input contained by the option (label) to the option.box
-			attribute.
-
-		2.	Adds an onchange event listener to the 'all' button as well as the
-			rest of the options that calls either 'all_label' (for all) or 'default'
-			(for the rest) on a change in value.
-
-		3.	'all_label' sets all other checkboxes to its own value.
-
-		4.	'default' checks that all options (aside from all) are checked, and
-			sets all or unsets all based on that.
+		This function handles the menus
 */
-var options = (function( buttons ){
-	var all = null;
-	var opts = [];
+(function( menus ){
+    function load( item ){
+        if(item.id in sessionStorage){ return sessionStorage.getItem(item.id)!='false'; }
+        else                         { return item.checked; }
+    }
 
-	// for each option button (left menu) . . .
-	for(var i = 0; i < buttons.length; i++){
+    for(var i = 0; i < menus.length; i++){
+        var menu = menus[i];
 
-		// sort them into 'all' or 'opts'
-		var item = buttons[i];
-		if(item.id=='all_label'){ all=item; }
-		else { opts.push(item); }
+        // handler for each menu
+        (function( all, opts ){
+            var options = new Array();
+            for(var i = 0; i < opts.length; i++)
+                options.push(opts[i]);
+            var all_options = new Array(all);
+            all_options.push.apply(all_options,options);
 
-		// shortcut the inner input (the checkbox) to an
-		// attribute for conveniance
-		item.box = item.getElementsByTagName('input')[0];
+            all_options.forEach(function(option){
+                option.box = option.getElementsByTagName('input')[0];
+                option.box.checked = load(option.box);
+                option.classList.toggle('mark',option.box.checked);
 
-        // if we have a value stored in sessionStorage,
-        // we need to load it.
-        if(item.box.id in sessionStorage){
-            item.box.checked = sessionStorage.getItem(item.box.id)!='false';
+                if(option==all){
+                    option.addEventListener('change',function(_event){
+                        var state = this.box.checked;
+                        options.forEach(function( item ){ item.box.checked = state; });
+                    });
+                }
+                else {
+                    option.addEventListener('change',function(_event){
+                        all.box.checked = options.every(function( item ){ return item.box.checked });
+                    });
+                }
+
+                option.addEventListener('change',function(_event){
+                    all_options.forEach(function(item){
+                        item.classList.toggle('mark',item.box.checked);
+                        window.sessionStorage.setItem(item.box.id,item.box.checked);
+                    });
+                });
+
+            });
+        })(
+            menu.getElementsByClassName('all')[0],
+            menu.getElementsByClassName('option')
+        );
+        // -----------------------
+    }
+})(document.getElementsByClassName('drop-down-menu'));
+
+(function( form ){
+    function process(_event){
+        _event.preventDefault();
+        var categories = form.querySelectorAll('.categories .option>input[type=checkbox]');
+        var sources = form.querySelectorAll('.sources .option>input[type=checkbox]');
+
+        var cat_arr = new Array();
+        var src_arr = new Array();
+
+        for(var i = 0; i < sources.length; i++){
+            var item = sources[i];
+            if(item.checked){
+                src_arr.push(item.getAttribute('no-name'));
+            }
         }
 
-        item.classList.toggle('mark',item.box.checked);
+        for(var i = 0; i < categories.length; i++){
+            var item = categories[i];
+            if(item.checked){
+                cat_arr.push(item.getAttribute('no-name'));
+            }
+        }
 
-		// on change, either call a custom handler, or the
-		// default option handler
-		item.addEventListener('change',function( _event ){
-			if ( this.id in handlers){ handlers[this.id]( this );}
-			else { handlers.default( this ); }
-		});
-	}
-	// define handlers for changing values
-	var handlers = {
+        document.getElementById('js-sources-str').value = src_arr.join('|');
+        document.getElementById('js-categories-str').value = cat_arr.join('|');
 
-		// the function sets all other options to the same value
-		// as the calling function, used by 'all'.
-		all_label:function( button ){
-			opts.forEach(function( item ){ item.box.checked = button.box.checked; });
-            this.update();
-		},
+        form.submit();
+        return false;
+    }
 
-		// this function updates 'all' on the status of the other
-		// options. (if they're all checked = set 'all' true, else
-		// false)
-		default:function( button ){
-			all.box.checked = opts.every(function( item ){ return item.box.checked });
-            this.update();
-		},
+    try     {form.addEventListener("submit", process, false);}
+    catch(e){form.attachEvent("onsubmit", process);}
 
-		// called on every change to update the mark class on each
-		// option so that styles apply.
-		update:function(){
-			for( var i=0 ; i<buttons.length ; i++ ){
-				var item = buttons[i];
-				item.classList.toggle('mark',item.box.checked);
-                window.sessionStorage.setItem(item.box.id,item.box.checked);
-			}
-		}
-	}
-
-})(document.getElementsByClassName('option-item'));
+})(document.getElementById('js-submit'));
 
 /* -----------------------------------------------------------------------------
 	SAVE INPUTS

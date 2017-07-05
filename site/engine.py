@@ -7,6 +7,7 @@ import signal
 
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
+from requests.exceptions import ConnectionError
 
 # ------------------------------------------------------------------------------
 # LOCALS
@@ -70,13 +71,15 @@ class NewsbinEngine:
 
 	def __crawl_article( self, item, meta ):
 		sfilter, source, category = meta
-		if item['title'] not in self.visited:
+		title = item.get('title')
+		link = item.get('link')
+		if title and title not in self.visited:
 			try:
 				# the title hasn't been fetched before, so try to add
 				# it to the database
 				with session_scope() as session:
 					# set initial values based off the rss item
-					article = models.Article( title=item['title'], link=item['link'], source=source, category=category )
+					article = models.Article( title=title, link=link, source=source, category=category )
 
 					# fetch and filter the article, and then update
 					# with additional information (content, for one)
@@ -93,6 +96,9 @@ class NewsbinEngine:
 
 			except IntegrityError as e:
 				pass
+
+			except ConnectionError as e:
+				log.warning('ConnectionError at: {}'.format(link))
 
 			except Exception as e:
 				log.exception('{} exception in __crawl_article'.format(type(e)))

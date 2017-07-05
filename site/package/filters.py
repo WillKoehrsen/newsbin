@@ -1,8 +1,12 @@
 import requests
+import logging
+
 from lxml import html
 from lxml import etree
 from lxml.cssselect import CSSSelector
 from unidecode import unidecode
+
+log = logging.getLogger('newsbin.engine')
 
 # ------------------------------------------------------------------------------
 # Filter Class

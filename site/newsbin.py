@@ -22,16 +22,16 @@ app.secret_key = 'DEVELOPMENT'
 @app.route('/<int:page>', methods=['GET'])
 def index( page=0 ):
 	options = request.values.to_dict()
-	sources = filters.sources.keys()
+	all_sources = defaults.default_sources()
+	all_categories = defaults.default_categories()
 
 	page_size = 20
 	end = page*page_size + page_size
 
 	with session_scope() as session:
-		category = options.get('category','all')
+		categories = [ c for c in options.get('categories','').split('|') if c ] or [ c[0] for c in all_categories ]
+		sources = [ s for s in options.get('sources','').split('|') if s ] or [ s[0] for s in all_sources ]
 		search = options.get('search','')
-		sources = [ s for s in sources if s in options ] or list(sources)
-
 
 		# the base query is just a filter to make sure the sources are
 		# what was requested and orders them by date. Note that we don't
@@ -39,12 +39,8 @@ def index( page=0 ):
 		# the other values in the search form.
 		articles = session.query( models.Article )\
 			.filter( models.Article.source.in_(sources) )\
+			.filter( models.Article.category.in_(categories) )\
 			.order_by( models.Article.fetched.desc() )
-
-		# if they have selected a category, add a filter that tests to make sure that category is
-		# in the results.
-		if category != 'all':
-			articles = articles.filter( models.Article.category.contains(category) )
 
 		# check for the search string in the title and content and then execute the query
 		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
@@ -53,14 +49,14 @@ def index( page=0 ):
 
 		data = {
 			'page':0,
-			'category':category,
-			'search':search,
+			'categories':categories,
 			'sources':sources,
+			'search':search,
 		}
 		user_data.clear()
 		user_data['last_search'] = data
 
-		return render_template('index.html', articles=articles, categories=defaults.default_categories(), date=datetime.datetime.now())
+		return render_template('index.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories())
 
 
 	# couldn't get a session for some reason
@@ -71,20 +67,19 @@ def titles( page ):
 	page_size = 20
 	start = page*page_size
 	end = start + page_size
-	sources = filters.sources.keys()
+	all_sources = [ s[0] for s in defaults.default_sources() ]
+	all_categories = [ c[0] for c in defaults.default_categories() ]
 	options = user_data['last_search']
 
 	with session_scope() as session:
-		category = options.get('category','all')
+		categories = options.get('categories') or all_categories
+		sources = options.get('sources') or all_sources
 		search = options.get('search','')
-		sources = options.get('sources',None) or sources
 
 		articles = session.query( models.Article )\
 			.filter( models.Article.source.in_(sources) )\
+			.filter( models.Article.categories.in_(categories) )\
 			.order_by( models.Article.fetched.desc() )
-
-		if category != 'all':
-			articles = articles.filter( models.Article.category.contains(category) )
 
 		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
 			.slice(start,end)\

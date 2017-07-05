@@ -65,14 +65,13 @@ body {
 
 	/* center the page */
 	margin: 0 auto 0 auto;
-	padding-top:20px;
 
 	/* transition for mobile */
 	transition:width 0.5s ease;
 
 	/* flex options */
 	display:flex;
-	flex-direction:row;
+	flex-direction:column;
 
 	.mobile-menu {
 		display:none;
@@ -117,17 +116,10 @@ body {
 	}
 }
 
-/* styles for both block and main */
-.sub-container {
-	/* side bar buttons */
+.main-container {
 	display:flex;
 	flex-direction:column;
-}
-
-.main-container {
-	flex:4;
-	padding:0 10px 0px 10px;
-	margin-left: 5px;
+	padding:0 10px 0 10px;
 
 	.footer {
 		width:100%;
@@ -142,154 +134,6 @@ body {
 		border:none;
 		margin-top:10px;
 		padding-top: 10vh;
-	}
-}
-
-.side-container {
-	flex:1;
-
-	@media screen and (max-width: $mobile_width) {
-		margin:0 auto 0 auto;
-		position:fixed;
-		top:calc(8vh + 2px);
-		left:0;
-		overflow-y: scroll;
-		overflow-x: hidden;
-		height:90vh;
-		width:90vw;
-		background-color: #faf8f6;
-		align-items: center;
-		z-index:1;
-
-		border:1px solid grey;
-		box-shadow:2px 2px 5px rgba(0,0,0,0.25);
-
-		margin-left: -91vw;
-		transition:margin-left 0.5s;
-	}
-
-	div {
-		@media screen and (max-width: $mobile_width) {
-			width:90%;
-		}
-	}
-
-	.block {
-		margin-bottom:10px;
-
-		/* header for each block */
-		.header {
-			color:black;
-			font-size:1.5em;
-			padding:5px 25px 5px 0;
-		}
-
-		/* option menu styles*/
-		.option-item {
-			display:block;
-			user-select:none;
-			cursor:pointer;
-			padding:5px 3px 5px 7px;
-			color:black;
-			text-decoration:none;
-			border-right:3px solid rgba(0,0,0,0.25);
-			transition:background-color 0.05s ease, border-right 0.1s ease;
-
-			input {	display:none; }
-			&:hover { background-color: white; }
-		}
-
-		/* checked x-option */
-		.mark {
-			border-right:3px solid #0d930f;
-			background-color: white;
-		}
-
-		.search-bar, .category-bar {
-			padding:5px 3px 5px 5px;
-			text-align: center;
-		}
-
-		.search-input, .category-input {
-			padding:3px;
-			border:1px solid lightgrey;
-			width:95%;
-
-			/* override category-input defaults */
-			background-color: white;
-			border-radius:none;
-
-			@media screen and (max-width: $mobile_width) {
-				min-width:10px;
-			}
-		}
-
-		.category-input {
-			width:100%;
-		}
-
-		.search-submit {
-			height:40px;
-			line-height:30px;
-			background-color:#388E3C;
-			color:white;
-			width:100%;
-			text-align:center;
-			font-weight:bold;
-			font-size:1.25em;
-			box-shadow: 2px 2px 5px rgba(0,0,0,0.25);
-			border:none;
-			cursor:pointer;
-			transition: all .2s ease-in-out;
-			padding:5px 0 5px 0;
-
-			/* to stop safari from trying to style my buttons */
-			-webkit-appearance:none;
-			-webkit-border-radius:none;
-					border-radius:none;
-
-			&:hover {
-				background-color:#3ea043;
-			}
-		}
-
-		.item {
-			user-select:none;
-			cursor:pointer;
-			display:block;
-			padding:5px 5px 5px 5px;
-			color:black;
-			text-decoration:none;
-			transition:background-color 0.1s ease;
-
-			&:hover {
-				background-color: white;
-			}
-		}
-
-		&:last-child {
-			@media screen and (max-width: $mobile_width) {
-					padding-bottom: 10px;
-			}
-		}
-
-	}
-
-	/*	hide/display additional info about article
-		on mobile. */
-	.information-block {
-		display:none;
-
-		@media screen and (max-width: $mobile_width) {
-			display:block;
-		}
-	}
-
-}
-
-.open {
-	@media screen and (max-width: $mobile_width) {
-		margin-left:0;
 	}
 }
 
@@ -373,6 +217,109 @@ body {
 
 	@include pop-in(0.2s,0.0s);
 }
+
+/* -----------------------------------------------------------------------------
+	MENU TEST */
+
+.menu {
+	display:flex;
+	font-size:0.8em;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+	padding:10px;
+
+	.sub-menu {
+		position:relative;
+		cursor:pointer;
+		user-select:none;
+		padding:5px 10px 5px 10px;
+
+		.drop-down-menu {
+			display:none;
+			width:200px;
+			left:0;
+			margin:4px 0 0 -1px;
+			border:1px solid black;
+			background-color:white;
+			box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+			z-index:1;
+		}
+
+	}
+
+	.active>.expand-me {
+		position:absolute;
+		display:flex;
+		flex-direction: column;
+	}
+
+	.active {
+		background-color: white;
+	}
+
+	.sources {
+		margin-right:20px;
+	}
+
+	.categories {
+		margin-right:auto;
+	}
+
+	.option-item {
+		padding:5px 10px 5px 10px;
+		cursor:pointer;
+		border-right:3px solid lightgrey;
+
+		&>input[type=checkbox] {
+			display:none;
+		}
+	}
+
+	.mark {
+		background-color: #f0f0f0;
+		border-right:3px solid #0d930f;
+	}
+
+	.search {
+		font-size:inherit;
+		border:none;
+		padding:5px;
+		margin-right:10px;
+		border-radius:1px;
+		background-color: transparent;
+		border: 1px solid transparent;
+		border-bottom: 1px solid rgba(0,0,0,0.25);
+		transition:background-color 0.25s ease-out, border 0.25s ease-out;
+
+		&:focus {
+			background-color: white;
+			border: 1px solid rgba(0,0,0,0.1);
+			border-bottom: 1px solid rgba(0,0,0,0.80);
+		}
+	}
+
+	.submit {
+		font-size:inherit;
+		cursor:pointer;
+		padding:5px 10px 5px 10px;
+		background-color:transparent;
+		border:none;
+
+		/* to stop safari from trying to style my buttons */
+		-webkit-appearance:none;
+		-webkit-border-radius:none;
+				border-radius:none;
+
+	}
+}
+
+/* 	MENU TEST
+------------------------------------------------------------------------------*/
+
+
+
+
 
 /* animations */
 @keyframes fade-enter {

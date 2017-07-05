@@ -121,15 +121,17 @@ labels = {
 	'washpo':'The Washington Post',
 	'reuters':'Reuters',
 	'foxnews':'Fox News',
+	'us':'U.S.',
 }
 
 def default_categories():
 	results = []
 	for source, feed, categories in sources:
 		for category in categories.split(','):
-			if category not in results:
-				results.append(category)
-	results = sorted(results)
+			result = ( category, labels.get(category,category.capitalize()) )
+			if result not in results:
+				results.append(result)
+	results = sorted(results,key=lambda x: x[1])
 	return results
 
 def default_feeds():
@@ -139,7 +141,7 @@ def default_feeds():
 def default_sources():
 	results = []
 	for source, feed, categories in sources:
-		result = ( source, labels[source] )
+		result = ( source, labels.get(source,source.capitalize()) )
 		if result not in results:
 			results.append(result)
 	results = sorted(results,key=lambda x: x[1])

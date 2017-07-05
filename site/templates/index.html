@@ -32,9 +32,49 @@
 				</div>
 			</div>
 
-			{% include 'menu.html' %}
+			<form class="menu" id="js-submit">
 
-			<div class="sub-container main-container" id="js-titlecard-list" role="main">
+				<input name="sources" id="js-sources-str" type="hidden">
+				<div class="sub-menu sources" onclick="expand( this );">
+					Sources
+					<div class="drop-down-menu expand-me">
+						<label class="option-item all">All<input type="checkbox" id="all_source_check" checked></label>
+						{% for source, label in sources %}
+						<label class="option-item option">{{ label }} <input id="{{ source }}_checkbox" type="checkbox" no-name="{{ source }}" checked></label>
+						{% endfor %}
+					</div>
+				</div>
+
+				<input name="categories" id="js-categories-str" type="hidden">
+				<div class="sub-menu categories" onclick="expand( this );">
+					Categories
+					<div class="drop-down-menu expand-me">
+						<label class="option-item all">All<input type="checkbox" id="all_category_check" checked></label>
+						{% for category, label in categories %}
+						<label class="option-item option">{{ label }} <input id="{{ category }}_checkbox" type="checkbox" no-name="{{ category }}" checked></label>
+						{% endfor %}
+					</div>
+				</div>
+
+				<input
+					class="search"
+					name="search"
+					id="search-entry"
+					type="text"
+					placeholder="Search . . ."
+					onfocus="this.placeholder='';"
+					onblur="this.placeholder='Search . . .';"
+				>
+
+				<input
+					class="submit"
+					type="submit"
+					value="Apply"
+				>
+
+			</form>
+
+			<div class="main-container" id="js-titlecard-list" role="main">
 				{% for article in articles %}
 						<div class="titlecard">
 							<a href="/article/{{ article.id }}" class="title-link">{{ article.title }}</a>
