@@ -76,8 +76,6 @@ body {
 
 	@media screen and (max-width: $mobile_width) {
 		width:100%;
-		flex-direction:column;
-		overflow:hidden;
 		padding-top: 0;
 	}
 }
@@ -95,11 +93,8 @@ body {
 	}
 
 	@media screen and (max-width: $mobile_width) {
-		width:90%;
-		margin:0 auto 0 auto;
-		border:none;
-		margin-top:10px;
-		padding-top: 10vh;
+		width:100%;
+		padding: 0;
 	}
 }
 
@@ -128,25 +123,29 @@ body {
 		margin-right: auto;
 	}
 
-	.date, .source {
-		font-size:0.9em;
-		&, a { color:grey; }
-	}
-
 	.category {
 		width:120px;
 		color:grey;
 	}
 
-	.date {
+	.date-source {
 		flex-shrink: 0;
-	}
-
-	.source {
-		flex-shrink: 0;
+		&, a { color:grey; }
 	}
 
 	@include fade-in(0.2s,0.1s);
+
+	@media screen and (max-width: $mobile_width) {
+		flex-direction: column;
+		margin-bottom:10px;
+		.category { display:none; }
+		.title {
+			font-size:1.25em;
+		}
+		.date-source {
+			margin-left:auto;
+		}
+	}
 }
 
 .about {
@@ -192,21 +191,6 @@ body {
 
 	font-weight:bold;
 	color:white;
-
-	.menu-btn {
-		padding: 0 5px 0 5px;
-		height:100%;
-		text-align: center;
-		line-height:40px;
-
-		color:white;
-		font-weight:bold;
-		cursor:pointer;
-		user-select:none;
-		&:hover {
-			background-color: #537eac;
-		}
-	}
 
 	.sub-menu {
 		position:relative;
@@ -280,10 +264,17 @@ body {
 			border: 1px solid rgba(0,0,0,0.80);
 			border-bottom: 1px solid rgba(0,0,0,0.80);
 		}
+
+		@media screen and (max-width: $mobile_width) {
+			width:90%;
+			margin: 0 auto 0 auto;
+		}
 	}
 
 	.annotate {
-
+		@media screen and (max-width: $mobile_width) {
+			margin-top:5px;
+		}
 	}
 
 	.submit {
@@ -296,6 +287,33 @@ body {
 		-webkit-border-radius:none;
 				border-radius:none;
 
+	}
+
+	.menu-btn {
+		padding: 0 5px 0 5px;
+		height:100%;
+		text-align: center;
+		line-height:40px;
+
+		color:white;
+		font-weight:bold;
+		cursor:pointer;
+		user-select:none;
+		&:hover {
+			background-color: #537eac;
+		}
+
+		@media screen and (max-width: $mobile_width) {
+			width:90%;
+			margin: 0 auto 0 auto;
+			padding-left:0;
+			padding-right:0;
+		}
+	}
+
+	@media screen and (max-width: $mobile_width) {
+		flex-direction: column;
+		height:auto;
 	}
 }
 

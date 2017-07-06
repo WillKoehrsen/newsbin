@@ -7,12 +7,18 @@ $mobile_width:500px;
 
 .eye-toggle {
 	stroke:white;
+
+	@media screen and (max-width: $mobile_width) {
+		float: right;
+		height: 70px;
+		margin-left: auto;
+		padding: 5px;
+	}
 }
 
 .active-toggle {
 	stroke:#49beaa;
 }
-
 
 /* -------------------------------------------------------------------------- */
 /* Article Page */
@@ -21,7 +27,7 @@ $mobile_width:500px;
 	display:block;
 
 	@media screen and (max-width: $mobile_width) {
-		padding-top: 8vh;
+
 	}
 
 	.article-title {

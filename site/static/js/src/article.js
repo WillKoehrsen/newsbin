@@ -108,7 +108,7 @@ var annotations = (function(){
         },
         refresh:function(){
             var annotations = document.getElementsByClassName('annotation')
-            var toggle = document.getElementById('eye-toggle');
+            var toggle = document.getElementById('js-eye-toggle');
             for( var i = 0; i < annotations.length; i++ ){
                 var anno = annotations[i];
                 anno.removeEventListener('click', open_modal, false);

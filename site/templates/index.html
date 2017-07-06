@@ -70,8 +70,8 @@
 						<div class="titlecard">
 								<div class="category">{{ article.category_label }}</div>
 								<a class="title" href="/article/{{ article.id }}">{{ article.title }}</a>
-								<a class="source" href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_label() }}</a>
-								<div class="date">&nbsp; on {{ article.fetched.strftime('%Y-%m-%d') }}</div>
+								<div class="date-source"><a class="source" href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_label() }}</a>
+									 on {{ article.fetched.strftime('%Y-%m-%d') }}</div>
 						</div>
 				{% endfor %}
 			</div>
