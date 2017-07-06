@@ -146,3 +146,9 @@ def default_sources():
 			results.append(result)
 	results = sorted(results,key=lambda x: x[1])
 	return results
+
+def category_label( category ):
+	if category in labels:
+		return labels[category]
+	else:
+		return category.capitalize()

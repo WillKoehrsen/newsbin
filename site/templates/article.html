@@ -34,21 +34,24 @@
 
 		<div class="container">
 
-			<div class="mobile-menu" id="js-mobile-menu" aria-hidden="true">
-				<div run="open_menu">
-					Menu
-				</div>
-				<div run="close_menu" class="current">
-					Article
-				</div>
-			</div>
+				<form action="/article/{{ article.id }}" method="post" class="menu" autocomplete="off" style="position:relative">
 
-			<div class="sub-container side-container" id="js-menu">
+					<input class="annotate" type="text" name="annotation" id="js-add-selection"
+						placeholder="Annotate . . ."
+						onfocus="this.placeholder='';"
+						onblur="this.placeholder='Annotate . . .';">
 
-				<form action="/article/{{ article.id }}" method="post" class="block annotation-block" autocomplete="off" role="form">
-					<div class="header">Annotate</div>
+					<input type="submit" class="submit menu-btn" name="add" value="Add"
+					tooltip="<b>add</b> key phrases like 'Panama Canal' to<br/>annotate the article
+							with information from <br/>wikipedia."
+					tooltip-apply="tooltip-bottom">
 
-					<svg class="eye-toggle active-toggle" id="eye-toggle" xmlns="http://www.w3.org/2000/svg"
+					<input type="submit" class="submit menu-btn" name="remove" value="Remove" style="margin-right:auto;"
+					tooltip="<b>remove</b> to blacklist
+							inaccurate<br/>annotations in this article."
+					tooltip-apply="tooltip-bottom">
+
+					<svg class="eye-toggle active-toggle" id="js-eye-toggle" xmlns="http://www.w3.org/2000/svg"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
@@ -57,50 +60,18 @@
 						stroke-width="2"
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						tooltip="toggle annotations on and off"
 						role="button"
 						aria-label="toggle annotations on and off">
 						<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
 						<circle cx="12" cy="12" r="3"/>
 					</svg>
-
-
-					<input class="annotation-input" type="text" name="annotation" id="js-add-selection"
-						aria-label="add annotations to this article"
-						tooltip="<b>add</b> key phrases like 'Panama Canal' to<br/>annotate the article with information from <br/>wikipedia, or <b>remove</b> to blacklist inaccurate<br/>annotations">
-					<input type="submit" class="item button" name="add" value="Add">
-					<input type="submit" class="item button" name="remove" value="Remove">
+					<span
+						id="js-eye-btn"
+						style="width:40px;height:40px;position:absolute;right:5px;"
+						tooltip="toggle annotations on and off"
+						tooltip-apply="tooltip-left">
+					</span>
 				</form>
-
-				<div class="block">
-					<div class="header">Blacklist</div>
-					<div class="blacklist{{ ' fadelist' if not blacklist }}" aria-label="blacklisted annotations">{{ blacklist if blacklist else 'nothing here' }}</div>
-				</div>
-
-				<!-- only displays on mobile, and hidden to screen readers -->
-				<div class="block information-block" aria-hidden="true">
-					<div class="header">Information</div>
-					<table>
-						<tr>
-							<td>Source:</td>
-							<td aria-label="news source"><a href="{{ article.link }}" target="_blank" rel="noopener">{{ article.source }}</a></td>
-						</tr>
-						<tr>
-							<td>Author(s):</td>
-							<td aria-label="article author">{{ article.author if article.author else 'unknown' }}</td>
-						</tr>
-						<tr>
-							<td>Fetched:</td>
-							<td aria-label="date fetched">{{ article.fetched.strftime('%Y-%m-%d') }}</td></tr>
-					</table>
-				</div>
-
-				<div class="block" role="navigation">
-					<div class="header">Navigation</div>
-					<a href="/" class="item">< Back</a>
-				</div>
-
-			</div>
 
 			<div class="sub-container main-container article" role="main">
 				<div class="article-title" aria-label="article title">{{ article.title }}</div>
@@ -136,8 +107,8 @@
 		</script>
 
 		<!-- External Javascript -->
-		<script src="/static/js/ui.js"></script>
-		<script src="/static/js/article.js"></script>
+		<script src="/static/js/src/ui.js"></script>
+		<script src="/static/js/src/article.js"></script>
 		<script src="/static/js/analytics.js"></script>
 		<!-- End External Javascript -->
 	</body>

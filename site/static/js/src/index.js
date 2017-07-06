@@ -142,36 +142,6 @@ if (!NodeList.prototype.forEach) {
 })(document.getElementById('js-year'));
 
 /* -----------------------------------------------------------------------------
-	MOBILE MENU
-
-		This bit adds a 'click' eventlistener that toggles the tabs and
-		hides/displays the mobile menu. Tabs define functions to run from
-		handlers with the 'run' attribute.
-*/
-(function( menu, options ){
-	var tabs = [];
-	[].push.apply(tabs, menu.getElementsByTagName('div'));
-
-	var handlers = {
-		open_menu:function(){options.classList.add('open')},
-		close_menu:function(){options.classList.remove('open')},
-	}
-
-	tabs.forEach(function( tab ){
-		tab.addEventListener('click',function( _event ){
-			if(!this.classList.contains('current')){
-				tabs.forEach(function(i){i.classList.remove('current')})
-				this.classList.add('current');
-				handlers[this.getAttribute('run')]();
-			}
-		})
-	});
-})(
-	document.getElementById('js-mobile-menu'),
-	document.getElementById('js-menu')
-);
-
-/* -----------------------------------------------------------------------------
 	INFINITE SCROLL
 
 		When the viewer gets close to the bottom of the page, we add new content
@@ -195,14 +165,11 @@ if (!NodeList.prototype.forEach) {
                     var response = JSON.parse(this.responseText);
                     for( var i = 0; i < response.length; i++ ){
                         var article = JSON.parse(response[i]);
-                        astr =  '<a href="/article/'+ article.id +'" class="title-link">'+ article.title +'</a>' +
-                                '<table class="information">' +
-                                    '<tr>'+
-                                        '<td><a href="'+ article.link +'" target="_blank" rel="noopener">on '+ article.label +'</a></td>' +
-                                        '<td>fetched: '+ article.fetched.split(' ')[0] +'</td>' +
-                                        '<td></td><td></td>'
-                                    '</tr>' +
-                                '</table>';
+                        astr =  '<div class="category">'+ article.category_label +'</div>' +
+                                '<a class="title" href="/article/'+ article.id +'">'+ article.title +'</a>' +
+                                '<a class="source" href="'+ article.link +'" target="_blank" rel="noopener">'+ article.label +'</a>' +
+                                '<div class="date">&nbsp; on '+ article.fetched.split(' ')[0] +'</div>';
+
                         aobj = document.createElement('div');
                         aobj.classList.add("titlecard");
                         aobj.innerHTML = astr;

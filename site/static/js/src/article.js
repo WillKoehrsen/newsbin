@@ -159,44 +159,13 @@ var annotations = (function(){
 })(document.getElementById('js-year'));
 
 /* -----------------------------------------------------------------------------
-	MOBILE MENU
-
-		This bit adds a 'click' eventlistener that toggles the tabs and
-		hides/displays the mobile menu. Tabs define functions to run from
-		handlers with the 'run' attribute.
-*/
-(function( menu, options ){
-	var tabs = [];
-	[].push.apply(tabs, menu.getElementsByTagName('div'));
-
-	var handlers = {
-		open_menu:function(){options.classList.add('open')},
-		close_menu:function(){options.classList.remove('open')},
-	}
-
-	tabs.forEach(function( tab ){
-		tab.addEventListener('click',function( _event ){
-			if(!this.classList.contains('current')){
-				tabs.forEach(function(i){i.classList.remove('current')})
-				this.classList.add('current');
-				handlers[this.getAttribute('run')]();
-			}
-		})
-	});
-})(
-	document.getElementById('js-mobile-menu'),
-	document.getElementById('js-menu')
-);
-
-
-/* -----------------------------------------------------------------------------
 	EYE TOGGLE
 
 		This adds a 'click' eventlistener to the 'eye' in the menu
         that toggles the display of annotations in the article
 */
-(function( eye ){
-    if( eye ){
+(function( eye, eye_btn ){
+    if( eye && eye_btn ){
         if(eye.id in sessionStorage){
             var initial = sessionStorage.getItem(eye.id)!='false';
             if(initial){
@@ -207,17 +176,20 @@ var annotations = (function(){
                 annotations.disable();
             }
         }
-        eye.addEventListener('click',function(){
-            if(this.classList.toggle('active-toggle')){
+        eye_btn.addEventListener('click',function(){
+            if(eye.classList.toggle('active-toggle')){
                 annotations.enable();
-                window.sessionStorage.setItem(this.id,true);
+                window.sessionStorage.setItem(eye.id,true);
             } else {
                 annotations.disable();
-                window.sessionStorage.setItem(this.id,false);
+                window.sessionStorage.setItem(eye.id,false);
             }
         });
     }
-})(document.getElementById('eye-toggle'));
+})(
+    document.getElementById('js-eye-toggle'),
+    document.getElementById('js-eye-btn')
+);
 
 /* -----------------------------------------------------------------------------
 	ANNOTATE ARTICLE

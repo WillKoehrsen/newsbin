@@ -23,6 +23,10 @@ class Article(Base):
 	category = Column(String(250), nullable=True)
 	fetched = Column(DateTime(timezone=True), nullable=True)
 
+	# this is a temporary value for templating,
+	# it is only set immediately before serving
+	category_label = '';
+
 	def __init__( self, *args, **kwargs ):
 		for key, value in kwargs.items():
 			setattr(self, key, value)

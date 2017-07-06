@@ -1,70 +1,18 @@
 
 $mobile_width:500px;
 
-.annotation-block {
-	position:relative;
-
-	@media screen and (max-width: $mobile_width) {
-			width:85%;
-	}
-
-	.eye-toggle {
-		position: absolute;
-		cursor:pointer;
-		top:10px;
-		right:5px;
-		width:20;
-		stroke:rgba(0,0,0,0.5);
-	}
-
-	.active-toggle {
-		stroke:green;
-	}
-
-	.annotation-input {
-		min-width:10px;
-		width:calc(100% - 4px);
-		border:1px solid lightgrey;
-		margin:0 auto 0 auto;
-
-		@media screen and (max-width: $mobile_width) {
-			height:30px;
-			line-height:30px;
-		}
-	}
+#js-eye-btn {
+	cursor:pointer;
 }
 
-.blacklist {
-	min-height:40px;
-	padding:5px;
-	font-size: 0.8em;
-	background-color: white;
+.eye-toggle {
+	stroke:white;
 }
 
-.fadelist {
-	line-height: 40px;
-	color:grey;
-	text-align: center;
+.active-toggle {
+	stroke:#49beaa;
 }
 
-.button {
-	border:none;
-	width:100%;
-	text-align:left;
-	background-color: transparent;
-}
-
-.information-block {
-	table {
-		width:100%;
-		table-layout: fixed;
-
-		td:last-child {
-			color:grey;
-			font-size:0.9em;
-		}
-	}
-}
 
 /* -------------------------------------------------------------------------- */
 /* Article Page */

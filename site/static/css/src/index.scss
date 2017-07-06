@@ -62,6 +62,7 @@ body {
 .container {
 	width:80%;
 	max-width:1200px;
+	background-color: white;
 
 	/* center the page */
 	margin: 0 auto 0 auto;
@@ -72,41 +73,6 @@ body {
 	/* flex options */
 	display:flex;
 	flex-direction:column;
-
-	.mobile-menu {
-		display:none;
-
-		@media screen and (max-width: $mobile_width) {
-			position:fixed;
-			display:flex;
-			z-index:1;
-
-			height:8vh;
-			width:100%;
-			background-color: white;
-			margin:0 auto 0 auto;
-
-			div {
-				flex:1;
-				height:100%;
-				user-select:none;
-
-				color:grey;
-				font-size:1.25em;
-
-				display:flex;
-				justify-content: center;
-				align-items: center;
-				background-color: #faf8f6;
-				border-bottom:2px solid lightgrey;
-			}
-
-			.current {
-				color:black;
-				border-bottom:2px solid black;
-			}
-		}
-	}
 
 	@media screen and (max-width: $mobile_width) {
 		width:100%;
@@ -148,47 +114,39 @@ body {
 }
 
 .titlecard {
-	border-radius:3px;
-	padding:10px;
-	background-color: white;
-	box-shadow: 2px 2px 5px rgba(0,0,0,0.20);
-	margin-bottom:10px;
-	@include fade-in(0.2s,0.1s);
+	display:flex;
+	justify-content: flex-end;
 
-	.title-link {
-		display:block;
+	padding: 2px 5px 2px 5px;
+
+	border:1px solid transparent;
+	&:hover { border:1px solid rgba(0,0,0,0.25); }
+
+	.title {
 		color:black;
-		font-size: 1.25em;
-		padding:5px;
-		border:1px dotted transparent;
-		text-decoration:none;
-
-		&:hover {
-			border:1px solid lightgrey;
-		}
+		text-decoration: none;
+		margin-right: auto;
 	}
 
-	.information {
-		font-size:0.75em;
-		table-layout: fixed;
-		width:100%;
-
-		$text_color: grey;
-
-		td {
-			color:$text_color;
-			background-color: #f2f2f2;
-			padding:5px 10px 5px 10px;
-		}
-
-		a {
-			color:$text_color;
-		}
-
-		@media screen and (max-width: $mobile_width) {
-			display:none;
-		}
+	.date, .source {
+		font-size:0.9em;
+		&, a { color:grey; }
 	}
+
+	.category {
+		width:120px;
+		color:grey;
+	}
+
+	.date {
+		flex-shrink: 0;
+	}
+
+	.source {
+		flex-shrink: 0;
+	}
+
+	@include fade-in(0.2s,0.1s);
 }
 
 .about {
@@ -227,21 +185,41 @@ body {
 	flex-direction: row;
 	justify-content: flex-end;
 	align-items: center;
-	padding:10px;
+	padding:0 10px 0 10px;
+	height:40px;
+	background-color: #456990;
+	margin-bottom:10px;
+
+	font-weight:bold;
+	color:white;
+
+	.menu-btn {
+		padding: 0 5px 0 5px;
+		height:100%;
+		text-align: center;
+		line-height:40px;
+
+		color:white;
+		font-weight:bold;
+		cursor:pointer;
+		user-select:none;
+		&:hover {
+			background-color: #537eac;
+		}
+	}
 
 	.sub-menu {
 		position:relative;
-		cursor:pointer;
-		user-select:none;
-		padding:5px 10px 5px 10px;
 
 		.drop-down-menu {
 			display:none;
 			width:200px;
+			font-weight:normal;
 			left:0;
-			margin:4px 0 0 -1px;
+			text-align: left;
 			border:1px solid black;
 			background-color:white;
+			color:black;
 			box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
 			z-index:1;
 		}
@@ -255,7 +233,7 @@ body {
 	}
 
 	.active {
-		background-color: white;
+
 	}
 
 	.sources {
@@ -269,6 +247,7 @@ body {
 	.option-item {
 		padding:5px 10px 5px 10px;
 		cursor:pointer;
+		line-height: normal;
 		border-right:3px solid lightgrey;
 
 		&>input[type=checkbox] {
@@ -281,7 +260,7 @@ body {
 		border-right:3px solid #0d930f;
 	}
 
-	.search {
+	.search, .annotate {
 		font-size:inherit;
 		border:none;
 		padding:5px;
@@ -289,20 +268,26 @@ body {
 		border-radius:1px;
 		background-color: transparent;
 		border: 1px solid transparent;
-		border-bottom: 1px solid rgba(0,0,0,0.25);
+		border-bottom: 1px solid rgba(0,0,0,0.5);
 		transition:background-color 0.25s ease-out, border 0.25s ease-out;
 
+		font-weight:bold;
+		color:white;
+
 		&:focus {
+			color:black;
 			background-color: white;
-			border: 1px solid rgba(0,0,0,0.1);
+			border: 1px solid rgba(0,0,0,0.80);
 			border-bottom: 1px solid rgba(0,0,0,0.80);
 		}
 	}
 
+	.annotate {
+
+	}
+
 	.submit {
 		font-size:inherit;
-		cursor:pointer;
-		padding:5px 10px 5px 10px;
 		background-color:transparent;
 		border:none;
 
@@ -317,7 +302,15 @@ body {
 /* 	MENU TEST
 ------------------------------------------------------------------------------*/
 
+.tooltip-bottom {
+	margin-top: 45px;
+	margin-left: -50px;
+}
 
+.tooltip-left {
+	margin-top: 45px;
+	margin-left: -180px;
+}
 
 
 

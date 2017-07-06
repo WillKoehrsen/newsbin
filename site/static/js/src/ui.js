@@ -24,6 +24,7 @@ var tooltips = (function( targets ){
                 var popup = document.createElement('div');
                 tooltip = popup;
                 popup.classList.add("tooltip");
+                popup.classList.add( _event.target.getAttribute('tooltip-apply') )
                 var msg = _event.target.getAttribute('tooltip');
                 if(msg){
                     popup.innerHTML = msg;
@@ -34,15 +35,7 @@ var tooltips = (function( targets ){
                     var right_ref = parseInt(reference.right);
                     var left_ref = parseInt(reference.left);
 
-                    if(left_ref < window.innerWidth/2){
-                        popup.style.left = right_ref+window.pageXOffset+offset+'px'
-                        popup.classList.add('left');
-                    }
-                    else {
-                        popup.style.left = left_ref-parseInt(popup.offsetWidth)+window.pageXOffset-offset+'px'
-                        popup.classList.add('right');
-                    }
-
+                    popup.style.left = right_ref+window.pageXOffset+offset+'px'
                     popup.style.top = parseInt(reference.top) + window.pageYOffset + 'px';
                 }
             });

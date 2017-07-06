@@ -25,7 +25,7 @@ def index( page=0 ):
 	all_sources = defaults.default_sources()
 	all_categories = defaults.default_categories()
 
-	page_size = 20
+	page_size = 40
 	end = page*page_size + page_size
 
 	with session_scope() as session:
@@ -56,6 +56,9 @@ def index( page=0 ):
 		user_data.clear()
 		user_data['last_search'] = data
 
+		for a in articles:
+			a.category_label = defaults.category_label( a.category )
+
 		return render_template('index.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories())
 
 
@@ -64,7 +67,7 @@ def index( page=0 ):
 
 @app.route('/titles/<int:page>', methods=['GET'])
 def titles( page ):
-	page_size = 20
+	page_size = 40
 	start = page*page_size
 	end = start + page_size
 	all_sources = [ s[0] for s in defaults.default_sources() ]
@@ -78,12 +81,15 @@ def titles( page ):
 
 		articles = session.query( models.Article )\
 			.filter( models.Article.source.in_(sources) )\
-			.filter( models.Article.categories.in_(categories) )\
+			.filter( models.Article.category.in_(categories) )\
 			.order_by( models.Article.fetched.desc() )
 
 		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
 			.slice(start,end)\
 			.all()
+
+		for a in articles:
+			a.category_label = defaults.category_label( a.category )
 
 		data = [ a.serialize(exclude=('content')) for a in articles ]
 		if data:
