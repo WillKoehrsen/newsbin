@@ -41,15 +41,17 @@
 						onfocus="this.placeholder='';"
 						onblur="this.placeholder='Annotate . . .';">
 
-					<input type="submit" class="submit menu-btn" name="add" value="Add"
+					<input type="submit" class="menu-btn" name="add" value="Add"
 					tooltip="<b>add</b> key phrases like 'Panama Canal' to<br/>annotate the article
 							with information from <br/>wikipedia."
 					tooltip-apply="tooltip-bottom">
 
-					<input type="submit" class="submit menu-btn" name="remove" value="Remove" style="margin-right:auto;"
+					<input type="submit" class="menu-btn" name="remove" value="Remove" style="margin-right:auto;"
 					tooltip="<b>remove</b> to blacklist
 							inaccurate<br/>annotations in this article."
 					tooltip-apply="tooltip-bottom">
+
+					<input type="button" class="menu-btn" value="Back" style="margin-right:10px;" onclick="window.history.back();">
 
 					<svg class="eye-toggle active-toggle" id="js-eye-toggle" xmlns="http://www.w3.org/2000/svg"
 						width="24"
