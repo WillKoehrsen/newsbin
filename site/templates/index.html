@@ -14,14 +14,22 @@
 	</head>
 	<body>
 		<noscript class="noscript-notification">
-			some site functionality won't be available without <a href="http://www.enable-javascript.com/" target="_blank" rel="noopener">javascript</a> enabled.
+			<div>
+				<h2>without javascript enabled, this site won't work. Sorry about that :/</h2>
+				<p>
+					If you turned javascript off by accident, you can find instructions to turn it on
+					<a href="http://www.enable-javascript.com/" target="_blank" rel="noopener">here</a>,
+					or you can upgrade your browser <a href="http://outdatedbrowser.com" target="_blank" rel="noopener">here</a>.
+					Remember to refresh the page when you're done!
+				</p>
+			</div>
 			<style>
-				.container {
-					margin-top:40px;
+				.noscript-hide {
+					display:none;
 				}
 			</style>
 		</noscript>
-		<div class="container">
+		<div class="container noscript-hide">
 
 			<form class="menu" id="js-submit">
 
