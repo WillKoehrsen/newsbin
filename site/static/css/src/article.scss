@@ -1,6 +1,10 @@
 
 $mobile_width:500px;
 
+cite::after {
+	content:' ';
+}
+
 #js-eye-btn {
 	cursor:pointer;
 }
@@ -99,11 +103,15 @@ $mobile_width:500px;
 	display:none;
 	flex-direction:column;
 	align-items: center;
+	z-index:2;
 
 	background-color: white;
 	border:1px solid black;
 	box-shadow:5px 5px 5px rgba(0,0,0,0.5);
 	overflow-y: scroll;
+
+	/* transition for mobile */
+	transition:width 0.5s ease;
 
 	div, a {
 		width:90%;
@@ -188,11 +196,11 @@ $mobile_width:500px;
 	}
 
 	@media screen and (max-width: $mobile_width) {
-		width:calc(100% - 4px);
-		margin-left: 0;
-		margin-top: 0;
-		left:0;
+		width:95%;
+		left:50%;
 		top:10%;
+		margin-top: 0;
+		margin-left: -47.5%;
 		height:85%;
 		word-wrap: break-word;
 	}

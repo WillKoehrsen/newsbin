@@ -323,6 +323,10 @@ body {
 .tooltip-bottom {
 	margin-top: 45px;
 	margin-left: -50px;
+	@media screen and (max-width: $mobile_width) {
+		margin-top: 70px;
+		margin-left: -180px;
+	}
 }
 
 .tooltip-left {

@@ -167,8 +167,8 @@ if (!NodeList.prototype.forEach) {
                         var article = JSON.parse(response[i]);
                         astr =  '<div class="category">'+ article.category_label +'</div>' +
                                 '<a class="title" href="/article/'+ article.id +'">'+ article.title +'</a>' +
-                                '<a class="source" href="'+ article.link +'" target="_blank" rel="noopener">'+ article.label +'</a>' +
-                                '<div class="date">&nbsp; on '+ article.fetched.split(' ')[0] +'</div>';
+                                '<div class="date-source"><a class="source" href="'+ article.link +'" target="_blank" rel="noopener">'+ article.label +'</a>' +
+									 ' on '+ article.fetched.split(' ')[0] +'</div>';
 
                         aobj = document.createElement('div');
                         aobj.classList.add("titlecard");
