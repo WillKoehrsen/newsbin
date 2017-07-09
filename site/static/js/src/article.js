@@ -232,7 +232,7 @@ var annotations = (function(){
             try {
                 var response = JSON.parse(this.responseText);
                 var values = response.annotations.sort(function(a,b){
-                    return a.length - b.length || a.localeCompare(b);
+                    return b.length - a.length || a.localeCompare(b);
                 });
                 console.log(values);
                 target.innerHTML = annotate( target, values );
