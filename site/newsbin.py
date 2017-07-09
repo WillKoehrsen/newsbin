@@ -114,7 +114,8 @@ def article( pk ):
 					blacklist = ''
 				try:
 					summary = regex.sub('<.*?>','',article.content[:160].replace('</cite>','</cite> '))
-				except:
+				except Exception as e:
+					log.exception(e)
 					summary = article.content[:160]
 				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary)
 			except Exception as e:
