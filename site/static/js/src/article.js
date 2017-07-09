@@ -234,6 +234,7 @@ var annotations = (function(){
                 var values = response.annotations.sort(function(a,b){
                     return a.length - b.length || a.localeCompare(b);
                 });
+                console.log(values);
                 target.innerHTML = annotate( target, values );
                 annotations.refresh();
             } catch(err){
