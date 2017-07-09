@@ -268,7 +268,7 @@ body {
 		border: none;
 		transition:background-color 0.25s ease;
 
-		font-weight:bold;
+		font-weight:normal;
 		color:white;
 
 		&:focus {
@@ -304,7 +304,7 @@ body {
 		line-height:40px;
 
 		color:white;
-		font-weight:bold;
+		font-weight:inherit;
 		cursor:pointer;
 		user-select:none;
 		&:hover {

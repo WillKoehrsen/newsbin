@@ -30,29 +30,30 @@ if (!NodeList.prototype.forEach) {
             all_options.push.apply(all_options,options);
 
             all_options.forEach(function(option){
-                option.box = option.getElementsByTagName('input')[0];
-                option.box.checked = load(option.box);
-                option.classList.toggle('mark',option.box.checked);
+                if(option){
+                    option.box = option.getElementsByTagName('input')[0];
+                    option.box.checked = load(option.box);
+                    option.classList.toggle('mark',option.box.checked);
 
-                if(option==all){
+                    if(option==all){
+                        option.addEventListener('change',function(_event){
+                            var state = this.box.checked;
+                            options.forEach(function( item ){ item.box.checked = state; });
+                        });
+                    }
+                    else {
+                        option.addEventListener('change',function(_event){
+                            all.box.checked = options.every(function( item ){ return item.box.checked });
+                        });
+                    }
+
                     option.addEventListener('change',function(_event){
-                        var state = this.box.checked;
-                        options.forEach(function( item ){ item.box.checked = state; });
+                        all_options.forEach(function(item){
+                            item.classList.toggle('mark',item.box.checked);
+                            window.sessionStorage.setItem(item.box.id,item.box.checked);
+                        });
                     });
                 }
-                else {
-                    option.addEventListener('change',function(_event){
-                        all.box.checked = options.every(function( item ){ return item.box.checked });
-                    });
-                }
-
-                option.addEventListener('change',function(_event){
-                    all_options.forEach(function(item){
-                        item.classList.toggle('mark',item.box.checked);
-                        window.sessionStorage.setItem(item.box.id,item.box.checked);
-                    });
-                });
-
             });
         })(
             menu.getElementsByClassName('all')[0],
