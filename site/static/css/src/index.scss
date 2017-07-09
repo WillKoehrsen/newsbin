@@ -116,6 +116,7 @@ body {
 	}
 
 	.category {
+		flex-shrink:0;
 		width:120px;
 		color:grey;
 	}
@@ -237,15 +238,35 @@ body {
 	}
 
 	.search, .annotate {
+		$color:white;
+		&::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+		    color:	$color;
+		}
+		&:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+		   color:	$color;
+		   opacity:	1;
+		}
+		&::-moz-placeholder { /* Mozilla Firefox 19+ */
+		   color:	$color;
+		   opacity:	1;
+		}
+		&:-ms-input-placeholder { /* Internet Explorer 10-11 */
+		   color:	$color;
+		}
+		&::-ms-input-placeholder { /* Microsoft Edge */
+		   color:	$color;
+		}
+	}
+
+	.search, .annotate {
 		font-size:inherit;
 		border:none;
 		padding:5px;
 		margin-right:10px;
 		border-radius:1px;
-		background-color: transparent;
-		border: 1px solid transparent;
-		border-bottom: 1px solid rgba(0,0,0,0.5);
-		transition:background-color 0.25s ease-out, border 0.25s ease-out;
+		background-color: #537eac;
+		border: none;
+		transition:background-color 0.25s ease;
 
 		font-weight:bold;
 		color:white;
@@ -253,8 +274,6 @@ body {
 		&:focus {
 			color:black;
 			background-color: white;
-			border: 1px solid rgba(0,0,0,0.80);
-			border-bottom: 1px solid rgba(0,0,0,0.80);
 		}
 
 		@media screen and (max-width: $mobile_width) {

@@ -62,6 +62,16 @@ if (!NodeList.prototype.forEach) {
     }
 })(document.getElementsByClassName('drop-down-menu'));
 
+/* -----------------------------------------------------------------------------
+	PRE-SUBMIT PROCESS FORM
+
+        Organize info from the form into a more condensed url before
+        submit. Each collection of checkboxes gets turned into a
+        string of a values like so:
+            value1=on value2=on value3=off
+                becomes
+            values=value1,value2
+*/
 (function( form ){
     function process(_event){
         _event.preventDefault();
@@ -85,8 +95,8 @@ if (!NodeList.prototype.forEach) {
             }
         }
 
-        document.getElementById('js-sources-str').value = src_arr.join('|');
-        document.getElementById('js-categories-str').value = cat_arr.join('|');
+        document.getElementById('js-sources-str').value = src_arr.join(',');
+        document.getElementById('js-categories-str').value = cat_arr.join(',');
 
         form.submit();
         return false;

@@ -74,3 +74,22 @@ function expand( element ){
         }
     }
 }
+
+function ancestor_has_class( element, _class ){
+    while( element.parentNode && element.tagName!='HTML' ){
+        if(element.classList.contains(_class)){
+            return true;
+        }
+        element = element.parentNode;
+    }
+    return false;
+}
+
+window.addEventListener('click',function(_event){
+    if(!ancestor_has_class(_event.target,'noclear')){
+        var menus = document.getElementsByClassName('active');
+        for(var i = 0; i < menus.length; i++ ){
+            menus[i].classList.remove('active');
+        }
+    }
+});

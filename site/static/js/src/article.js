@@ -231,9 +231,14 @@ var annotations = (function(){
         if(this.status==200){
             try {
                 var response = JSON.parse(this.responseText);
-                target.innerHTML = annotate( target, response.annotations );
+                var values = response.annotations.sort(function(a,b){
+                    return a.length - b.length || a.localeCompare(b);
+                });
+                target.innerHTML = annotate( target, values );
                 annotations.refresh();
-            } catch(err){ console.log(err); }
+            } catch(err){
+                console.log(err);
+            }
         }
     }
 

@@ -34,23 +34,23 @@
 			<form class="menu" id="js-submit">
 
 				<input name="sources" id="js-sources-str" type="hidden">
-				<div class="sub-menu sources menu-btn" onclick="expand( this );">
+				<div class="sub-menu sources menu-btn noclear" onclick="expand( this );">
 					Sources
 					<div class="drop-down-menu expand-me">
-						<label class="option-item all">All<input type="checkbox" id="all_source_check" checked></label>
+						<label class="option-item all ">All<input type="checkbox" id="all_source_check" checked></label>
 						{% for source, label in sources %}
-						<label class="option-item option">{{ label }} <input id="{{ source }}_checkbox" type="checkbox" no-name="{{ source }}" checked></label>
+						<label class="option-item option ">{{ label }} <input id="{{ source }}_checkbox" type="checkbox" no-name="{{ source }}" checked></label>
 						{% endfor %}
 					</div>
 				</div>
 
 				<input name="categories" id="js-categories-str" type="hidden">
-				<div class="sub-menu categories menu-btn" onclick="expand( this );">
+				<div class="sub-menu categories menu-btn noclear" onclick="expand( this );">
 					Categories
 					<div class="drop-down-menu expand-me">
-						<label class="option-item all">All<input type="checkbox" id="all_category_check" checked></label>
+						<label class="option-item all ">All<input type="checkbox" id="all_category_check" checked></label>
 						{% for category, label in categories %}
-						<label class="option-item option">{{ label }} <input id="{{ category }}_checkbox" type="checkbox" no-name="{{ category }}" checked></label>
+						<label class="option-item option ">{{ label }} <input id="{{ category }}_checkbox" type="checkbox" no-name="{{ category }}" checked></label>
 						{% endfor %}
 					</div>
 				</div>

@@ -29,8 +29,8 @@ def index( page=0 ):
 	end = page*page_size + page_size
 
 	with session_scope() as session:
-		categories = [ c for c in options.get('categories','').split('|') if c ] or [ c[0] for c in all_categories ]
-		sources = [ s for s in options.get('sources','').split('|') if s ] or [ s[0] for s in all_sources ]
+		categories = [ c for c in options.get('categories','').split(',') if c ] or [ c[0] for c in all_categories ]
+		sources = [ s for s in options.get('sources','').split(',') if s ] or [ s[0] for s in all_sources ]
 		search = options.get('search','')
 
 		# the base query is just a filter to make sure the sources are
