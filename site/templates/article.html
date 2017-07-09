@@ -5,15 +5,19 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<meta name="description"
-			  content="{{ article.fetched.strftime('%Y-%m-%d') }} - {{ summary }}. . ." />
+			  content="{{ article.fetched.strftime('%Y-%m-%d') }} - {{ summary }}" />
 		<!-- End Meta Declarations -->
 
 		<title>newsbin - {{ article.title }}</title>
 
 		<!-- External Stylesheets -->
-		<link rel="stylesheet" type="text/css" href="/static/css/index.css" />
-		<link rel="stylesheet" type="text/css" href="/static/css/article.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/stylesheet.css" />
 		<!-- End External Stylesheets -->
+
+		<!-- Inline Styles -->
+		<style>
+		</style>
+		<!-- End Inline Styles -->
 
 	</head>
 	<body>
@@ -121,8 +125,8 @@
 
 		<!-- External Javascript -->
 		<script src="/static/js/ui.js"></script>
-		<script src="/static/js/article.js"></script>
-		<script src="/static/js/analytics.js"></script>
+		<script src="/static/js/article.js" defer></script>
+		<script src="/static/js/analytics.js" defer></script>
 		<!-- End External Javascript -->
 	</body>
 </html>
