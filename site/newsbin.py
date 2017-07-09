@@ -117,7 +117,7 @@ def article( pk ):
 				except Exception as e:
 					log.exception(e)
 					summary = article.content[:100]
-				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary)
+				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary.strip())
 			except Exception as e:
 				log.exception(e)
 				raise
