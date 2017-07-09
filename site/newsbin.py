@@ -112,7 +112,8 @@ def article( pk ):
 					blacklist = article.blacklist.replace(';',', ')
 				else:
 					blacklist = ''
-				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now())
+				summary = regex.sub('<.*?>','',article.content[:160])
+				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary)
 			except Exception as e:
 				log.exception(e)
 				raise
