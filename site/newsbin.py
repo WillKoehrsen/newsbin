@@ -116,7 +116,7 @@ def article( pk ):
 					summary = regex.sub('<.*?>','',article.content[:160].replace('</cite>','</cite> '))
 				except Exception as e:
 					log.exception(e)
-					summary = article.content[:160]
+					summary = article.content[:100]
 				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary)
 			except Exception as e:
 				log.exception(e)
