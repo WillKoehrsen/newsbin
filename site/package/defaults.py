@@ -112,6 +112,13 @@ sources = [
 	('foxnews','http://feeds.foxnews.com/foxnews/tech','technology'),
 	('foxnews','http://feeds.foxnews.com/foxnews/national','us'),
 	('foxnews','http://feeds.foxnews.com/foxnews/world','world'),
+
+	('wired','https://www.wired.com/feed/rss','top'),
+	('wired','https://www.wired.com/feed/category/business/latest/rss','business'),
+	('wired','https://www.wired.com/feed/category/culture/latest/rss','life'),
+	('wired','https://www.wired.com/feed/category/gear/latest/rss','technology'),
+	('wired','https://www.wired.com/feed/category/security/latest/rss','technology'),
+	('wired','https://www.wired.com/feed/category/science/latest/rss','science'),
 ]
 
 labels = {
@@ -121,6 +128,7 @@ labels = {
 	'washpo':'The Washington Post',
 	'reuters':'Reuters',
 	'foxnews':'Fox News',
+	'wired':'Wired',
 	'us':'U.S.',
 }
 

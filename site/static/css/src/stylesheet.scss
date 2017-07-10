@@ -134,7 +134,7 @@ body {
 	}
 
 	.date-source {
-		flex-shrink: 0;
+		flex-shrink: 1;
 		&, a { color:grey; }
 	}
 
@@ -275,7 +275,8 @@ body {
 		}
 
 		@media screen and (max-width: $mobile_width) {
-			width:90%;
+			width:calc(90% - 10px);
+			height:30px;
 			margin: 0 auto 0 auto;
 		}
 	}
@@ -283,6 +284,13 @@ body {
 	.annotate {
 		@media screen and (max-width: $mobile_width) {
 			margin-top:5px;
+		}
+	}
+
+	.back-btn {
+		margin-right:10px;
+		@media screen and (max-width: $mobile_width) {
+			margin-right:0;
 		}
 	}
 
@@ -311,9 +319,9 @@ body {
 
 		@media screen and (max-width: $mobile_width) {
 			width:90%;
+			height:40px;
 			margin: 0 auto 0 auto;
-			padding-left:0;
-			padding-right:0;
+			padding:0;
 		}
 	}
 
@@ -331,7 +339,7 @@ body {
 	margin-left: -50px;
 	@media screen and (max-width: $mobile_width) {
 		margin-top: 70px;
-		margin-left: -180px;
+		margin-left: -300px;
 	}
 }
 
@@ -346,6 +354,13 @@ cite::after {
 
 #js-eye-btn {
 	cursor:pointer;
+}
+
+.eye-toggle-block {
+	width:40px;
+	height:40px;
+	position:absolute;
+	right:5px;
 }
 
 .eye-toggle {

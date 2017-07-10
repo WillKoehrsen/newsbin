@@ -53,8 +53,10 @@ class NewsbinEngine:
 		if not os.path.isfile( self.settings.database ):
 			models.Base.metadata.create_all(self.dbengine)
 
-	def start( self ):
+	def start( self, whitelist=() ):
 		log.info("Newsbin Engine Starting")
+
+		self.whitelist = whitelist
 
 		with session_scope() as session:
 			titles = [ a.title for a in session.query( models.Article ).all() ]
@@ -108,24 +110,24 @@ class NewsbinEngine:
 
 	def __crawl_feed( self, item ):
 		source, feed, categories = item
+		if source in self.whitelist:
+			try:
+				sfilter = filters.sources.get( source )
+				rss = feedparser.parse(feed)
+				for item in rss['items']:
 
-		try:
-			sfilter = filters.sources.get( source )
-			rss = feedparser.parse(feed)
-			for item in rss['items']:
+					# if stop_event isn't set crawl the article,
+					# otherwise, return.
+					if not self.stop_event.is_set():
+						self.__crawl_article( item, (sfilter,source,categories) )
+					else:
+						return
 
-				# if stop_event isn't set crawl the article,
-				# otherwise, return.
-				if not self.stop_event.is_set():
-					self.__crawl_article( item, (sfilter,source,categories) )
-				else:
-					return
+			except Exception as e:
+				log.exception('{} exception in __crawl_feed'.format(type(e)))
 
-		except Exception as e:
-			log.exception('{} exception in __crawl_feed'.format(type(e)))
-
-		finally:
-			pass
+			finally:
+				pass
 
 	def __run( self ):
 		while True:
@@ -145,5 +147,18 @@ if __name__=='__main__':
 	# register the shutdown signal
 	signal.signal(signal.SIGINT, shutdown)
 
+	# so that we can implement sources
+	# without scraping them until we
+	# turn them on here.
+	source_whitelist = (
+		'cnn',
+		'cnbc',
+		'nytimes',
+		'washpo',
+		'reuters',
+		'foxnews',
+		'wired',
+	)
+
 	engine = NewsbinEngine(sources=defaults.sources, settings=settings, engine=db_engine )
-	engine.start()
+	engine.start(whitelist=source_whitelist)

@@ -4,6 +4,7 @@ import logging
 from lxml import html
 from lxml import etree
 from lxml.cssselect import CSSSelector
+from lxml.html import HtmlComment
 from unidecode import unidecode
 
 log = logging.getLogger('newsbin.engine')
@@ -33,7 +34,7 @@ class Filter:
 
         # the whitelist is for child elements we want to retain
         # html for
-        self.whitelist = kwargs.get('whitelist',('a','b','i','em','cite','br'))
+        self.whitelist = kwargs.get('whitelist',('a','b','i','cite','br'))
 
         # attribute whitelist- other attributes on whitelisted
         # elements are discarded by __process
@@ -43,7 +44,12 @@ class Filter:
         """Filter article content from raw html"""
         # turn the raw html into an etree
         root = html.fromstring(document)
+
+        # so that they'll continue to work
         root.make_links_absolute(url)
+
+        # because who needs React-generated comments
+        etree.strip_tags(root,etree.Comment)
 
         content = []
 
@@ -62,7 +68,7 @@ class Filter:
                     # if we got something, keep it
                     if para: content.append( para )
             except Exception as e:
-                log.warning('{} in filter at: {}'.format(type(e),url))
+                log.exception('{} in filter at: {}'.format(type(e),url))
 
         # return a list of paragraphs
         return content
@@ -121,7 +127,8 @@ sources = {
     'nytimes':Filter(css='.story-body-text.story-content'),
     'washpo':Filter(css='article[itemprop=articleBody]>p, .row .span8>p:not(.interstitial-link), article.pg-article>p:not(.interstitial-link)'),
     'reuters':Filter(css='#article-text>p, #article-text>.article-prime'),
-    'foxnews':Filter(css='.article-text>p, .article-body>p')
+    'foxnews':Filter(css='.article-text>p, .article-body>p'),
+    'wired':Filter(css='article.article-body-component>div>p'),
 }
 
 
