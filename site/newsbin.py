@@ -43,8 +43,6 @@ def index( page=0 ):
 			.filter( models.Article.category.in_(categories) )\
 			.order_by( models.Article.fetched.desc() )
 
-		print(categories)
-
 		# check for the search string in the title and content and then execute the query
 		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
 			.slice(0,end)\
@@ -126,18 +124,20 @@ def article( pk ):
 				raise
 
 	elif request.method == 'POST':
-		name = request.form.get('annotation',None)
+		name = request.form.get('annotation','').strip()
 		add = 'add' in request.form
 		if pk:
 			try:
 				with session_scope() as session:
 					article = session.query( models.Article ).get( pk )
 
-					if add:
-						utilities.summarize(name)
-						article.unblacklist_name( name )
-					else:
-						article.blacklist_name(name)
+					if name:
+						if add:
+							utilities.summarize(name)
+							article.unblacklist_name( name )
+						else:
+							article.blacklist_name(name)
+
 					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
 			except Exception as e:
 				log.exception(e)
