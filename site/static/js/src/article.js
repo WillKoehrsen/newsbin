@@ -57,8 +57,8 @@ var modal = (function( target ){
 
 					response.data_table.forEach(function( item ){
 						refs.data.innerHTML += '<div class="modal-data-item">\
-													<div tooltip="'+item.tooltip+'" tooltip-apply="tooltip-bottom">'+item.key+'</div>\
-													<div tooltip="'+item.tooltip+'" tooltip-apply="tooltip-bottom">'+item.value+'</div>\
+													<div>'+item.key+'</div>\
+													<div>'+item.value+'</div>\
 												</div>';
                         tooltips.add(refs.data.lastChild);
                     });
