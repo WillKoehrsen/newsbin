@@ -33,6 +33,7 @@ def index( page=0 ):
 		sources = [ s for s in options.get('sources','').split(',') if s ] or [ s[0] for s in all_sources ]
 		search = options.get('search','')
 
+
 		# the base query is just a filter to make sure the sources are
 		# what was requested and orders them by date. Note that we don't
 		# care about the 'all' option- it's just a javascript hook to set
@@ -41,6 +42,8 @@ def index( page=0 ):
 			.filter( models.Article.source.in_(sources) )\
 			.filter( models.Article.category.in_(categories) )\
 			.order_by( models.Article.fetched.desc() )
+
+		print(categories)
 
 		# check for the search string in the title and content and then execute the query
 		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\

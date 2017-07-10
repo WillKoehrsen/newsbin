@@ -88,7 +88,7 @@ class NewsbinEngine:
 					response = requests.get( article.link, verify=False )
 					content = sfilter( response.text, url=article.link )
 
-					article.content = '\n'.join([ '<p>{}</p>'.format(p) for p in content if p ])
+					article.content = '\n'.join([ '<p>{}</p>'.format(p) for p in content if p.strip() ])
 					article.fetched = datetime.now()
 
 					# if there is a title and some sort of content,
@@ -151,13 +151,14 @@ if __name__=='__main__':
 	# without scraping them until we
 	# turn them on here.
 	source_whitelist = (
-		'cnn',
-		'cnbc',
-		'nytimes',
-		'washpo',
-		'reuters',
-		'foxnews',
-		'wired',
+		#'cnn',
+		#'cnbc',
+		#'nytimes',
+		#'washpo',
+		#'reuters',
+		#'foxnews',
+		#'wired',
+		'techcrunch',
 	)
 
 	engine = NewsbinEngine(sources=defaults.sources, settings=settings, engine=db_engine )

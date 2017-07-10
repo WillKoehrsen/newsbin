@@ -49,7 +49,7 @@ class Filter:
         root.make_links_absolute(url)
 
         # because who needs React-generated comments
-        etree.strip_tags(root,etree.Comment)
+        etree.strip_tags(root,'img',etree.Comment)
 
         content = []
 
@@ -88,9 +88,11 @@ class Filter:
             # if we want to keep the html, then strip the attributes (__process)
             # and convert to a string.
             if child.tag in self.whitelist:
-                result += unidecode( etree.tostring( self.__process(child), with_tail=False, encoding='unicode', method='html' ) )
+                if len(child)>0 or child.text:
+                    result += unidecode( etree.tostring( self.__process(child), with_tail=False, encoding='unicode', method='html' ) )
             else:
-                result += child.text_content()
+                if len(child)>0 or child.text:
+                    result += child.text_content()
 
             # if there is trailing text, decode and append it
             if child.tail and child.tail.strip():
@@ -129,6 +131,7 @@ sources = {
     'reuters':Filter(css='#article-text>p, #article-text>.article-prime'),
     'foxnews':Filter(css='.article-text>p, .article-body>p'),
     'wired':Filter(css='article.article-body-component>div>p'),
+    'techcrunch':Filter(css='div.article-entry>p'),
 }
 
 
@@ -149,7 +152,7 @@ if __name__=='__main__':
                 links[source].append( (item['link'],item['title'],'item{}'.format(count)) )
                 count += 1
 
-    with open('/home/mhouse/Projects/python/output.html','w') as out:
+    with open('output.html','w') as out:
         out.write('<style>div{ width:500px; margin:10px auto 10px auto; }</style>')
 
         out.write('<div>')
@@ -165,10 +168,10 @@ if __name__=='__main__':
         out.write('<br/><hr/><br/>')
 
         for source in links:
-            if source in sourcelist:
+            if source in sources:
                 for idx, item in enumerate(links[source]):
                     link, title, tag = item
                     if idx <= limit:
                         doc = requests.get(link).text
-                        content = ''.join([ '<p>{}</p>'.format(p) for p in sourcelist[source]( doc, link ) ])
+                        content = ''.join([ '<p>{}</p>'.format(p) for p in sources[source]( doc, link ) ])
                         out.write('<div><a name="{}"></a><hr/><a href="{}" target="_blank"><h3>{}</h3></a>{}<hr/></div>'.format(tag,link,title,content))
