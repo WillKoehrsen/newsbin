@@ -60,7 +60,9 @@ def index( page=0 ):
 		for a in articles:
 			a.category_label = defaults.category_label( a.category )
 
-		return render_template('index.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories())
+		short_page = True if len(articles) < page_size else False
+		
+		return render_template('index.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories(), short_page=short_page)
 
 
 	# couldn't get a session for some reason
@@ -131,14 +133,13 @@ def article( pk ):
 				with session_scope() as session:
 					article = session.query( models.Article ).get( pk )
 
-					if name:
-						if add:
-							utilities.summarize(name)
-							article.unblacklist_name( name )
-						else:
-							article.blacklist_name(name)
+					if add and name:
+						utilities.summarize(name)
+						article.unblacklist_name( name )
+					elif name:
+						article.blacklist_name(name)
 
-					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',','), date=datetime.datetime.now())
+					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',', '), date=datetime.datetime.now())
 			except Exception as e:
 				log.exception(e)
 		else:

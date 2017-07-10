@@ -85,14 +85,25 @@
 			</form>
 
 			<div class="main-container" id="js-titlecard-list" role="main">
-				{% for article in articles %}
-						<div class="titlecard">
-								<div class="category">{{ article.category_label }}</div>
-								<a class="title" href="/article/{{ article.id }}">{{ article.title }}</a>
-								<div class="date-source"><a class="source" href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_label() }}</a>
-									 on {{ article.fetched.strftime('%Y-%m-%d') }}</div>
-						</div>
-				{% endfor %}
+				{% if articles %}
+					{% for article in articles %}
+					<div class="titlecard">
+							<div class="category">{{ article.category_label }}</div>
+							<a class="title" href="/article/{{ article.id }}">{{ article.title }}</a>
+							<div class="date-source"><a class="source" href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_label() }}</a>
+								 on {{ article.fetched.strftime('%Y-%m-%d') }}</div>
+					</div>
+					{% endfor %}
+					{% if short_page %}
+					<div class="the-end">
+						no more articles here, sorry :/
+					</div>
+					{% endif %}
+				{% else %}
+					<div class="the-end">
+						we couldn't find any articles for that search.
+					</div>
+				{% endif %}
 			</div>
 
 			<!--<div class="footer" role="contentinfo">
