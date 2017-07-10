@@ -20,7 +20,7 @@ def matches( target, name_list ):
 	"""generate matches from politifact master list"""
 	for name in name_list:
 		ratio = SequenceMatcher( None, target, name ).ratio()
-		yield ( name, ratio ) if ratio > 0.75 else ()
+		yield ( name, ratio ) if ratio > 0.90 else ()
 
 def get_slug( name ):
 	"""preprocess name, get best matching slug"""
