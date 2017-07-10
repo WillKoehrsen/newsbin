@@ -151,13 +151,13 @@ if __name__=='__main__':
 	# without scraping them until we
 	# turn them on here.
 	source_whitelist = (
-		#'cnn',
-		#'cnbc',
-		#'nytimes',
-		#'washpo',
-		#'reuters',
-		#'foxnews',
-		#'wired',
+		'cnn',
+		'cnbc',
+		'nytimes',
+		'washpo',
+		'reuters',
+		'foxnews',
+		'wired',
 		'techcrunch',
 	)
 
