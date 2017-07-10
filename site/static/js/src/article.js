@@ -56,9 +56,9 @@ var modal = (function( target ){
 					if(response.slug){ refs.links.innerHTML += '<a href="http://www.politifact.com/personalities/'+response.slug+'" target="_blank">on politifact</a>'; }
 
 					response.data_table.forEach(function( item ){
-						refs.data.innerHTML += '<div class="modal-data-item" tooltip="'+item.tooltip+'">\
-													<div>'+item.key+'</div>\
-													<div>'+item.value+'</div>\
+						refs.data.innerHTML += '<div class="modal-data-item">\
+													<div tooltip="'+item.tooltip+'" tooltip-apply="tooltip-bottom">'+item.key+'</div>\
+													<div tooltip="'+item.tooltip+'" tooltip-apply="tooltip-bottom">'+item.value+'</div>\
 												</div>';
                         tooltips.add(refs.data.lastChild);
                     });
