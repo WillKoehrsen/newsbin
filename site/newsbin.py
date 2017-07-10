@@ -6,6 +6,7 @@ import os
 import json
 import datetime
 import logging
+import jinja2
 
 from sqlalchemy import literal
 
@@ -15,7 +16,17 @@ from package import politifact
 from package import defaults
 
 log = logging.getLogger('newsbin.site')
+
+# init the app
 app = Flask(__name__)
+
+# custom loader so we can inline css
+loader = jinja2.ChoiceLoader([
+    app.jinja_loader,
+    jinja2.FileSystemLoader('static/css/'),
+])
+
+app.jinja_loader = loader
 app.secret_key = 'DEVELOPMENT'
 
 @app.route('/', methods=['GET'])
@@ -61,7 +72,7 @@ def index( page=0 ):
 			a.category_label = defaults.category_label( a.category )
 
 		short_page = True if len(articles) < page_size else False
-		
+
 		return render_template('index.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories(), short_page=short_page)
 
 
