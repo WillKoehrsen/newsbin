@@ -74,8 +74,11 @@ class Annotation(Base):
 
 	name = Column(String(250), nullable=True, unique=True)
 	slug = Column(String(250), nullable=True, unique=True)
-	image = Column(String(250), nullable=True)
+	image = Column(Text, nullable=True)
 	summary = Column(Text, nullable=True)
+
+	wikiname = Column(String(250), nullable=True)
+	wikilink = Column(String(250), nullable=True)
 
 	def __init__( self, *args, **kwargs ):
 		for key, value in kwargs.items():

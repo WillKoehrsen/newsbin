@@ -13,6 +13,7 @@ from sqlalchemy import literal
 from package import filters, utilities
 from package import models, session_scope
 from package import politifact
+from package import wikimedia
 from package import defaults
 
 log = logging.getLogger('newsbin.site')
@@ -145,12 +146,14 @@ def article( pk ):
 					article = session.query( models.Article ).get( pk )
 
 					if add and name:
-						utilities.summarize(name)
+						anno = wikimedia.summarize(name)
+                        if anno:
+                            session.add(anno)
 						article.unblacklist_name( name )
 					elif name:
 						article.blacklist_name(name)
 
-					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',', '), date=datetime.datetime.now())
+					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',', '), date=datetime.datetime.now(), reloaded=True)
 			except Exception as e:
 				log.exception(e)
 		else:
@@ -186,25 +189,15 @@ def annotations():
 	name = request.values.get('name',None)
 	with session_scope() as session:
 		try:
-			annotation = session.query( models.Annotation ).filter( models.Annotation.name==name ).first()
-			slug = annotation.slug
-			if not slug:
-				rating, slug = politifact.get_rating(name=annotation.name)
-				if slug: annotation.update(slug=slug)
-			else:
-				rating, slug = politifact.get_rating(name=annotation.name,slug=slug)
-		except Exception as e:
-			try:
-				annotation = utilities.summarize(name)
-				if annotation.name:
-					rating, slug = politifact.get_rating(name=annotation.name)
-					if slug: annotation.update(slug=slug)
-			except Exception as e:
-				log.exception(e)
-				return abort(404)
+			anno = session.query( models.Annotation ).filter( models.Annotation.name==name ).first() or wikimedia.summarize(name)
+            if anno and anno.slug:
+                rating = politifact.get_rating(name=anno.name,slug=anno.slug)
+            elif not anno:
+                return abort(404)
 
 		table_items = []
-		if rating: table_items.append({'key':'Truth Score','value':str(rating)+'%','tooltip':'from last five statements rated by politifact.com'})
+		if rating:
+            table_items.append({'key':'Truth Score','value':'{}%'.format(rating)})
 
 		data = annotation.serialize(data_table=table_items,slug=slug)
 		return make_response(data)

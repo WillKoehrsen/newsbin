@@ -1,42 +1,9 @@
-import os
-import sys
 import regex
 import copy
 
 from sqlalchemy import literal
-import requests
 
-import wikipedia
-from wikipedia.exceptions import PageError
-
-from package.models import Annotation, Article
-from . import session_scope
-
-def politifact_exists( name ):
-	pass
-
-def politifact_rating( name ):
-	pass
-
-def collapse( names ):
-	names = sorted( set(names), key=len, reverse=True)
-	collapsed = {}
-	for idx,name in enumerate(names):
-		subnames = [ rem for rem in names[idx+1:] if name.endswith( rem ) ]
-		collapsed[name] = list(subnames)
-	values = [ item for sublist in collapsed.values() for item in sublist ]
-	return [ (key,(value,)) for key,value in collapsed.items() if key not in values ]
-
-def get_thumbnail( title ):
-	try:
-		response = requests.get( 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&pithumbsize=400&titles={}'.format(title) )
-		pages = response.json()['query']['pages']
-		if len(pages) > 1: raise ValueError('too many results')
-
-		for key,data in pages.items():
-			return data['thumbnail']['source']
-	except Exception as e:
-		return ''
+from package.models import Annotation
 
 def multi_replace( content, lookups ):
 	annotate = regex.compile('|'.join(regex.escape(key) for key in lookups.keys()))
@@ -56,17 +23,3 @@ def annotate( article, session ):
 
 	article.content = ''.join([ '<p>{}</p>\n'.format(p) for p in article.content.split('\n\n') if p ])
 	return article
-
-def summarize( name ):
-	try:
-		summary = wikipedia.summary(name.strip())
-		if summary:
-			with session_scope() as session:
-				summary = '\n\n'.join([ p for p in summary.split('\n') if p ])
-				image_url = get_thumbnail( name )
-				annotation = Annotation(name=name,summary=summary,image=image_url)
-				session.add( annotation )
-				return annotation
-	except Exception as e:
-		print(e)
-		return None
