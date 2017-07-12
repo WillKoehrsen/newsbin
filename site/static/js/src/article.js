@@ -53,7 +53,7 @@ var modal = (function( target ){
 					});
 
 					refs.links.innerHTML += '<a href="https://en.wikipedia.org/wiki/'+response.name+'" target="_blank">on wikipedia</a>';
-					if(response.slug){ refs.links.innerHTML += '<a href="http://www.politifact.com/personalities/'+response.slug+'" target="_blank">on politifact</a>'; }
+					if(response.slug && response.slug!='None'){ refs.links.innerHTML += '<a href="http://www.politifact.com/personalities/'+response.slug+'" target="_blank">on politifact</a>'; }
 
 					response.data_table.forEach(function( item ){
 						refs.data.innerHTML += '<div class="modal-data-item">\

@@ -5,6 +5,7 @@ import time
 
 from package import politifact
 from package import models
+from package import database
 
 
 API_URL = 'http://en.wikipedia.org/w/api.php'
@@ -31,10 +32,22 @@ def get_image( title ):
 		return ''
 
 def get_slug( *args ):
+    slug = None
+
+    # try to get a slug for each given name
     for title in args:
-        result = politifact.get_slug(title)
-        if result: return result
-    return None
+        slug = politifact.get_slug(title)
+        if slug: break
+
+    if not slug:
+        with database.session_scope() as session:
+            others = session.query( models.Annotation)\
+                        .filter( models.Annotation.name.in_(args) | models.Annotation.wikiname.in_(args) )\
+                        .filter( models.Annotation.slug != None )\
+                        .first()
+            if others: slug = others.slug
+
+    return slug
 
 def _request( params ):
 

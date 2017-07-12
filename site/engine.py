@@ -16,7 +16,7 @@ from package import filters
 from package import models
 
 from package import session_scope
-from package import db_engine
+from package import database
 from package import settings
 
 # ------------------------------------------------------------------------------
@@ -161,5 +161,6 @@ if __name__=='__main__':
 		'techcrunch',
 	)
 
-	engine = NewsbinEngine(sources=defaults.sources, settings=settings, engine=db_engine )
+	database.init(settings.database)
+	engine = NewsbinEngine(sources=defaults.sources, settings=settings, engine=database.db_engine )
 	engine.start(whitelist=source_whitelist)

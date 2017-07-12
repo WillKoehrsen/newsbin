@@ -6,13 +6,11 @@ import logging
 # for config management
 from configparser import ConfigParser, ExtendedInterpolation
 
-# for database interaction
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 # to simplify the settings portion of config
 from types import SimpleNamespace
-from contextlib import contextmanager
+
+from package import database
+from package.database import session_scope, db_engine
 
 # set the path to the root directory
 root = os.path.dirname( os.path.dirname( os.path.dirname( __file__ ) ) )
@@ -26,10 +24,7 @@ config = ConfigParser( interpolation=ExtendedInterpolation() )
 config.read( os.path.join( root, 'config/newsbin.conf' ) )
 
 settings = SimpleNamespace( **config['production'] ) if production else SimpleNamespace( **config['settings'] )
-
-# attach to the database specified in the config file
-db_engine = create_engine( settings.database )
-session_generator = sessionmaker(bind=db_engine)
+database.init( settings.database )
 
 # ------------------------------------------------------------------------------
 # init the log
@@ -58,16 +53,3 @@ console_h.setFormatter(_format)
 site_log.addHandler(file_s)
 eng_log.addHandler(file_e)
 eng_log.addHandler(console_h)
-
-@contextmanager
-def session_scope():
-    """Provide a transactional scope around a series of operations."""
-    session = session_generator()
-    try:
-        yield session
-        session.commit()
-    except:
-        session.rollback()
-        raise
-    finally:
-        session.close()

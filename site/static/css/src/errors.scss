@@ -1,25 +1,24 @@
 @font-face {
-  font-family: 'Open Sans';
-  src: url('/static/font/Open_Sans/OpenSans-Regular.ttf')  format('truetype');
+    font-family: 'Open Sans';
+	src:url('/static/font/sans/opensans-regular.woff2') format('woff2'),
+		url('/static/font/sans/opensans-regular.woff') format('woff'),
+    	url('/static/font/sans/opensans-regular.ttf') format('truetype'),
+    	url('/static/font/sans/opensans-regular.eot') format('embedded-opentype');
 }
 
 body {
 	padding:0;
 	margin:0;
-	font-family: 'Open Sans', sans-serif;
-
-	/*
-	font-family: -apple-system,
-			 BlinkMacSystemFont,
-			 "Segoe UI",
-			 Roboto,
-			 Oxygen-Sans,
-			 Ubuntu,
-			 Cantarell,
-			 "Open Sans",
-			 "Helvetica Neue",
-			 sans-serif;
-	*/
+    font-family:'Open Sans',
+				-apple-system,
+			 	BlinkMacSystemFont,
+			 	"Segoe UI",
+			 	Roboto,
+			 	Oxygen-Sans,
+			 	Ubuntu,
+			 	Cantarell,
+			 	"Helvetica Neue",
+			 	sans-serif;
 }
 
 .container {

@@ -73,7 +73,7 @@ class Annotation(Base):
 	id = Column(Integer, primary_key=True)
 
 	name = Column(String(250), nullable=True, unique=True)
-	slug = Column(String(250), nullable=True, unique=True)
+	slug = Column(String(250), nullable=True)
 	image = Column(Text, nullable=True)
 	summary = Column(Text, nullable=True)
 

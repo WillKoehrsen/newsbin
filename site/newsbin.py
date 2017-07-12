@@ -8,7 +8,7 @@ import datetime
 import logging
 import jinja2
 
-from sqlalchemy import literal
+from sqlalchemy import literal, exists
 
 from package import filters, utilities
 from package import models, session_scope
@@ -23,8 +23,8 @@ app = Flask(__name__)
 
 # custom loader so we can inline css
 loader = jinja2.ChoiceLoader([
-    app.jinja_loader,
-    jinja2.FileSystemLoader('static/css/'),
+	app.jinja_loader,
+	jinja2.FileSystemLoader('static/css/'),
 ])
 
 app.jinja_loader = loader
@@ -147,8 +147,11 @@ def article( pk ):
 
 					if add and name:
 						anno = wikimedia.summarize(name)
-                        if anno:
-                            session.add(anno)
+						try:
+							with session_scope() as adder:
+								adder.add(anno)
+						except Exception as e:
+							log.exception(e)
 						article.unblacklist_name( name )
 					elif name:
 						article.blacklist_name(name)
@@ -158,10 +161,10 @@ def article( pk ):
 				log.exception(e)
 		else:
 			log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
-			return abort(404)
 	else:
-		return abort(404)
+		log.warning('article view called with bad method (not POST/GET)')
 
+	return abort(404)
 # ------------------------------------------------------------------------------
 # ANNOTATIONS
 # 	These routes handle fetching info about annotations
@@ -180,6 +183,7 @@ def annotate( pk ):
 			return make_response( json.dumps(data) )
 	except Exception as e:
 		log.exception('at /article/<int:pk>/annotate: '.format(e))
+		print(e)
 		return abort(404)
 
 
@@ -188,18 +192,17 @@ def annotate( pk ):
 def annotations():
 	name = request.values.get('name',None)
 	with session_scope() as session:
-		try:
-			anno = session.query( models.Annotation ).filter( models.Annotation.name==name ).first() or wikimedia.summarize(name)
-            if anno and anno.slug:
-                rating = politifact.get_rating(name=anno.name,slug=anno.slug)
-            elif not anno:
-                return abort(404)
+		anno = session.query( models.Annotation ).filter( models.Annotation.name==name ).first() or wikimedia.summarize(name)
+		if not anno:
+			return abort(404)
 
+		rating = politifact.get_rating(name=anno.name,slug=anno.slug) if anno.slug else None
 		table_items = []
-		if rating:
-            table_items.append({'key':'Truth Score','value':'{}%'.format(rating)})
 
-		data = annotation.serialize(data_table=table_items,slug=slug)
+		if rating:
+			table_items.append({'key':'Truth Score','value':'{}%'.format(rating)})
+
+		data = anno.serialize(data_table=table_items)
 		return make_response(data)
 
 @app.route('/about', methods=['GET'])
@@ -210,11 +213,11 @@ def about():
 # Error Pages
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('errors/404.html', e=e), 404
+	return render_template('errors/404.html', e=e), 404
 
 @app.errorhandler(500)
 def page_not_found(e):
-    return render_template('errors/500.html', e=e), 500
+	return render_template('errors/500.html', e=e), 500
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0')
