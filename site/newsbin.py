@@ -142,21 +142,23 @@ def article( pk ):
 		add = 'add' in request.form
 		if pk:
 			try:
+				try:
+					with session_scope() as session:
+						if add and name:
+							anno = wikimedia.summarize(name)
+							session.add(anno)
+				except Exception as e:
+					print(e)
+
 				with session_scope() as session:
 					article = session.query( models.Article ).get( pk )
-
 					if add and name:
-						anno = wikimedia.summarize(name)
-						try:
-							with session_scope() as adder:
-								adder.add(anno)
-						except Exception as e:
-							log.exception(e)
 						article.unblacklist_name( name )
 					elif name:
 						article.blacklist_name(name)
 
 					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',', '), date=datetime.datetime.now(), reloaded=True)
+
 			except Exception as e:
 				log.exception(e)
 		else:
@@ -196,10 +198,10 @@ def annotations():
 		if not anno:
 			return abort(404)
 
-		rating = politifact.get_rating(name=anno.name,slug=anno.slug) if anno.slug else None
+		rating, slug = politifact.get_rating(name=anno.name,slug=anno.slug) if anno.slug else (None,None)
 		table_items = []
 
-		if rating:
+		if rating != None:
 			table_items.append({'key':'Truth Score','value':'{}%'.format(rating)})
 
 		data = anno.serialize(data_table=table_items)

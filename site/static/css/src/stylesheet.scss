@@ -112,11 +112,15 @@ body {
 	align-items: center;
 }
 
+.titlecard:nth-child(odd) {
+	background-color: #f2f2f2;
+}
+
 .titlecard {
 	display:flex;
 	justify-content: flex-end;
 
-	padding: 2px 5px 2px 5px;
+	padding:5px;
 
 	border:1px solid transparent;
 	&:hover { border:1px solid rgba(0,0,0,0.25); }
@@ -180,6 +184,7 @@ body {
 	height:40px;
 	background-color: #456990;
 	margin-bottom:10px;
+	position: relative;
 
 	font-weight:bold;
 	color:white;
@@ -218,6 +223,23 @@ body {
 
 	.categories {
 		margin-right:auto;
+	}
+
+	.newsbin-standalone-logo {
+		height:100%;
+		width:40px;
+		margin-right:auto;
+
+		& * {
+			max-height:80%;
+			max-width:80%;
+			margin:10%;
+			opacity:0.8;
+		}
+
+		@media screen and (max-width: 600px) {
+			display:none;
+		}
 	}
 
 	.option-item {
@@ -332,7 +354,7 @@ body {
 	}
 }
 
-/* 	MENU TEST
+/* 	MENU
 ------------------------------------------------------------------------------*/
 
 .tooltip-bottom {

@@ -51,5 +51,6 @@ console_h.setFormatter(_format)
 
 # add handlers to log object
 site_log.addHandler(file_s)
+site_log.addHandler(console_h)
 eng_log.addHandler(file_e)
 eng_log.addHandler(console_h)

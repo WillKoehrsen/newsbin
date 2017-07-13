@@ -2,6 +2,7 @@ import requests
 import wikipedia
 import datetime
 import time
+import string
 
 from package import politifact
 from package import models
@@ -34,18 +35,24 @@ def get_image( title ):
 def get_slug( *args ):
     slug = None
 
-    # try to get a slug for each given name
-    for title in args:
-        slug = politifact.get_slug(title)
-        if slug: break
+    with database.session_scope() as session:
+        related = session.query( models.Annotation)\
+                    .filter( models.Annotation.name.in_(args) | models.Annotation.wikiname.in_(args) )\
+                    .filter( models.Annotation.slug != None ).all()
 
-    if not slug:
-        with database.session_scope() as session:
-            others = session.query( models.Annotation)\
-                        .filter( models.Annotation.name.in_(args) | models.Annotation.wikiname.in_(args) )\
-                        .filter( models.Annotation.slug != None )\
-                        .first()
-            if others: slug = others.slug
+        # try to get a slug for each given name
+        # and update related annos if we have one.
+        for title in args:
+            slug = politifact.get_slug(title)
+            if slug:
+                for anno in ( r for r in related if not r.slug):
+                    anno.slug = slug
+                break
+
+        # didn't get a slug from politifact directly
+        # so use a related annotations slug from db
+        if not slug and related:
+            slug = related[0].slug
 
     return slug
 
@@ -79,6 +86,7 @@ def _request( params ):
     return r.json()
 
 def summarize( title ):
+    title = title.strip(string.punctuation)
     page = get_title( title )
     if page:
         try:
