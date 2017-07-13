@@ -161,7 +161,13 @@ if (!NodeList.prototype.forEach) {
     // function-global variables
     var articles = []
     var fetching = false;
-    var page = parseInt(window.location.pathname.replace('/','')) || 0;
+    var page = window.location.search.match( /page=(.*?)(&|\/|$)/ );
+    if(page != null){
+        page = parseInt(page[1]);
+    } else {
+        page = 0;
+    }
+    console.log('page = ' + page);
     var the_end = false;
     var end_msg = 'no more articles here, sorry :/';
 
@@ -205,7 +211,17 @@ if (!NodeList.prototype.forEach) {
 
     function update_url( num ){
         var sobj = {};
-        history.replaceState(sobj, "page " + num, num + window.location.search);
+        var search = window.location.search;
+        if(search.indexOf('page') == -1){
+            console.log('page not in url');
+            search = search.replace(/(\&+|\/+)$/, '') + '&page=' + num;
+        }
+        else {
+            console.log('page in url');
+            search = search.replace(/page=.*?(&|\/|$)/,'page='+ num +'$1')
+        }
+        console.log('search = ' + search);
+        history.replaceState(sobj, "page " + num, search);
     }
 
     function load_next_card(){

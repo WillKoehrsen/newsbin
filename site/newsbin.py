@@ -37,6 +37,8 @@ def index( page=0 ):
 	all_sources = defaults.default_sources()
 	all_categories = defaults.default_categories()
 
+	page = options.get('page',0)
+
 	page_size = 40
 	end = page*page_size + page_size
 
@@ -206,10 +208,6 @@ def annotations():
 
 		data = anno.serialize(data_table=table_items)
 		return make_response(data)
-
-@app.route('/about', methods=['GET'])
-def about():
-	return render_template('about.html', categories=defaults.default_categories(), date=datetime.datetime.now())
 
 # ------------------------------------------------------------------------------
 # Error Pages
