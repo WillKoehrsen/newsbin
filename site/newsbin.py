@@ -153,7 +153,7 @@ def article( pk ):
 							anno = wikimedia.summarize(name)
 							session.add(anno)
 				except Exception as e:
-					print(e)
+					log.debug(e)
 
 				with session_scope() as session:
 					article = session.query( models.Article ).get( pk )
