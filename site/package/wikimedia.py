@@ -107,7 +107,6 @@ def summarize( title ):
                 image=get_image( page.title ),
                 summary='\n\n'.join([ p for p in summary.split('\n') if p ]),
             )
-
             return annotation
         except Exception as e:
             print(e)

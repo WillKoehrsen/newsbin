@@ -65,6 +65,7 @@ def index():
 
 		data = {
 			'page':0,
+			'href':request.url,
 			'categories':categories,
 			'sources':sources,
 			'search':search,
@@ -122,6 +123,9 @@ def titles( page ):
 #	submit new annotations for consideration.
 @app.route('/article/<int:pk>', methods=['GET','POST'])
 def article( pk ):
+	try: 	back_path = user_data['last_search']['href']
+	except: back_path = None
+
 	if request.method == 'GET':
 		with session_scope() as session:
 			try:
@@ -138,7 +142,7 @@ def article( pk ):
 					log.exception(e)
 					summary = article.content[:100]
 
-				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary.strip())
+				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary.strip(), back_path=back_path)
 			except Exception as e:
 				log.exception(e)
 
@@ -151,9 +155,9 @@ def article( pk ):
 					with session_scope() as session:
 						if add and name:
 							anno = wikimedia.summarize(name)
-							session.add(anno)
+							if anno: session.add(anno)
 				except Exception as e:
-					log.debug(e)
+					log.exception(e)
 
 				with session_scope() as session:
 					article = session.query( models.Article ).get( pk )
@@ -162,7 +166,7 @@ def article( pk ):
 					elif name:
 						article.blacklist_name(name)
 
-					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',', '), date=datetime.datetime.now(), reloaded=True)
+					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',', '), date=datetime.datetime.now(), back_path=back_path)
 
 			except Exception as e:
 				log.exception(e)
