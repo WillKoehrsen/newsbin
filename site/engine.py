@@ -105,6 +105,12 @@ class NewsbinEngine:
 			except Exception as e:
 				log.exception('{} exception in __crawl_article'.format(type(e)))
 
+			except requests.exceptions.InvalidSchema as e:
+				log.exception('{} exception- info follows'.format(type(e)))
+				log.debug('title: {}'.format(title))
+				log.debug('link: {}'.format(link))
+				log.debug('source: {}'.format(source)) 
+
 			finally:
 				self.visited.append(item['title'])
 

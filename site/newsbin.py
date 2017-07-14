@@ -31,22 +31,23 @@ app.jinja_loader = loader
 app.secret_key = 'DEVELOPMENT'
 
 @app.route('/', methods=['GET'])
-@app.route('/<int:page>', methods=['GET'])
-def index( page=0 ):
+def index():
 	options = request.values.to_dict()
 	all_sources = defaults.default_sources()
 	all_categories = defaults.default_categories()
 
-	page = options.get('page',0)
+	try:
+		page = int( options.get('page','0') )
+	except:
+		page = 0
 
 	page_size = 40
 	end = page*page_size + page_size
 
 	with session_scope() as session:
-		categories = [ c for c in options.get('categories','').split(',') if c ] or [ c[0] for c in all_categories ]
-		sources = [ s for s in options.get('sources','').split(',') if s ] or [ s[0] for s in all_sources ]
+		categories = [ c for c in options.get('categories','').split('|') if c ] or [ c[0] for c in all_categories ]
+		sources = [ s for s in options.get('sources','').split('|') if s ] or [ s[0] for s in all_sources ]
 		search = options.get('search','')
-
 
 		# the base query is just a filter to make sure the sources are
 		# what was requested and orders them by date. Note that we don't
@@ -137,7 +138,6 @@ def article( pk ):
 				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary.strip())
 			except Exception as e:
 				log.exception(e)
-				raise
 
 	elif request.method == 'POST':
 		name = request.form.get('annotation','').strip()

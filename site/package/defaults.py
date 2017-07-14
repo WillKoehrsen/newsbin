@@ -1,4 +1,3 @@
-
 # sources to fetch articles from
 sources = [
 	('cnn','http://rss.cnn.com/rss/edition.rss','top'),
