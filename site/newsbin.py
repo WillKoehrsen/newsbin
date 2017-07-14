@@ -126,15 +126,18 @@ def article( pk ):
 		with session_scope() as session:
 			try:
 				article = session.query( models.Article ).get( pk )
-				if article.blacklist:
+
+				if article and article.blacklist:
 					blacklist = article.blacklist.replace(';',', ')
 				else:
 					blacklist = ''
+
 				try:
 					summary = regex.sub('<.*?>','',article.content[:160].replace('</cite>','</cite> '))
 				except Exception as e:
 					log.exception(e)
 					summary = article.content[:100]
+
 				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary.strip())
 			except Exception as e:
 				log.exception(e)
