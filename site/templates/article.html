@@ -96,7 +96,7 @@
 				<div class="article-title" aria-label="article title">{{ article.title }}</div>
 				<table class="information" aria-label="article information">
 					<tr>
-						<td>on <a href="{{ article.link }}" target="_blank" rel="noopener" aria-label="original article">{{ article.get_label() }}</a></td>
+						<td>on <a href="{{ article.link }}" target="_blank" rel="noopener" aria-label="original article">{{ article.get_source() }}</a></td>
 						<td>fetched: {{ article.fetched.strftime('%Y-%m-%d') }}</td>
 						<td></td>
 						<td></td>
@@ -107,7 +107,7 @@
 				</div>
 				<table class="information" aria-hidden="true">
 					<tr>
-						<td>on <a href="{{ article.link }}" target="_blank" rel="noopener" aria-label="original article">{{ article.get_label() }}</a></td>
+						<td>on <a href="{{ article.link }}" target="_blank" rel="noopener" aria-label="original article">{{ article.get_source() }}</a></td>
 						<td>id: {{ article.id }}</td>
 						<td></td>
 						<td></td>

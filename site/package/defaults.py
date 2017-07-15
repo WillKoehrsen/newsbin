@@ -138,6 +138,21 @@ labels = {
 	'us':'U.S.',
 }
 
+def _categories():
+	results = []
+	for source, feed, categories in sources:
+		for category in categories.split(','):
+			if category not in results:
+				results.append(category)
+	return sorted(results)
+
+def _sources():
+	results = []
+	for source, feed, categories in sources:
+		if source not in results:
+			results.append(source)
+	return sorted(results)
+
 def default_categories():
 	results = []
 	for source, feed, categories in sources:

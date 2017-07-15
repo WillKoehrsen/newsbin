@@ -52,10 +52,10 @@ class Article(Base):
 		self.set_blacklist( plist )
 
 	def serialize( self, **kwargs ):
-		excludes = kwargs.get('exclude',())
-		variables = { str(key):str(value) for key,value in vars( self ).items() if not key.startswith('_') and not key in excludes }
-		variables['label'] = self.get_label()
-		return json.dumps( variables )
+		variables = { key:value for key,value in vars( self ).items() if not key.startswith('_') }
+		variables['source_label'] = self.get_source()
+		variables['category_label'] = self.get_category()
+		return variables
 
 	def deserialize( self, variables ):
 		try:
@@ -65,8 +65,11 @@ class Article(Base):
 		except ValueError as e:
 			raise
 
-	def get_label( self ):
+	def get_source( self ):
 		return defaults.labels.get(self.source,None)
+
+	def get_category( self ):
+		return defaults.labels.get(self.category,None) or self.category.capitalize()
 
 class Annotation(Base):
 	__tablename__ = 'annotations'

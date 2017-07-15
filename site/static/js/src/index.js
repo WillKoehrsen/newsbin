@@ -178,10 +178,10 @@ if (!NodeList.prototype.forEach) {
                 if(this.status==200){
                     var response = JSON.parse(this.responseText);
                     for( var i = 0; i < response.length; i++ ){
-                        var article = JSON.parse(response[i]);
+                        var article = response[i];
                         astr =  '<div class="category">'+ article.category_label +'</div>' +
                                 '<a class="title" href="/article/'+ article.id +'">'+ article.title +'</a>' +
-                                '<div class="date-source"><a class="source" href="'+ article.link +'" target="_blank" rel="noopener">'+ article.label +'</a>' +
+                                '<div class="date-source"><a class="source" href="'+ article.link +'" target="_blank" rel="noopener">'+ article.source_label +'</a>' +
 									 ' on '+ article.fetched.split(' ')[0] +'</div>';
 
                         aobj = document.createElement('div');
@@ -201,7 +201,7 @@ if (!NodeList.prototype.forEach) {
 
                 fetching = false;
             }
-            handle.open("GET", '/titles/' + page, true);
+            handle.open("GET", '/articles/?page=' + page + '&next', true);
             handle.send();
         }
     }
