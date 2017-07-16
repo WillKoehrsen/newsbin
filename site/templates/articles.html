@@ -96,7 +96,7 @@
 					{% for article in articles %}
 					<div class="titlecard">
 							<div class="category">{{ article.get_category() }}</div>
-							<a class="title" href="/article/{{ article.id }}">{{ article.title }}</a>
+							<a class="title" href="/articles/{{ article.id }}" target="_blank">{{ article.title }}</a>
 							<div class="date-source"><a class="source" href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_source() }}</a>
 								 on {{ article.fetched.strftime('%Y-%m-%d') }}</div>
 					</div>

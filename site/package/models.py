@@ -53,6 +53,7 @@ class Article(Base):
 
 	def serialize( self, **kwargs ):
 		variables = { key:value for key,value in vars( self ).items() if not key.startswith('_') }
+		variables['fetched'] = str(variables['fetched'])
 		variables['source_label'] = self.get_source()
 		variables['category_label'] = self.get_category()
 		return variables
@@ -64,6 +65,9 @@ class Article(Base):
 				self.__setattr__( key, value )
 		except ValueError as e:
 			raise
+
+	def get_intro( self ):
+		return regex.sub('<.*?>','',self.content[:160].replace('cite>','cite> '))
 
 	def get_source( self ):
 		return defaults.labels.get(self.source,None)

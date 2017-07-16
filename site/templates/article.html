@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<meta name="description"
-			  content="{{ article.fetched.strftime('%Y-%m-%d') }} - {{ summary }}" />
+			  content="{{ article.fetched.strftime('%Y-%m-%d') }} - {{ intro }}" />
 		<!-- End Meta Declarations -->
 
 		<title>newsbin - {{ article.title }}</title>
@@ -51,7 +51,7 @@
 
 		<div class="container noscript-hide">
 
-				<form action="/article/{{ article.id }}" method="post" class="menu" autocomplete="off" style="position:relative">
+				<form action="/articles/{{ article.id }}" method="post" class="menu" autocomplete="off" style="position:relative">
 
 					<input class="annotate" type="text" name="annotation" id="js-add-selection"
 						placeholder="Annotate . . ."
@@ -67,8 +67,6 @@
 					tooltip="<b>remove</b> to blacklist
 							inaccurate<br/>annotations in this article."
 					tooltip-apply="tooltip-bottom">
-
-					<a href="{{ back_path if back_path else '/' }}" class="back-btn menu-btn" >Back</a>
 
 					<svg class="eye-toggle active-toggle" id="js-eye-toggle" xmlns="http://www.w3.org/2000/svg"
 						width="24"
