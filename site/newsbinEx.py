@@ -51,7 +51,7 @@ def articles():
 	if _next:
 		args = json.loads( user_data['last'] )
 	else:
-		# conveniance assignment
+		# convenience assignment
 		args = request.values.to_dict()
 
 		# save the last request for additional requests
@@ -114,16 +114,14 @@ def articles():
 		# if we've gotten here, then we should have articles and the request didn't call for a json response
 		return render_template( 'articles.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories() )
 
-	# if we've gotten here, something failed
-	# and we need to error out.
 	abort(404)
 
 # ------------------------------------------------------------------------------
 # ARTICLES/<ID>		(GET)
 #	This view returns a single article in html or json format
-@app.route('/articles/<int:_id>', methods=['GET'])
+@app.route('/articles/<int:_id>/', methods=['GET'])
 def article_get( _id ):
-	args	= request.values.to_dict()			# conveniance assignment
+	args	= request.values.to_dict()			# convenience assignment
 	_json	= (args.get('format') == 'json')	# boolean set json response
 
 	try:
@@ -158,10 +156,11 @@ def article_get( _id ):
 #	This view handles annotation submission to articles
 #	and then redirects the viewer back to the GET version
 #	of the page.
-@app.route('/articles/<int:_id>', methods=['POST'])
+@app.route('/articles/<int:_id>/', methods=['POST'])
 def article_post( _id ):
-	args	= request.values.to_dict()						# conveniance assignment
-	back	= redirect('/articles/{}'.format(_id))			# redirec to the GET version 
+	args	= request.values.to_dict()						# convenience assignment
+	_json	= (args.get('format') == 'json')				# boolean set json redirect
+	back	= redirect('/articles/{}'.format(_id))			# redirect to the GET version
 	add		= ( 'add' in args )								# boolean add switch
 	phrase	= args.get('annotation','').strip()				# the annotation to add/remove
 
@@ -190,6 +189,93 @@ def article_post( _id ):
 		log.exception(e)
 
 	abort(404)
+
+# ------------------------------------------------------------------------------
+# ARTICLES/<ID>/ANNOTATIONS
+#	Returns annotations in json for a given article
+@app.route('/articles/<int:_id>/annotations/', methods=['GET'])
+def article_annotations( _id ):
+	try:
+		with session_scope() as session:
+			# get the article, and fetch annotations whose names
+			# are in the text of the article
+			article		= session.query( models.Article ).get( _id )
+			annotations = session.query( models.Annotation )\
+							.filter( literal(article.content)\
+							.contains(models.Annotation.name))\
+							.all()
+
+			# get the article blacklist
+			blacklist = article.get_blacklist()
+
+			# filter the results based on the blacklist
+			results = [ a.serialize() for a in annotations if a not in blacklist ]
+
+			# return json
+			return jsonify( results )
+
+	except Exception as e:
+		# failed to annotate the article, so log
+		# and fall through to the 404 page
+		log.exception(e)
+
+	abort(404)
+
+# ------------------------------------------------------------------------------
+# ANNOTATIONS
+#	Returns annotations (in json) by the page and
+#	in alphabetical order.
+@app.route('/annotations/', methods=['GET'])
+def annotations_all():
+	args 		= request.values.to_dict()	# convenience assignment
+	page 		= args.get('page')			# page of annotations to fetch
+	page_size	= int(settings.page_size)	# size of pages to return
+
+	# convert page to 'int' or '0'
+	try:	page = int(page)
+	except: page = 0
+
+	# calculate starting and ending indexes
+	start = (page*page_size)
+	end	  = (page*page_size) + page_size
+
+	try:
+		with session_scope() as session:
+			# get annotations sorted alphabetically by name,
+			# and slice to get requested page.
+			annotations = session.query( models.Annotation )\
+							.order_by( models.Annotation.name )\
+							.slice( start, end )\
+							.all()
+
+			# serialize to json and return results
+			results = [ a.serialize() for a in annotations ]
+			return jsonify( results )
+	except Exception as e:
+		# failed to fetch annotations, so log
+		# and fall through to a 404 response
+		log.exception(e)
+
+	abort(404)
+
+# ------------------------------------------------------------------------------
+# ANNOTATION
+#	Returns json for a single annotation
+@app.route('/annotations/<int:_id>', methods=['GET'])
+def annotations_one( _id ):
+	try:
+
+		with session_scope() as session:
+			annotation = session.query( models.Annotation ).get( _id )	# get annotation by id
+			return jsonify( annotation.serialize() )					# serialize to json and return
+
+	except Exception as e:
+		# failed to fetch annotation, so log
+		# and fall through to a 404 response
+		log.exception(e)
+
+	abort(404)
+
 
 # ------------------------------------------------------------------------------
 # Error Pages

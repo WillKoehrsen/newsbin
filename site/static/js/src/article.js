@@ -204,13 +204,15 @@ var annotations = (function(){
 			for( var i = 0; i < element.childNodes.length; i++ ){
 				var node = element.childNodes[i];
 				switch( node.nodeType ){
-					case 1:
+					case 1: // a nested element that we need to recurse into
 						node.innerHTML = annotate( node, values );
 						content += node.outerHTML;
 						break;
-					case 3:
-                        var regex = new RegExp(values.join('|'),'g');
-						content += node.nodeValue.replace(regex,function( value, index, text ){
+					case 3: // a textnode that we need to parse
+                        var names = [];
+                        for( var i = 0; i < values.length; i++ ){ names.push(values[i].name); }             // assemble an array of annotation names
+                        var regex = new RegExp(names.join('|'),'g');                                        // create a regex that matches all of them
+						content += node.nodeValue.replace(regex,function( value, index, text ){             // replace matches with new span
 							return '<span class="annotation" name="' + value + '">' + value + '</span>';
 						});
 						break;
@@ -231,8 +233,8 @@ var annotations = (function(){
         if(this.status==200){
             try {
                 var response = JSON.parse(this.responseText);
-                var values = response.annotations.sort(function(a,b){
-                    return b.length - a.length || a.localeCompare(b);
+                var values = response.sort(function(a,b){
+                    return b.name.length - a.name.length || a.name.localeCompare(b.name);
                 });
                 target.innerHTML = annotate( target, values );
                 annotations.refresh();
@@ -242,6 +244,6 @@ var annotations = (function(){
         }
     }
 
-    handle.open("GET", '/article/' + DATA.id + '/annotate', true);
+    handle.open("GET", '/articles/' + DATA.id + '/annotations', true);
     handle.send();
 })(document.getElementById('js-article-content'));
