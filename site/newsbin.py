@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, make_response, abort, redirect
 from flask import session as user_data
+from flask import jsonify
 
 import regex
 import os
@@ -15,8 +16,10 @@ from package import models, session_scope
 from package import politifact
 from package import wikimedia
 from package import defaults
+from package import settings
 
-log = logging.getLogger('newsbin.site')
+# global variables
+log	 = logging.getLogger('newsbin.site')
 
 # init the app
 app = Flask(__name__)
@@ -30,191 +33,227 @@ loader = jinja2.ChoiceLoader([
 app.jinja_loader = loader
 app.secret_key = 'DEVELOPMENT'
 
+# index is a stub that funnels people
+# to the listing endpoint.
 @app.route('/', methods=['GET'])
-def index():
-	options = request.values.to_dict()
-	all_sources = defaults.default_sources()
-	all_categories = defaults.default_categories()
-
-	try:
-		page = int( options.get('page','0') )
-	except:
-		page = 0
-
-	page_size = 40
-	end = page*page_size + page_size
-
-	with session_scope() as session:
-		categories = [ c for c in options.get('categories','').split('|') if c ] or [ c[0] for c in all_categories ]
-		sources = [ s for s in options.get('sources','').split('|') if s ] or [ s[0] for s in all_sources ]
-		search = options.get('search','')
-
-		# the base query is just a filter to make sure the sources are
-		# what was requested and orders them by date. Note that we don't
-		# care about the 'all' option- it's just a javascript hook to set
-		# the other values in the search form.
-		articles = session.query( models.Article )\
-			.filter( models.Article.source.in_(sources) )\
-			.filter( models.Article.category.in_(categories) )\
-			.order_by( models.Article.fetched.desc() )
-
-		# check for the search string in the title and content and then execute the query
-		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
-			.slice(0,end)\
-			.all()
-
-		data = {
-			'page':0,
-			'href':request.url,
-			'categories':categories,
-			'sources':sources,
-			'search':search,
-		}
-		user_data.clear()
-		user_data['last_search'] = data
-
-		for a in articles:
-			a.category_label = defaults.category_label( a.category )
-
-		short_page = True if len(articles) < page_size else False
-
-		return render_template('index.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories(), short_page=short_page)
-
-
-	# couldn't get a session for some reason
-	return abort(404)
-
-@app.route('/titles/<int:page>', methods=['GET'])
-def titles( page ):
-	page_size = 40
-	start = page*page_size
-	end = start + page_size
-	all_sources = [ s[0] for s in defaults.default_sources() ]
-	all_categories = [ c[0] for c in defaults.default_categories() ]
-	options = user_data['last_search']
-
-	with session_scope() as session:
-		categories = options.get('categories') or all_categories
-		sources = options.get('sources') or all_sources
-		search = options.get('search','')
-
-		articles = session.query( models.Article )\
-			.filter( models.Article.source.in_(sources) )\
-			.filter( models.Article.category.in_(categories) )\
-			.order_by( models.Article.fetched.desc() )
-
-		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
-			.slice(start,end)\
-			.all()
-
-		for a in articles:
-			a.category_label = defaults.category_label( a.category )
-
-		data = [ a.serialize(exclude=('content')) for a in articles ]
-		if data:
-			return make_response( json.dumps(data) )
-
-	return abort(404)
+def index(): return redirect('/articles/?page=0')
 
 # ------------------------------------------------------------------------------
-# ANNOTATIONS
-# 	This view returns articles complete with the article
-#	blacklist. If called as POST, this view is used to
-#	submit new annotations for consideration.
-@app.route('/article/<int:pk>', methods=['GET','POST'])
-def article( pk ):
-	try: 	back_path = user_data['last_search']['href']
-	except: back_path = None
-
-	if request.method == 'GET':
-		with session_scope() as session:
-			try:
-				article = session.query( models.Article ).get( pk )
-
-				if article and article.blacklist:
-					blacklist = article.blacklist.replace(';',', ')
-				else:
-					blacklist = ''
-
-				try:
-					summary = regex.sub('<.*?>','',article.content[:160].replace('</cite>','</cite> '))
-				except Exception as e:
-					log.exception(e)
-					summary = article.content[:100]
-
-				return render_template('article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), summary=summary.strip(), back_path=back_path)
-			except Exception as e:
-				log.exception(e)
-
-	elif request.method == 'POST':
-		name = request.form.get('annotation','').strip()
-		add = 'add' in request.form
-		if pk:
-			try:
-				try:
-					with session_scope() as session:
-						if add and name:
-							anno = wikimedia.summarize(name)
-							if anno: session.add(anno)
-				except Exception as e:
-					log.exception(e)
-
-				with session_scope() as session:
-					article = session.query( models.Article ).get( pk )
-					if add and name:
-						article.unblacklist_name( name )
-					elif name:
-						article.blacklist_name(name)
-
-					return render_template('article.html', article=article, blacklist=article.blacklist.replace(';',', '), date=datetime.datetime.now(), back_path=back_path)
-
-			except Exception as e:
-				log.exception(e)
-		else:
-			log.warning('pk missing from request: pk:{} name:{} add:{}'.format(pk,name,add))
+# ARTICLES
+#	This endpoint handles requests that need lists of articles in html
+#	or json format, and single pages of results in response to async
+#	requests (infinite scroll)
+@app.route('/articles/', methods=['GET'])
+def articles():
+	# if this is a request for additional results, and we have
+	# a saved search, then change the request context.
+	_next, args = ('next' in request.values) and ('last' in user_data), {}
+	if _next:
+		args = json.loads( user_data['last'] )
 	else:
-		log.warning('article view called with bad method (not POST/GET)')
+		# convenience assignment
+		args = request.values.to_dict()
 
-	return abort(404)
+		# save the last request for additional requests
+		user_data['last'] = json.dumps( args )
+
+
+	# define variables
+	sources 	= []								# news sources to pull from
+	categories	= []								# categories to include
+	search		= args.get('search','')				# search: in title or content
+	page		= request.values.get('page')		# page range: 0 to 'page'
+	page_size	= int(settings.page_size)			# size of pages to return
+	_json		= (args.get('format') == 'json')	# boolean set json response
+
+	# convert page number to int
+	try:	page = int(page)
+	except: page = 0
+
+	# get the number of rows to fetch
+	start = (page*page_size) if _next else 0
+	end	  = (page*page_size) + page_size
+
+	# this function parses arguments of the form:
+	# 		ARG=value1|value2|value3
+	def parse_piped_argument( _dict, _name, _fallback ):
+		result = []
+		# get requested values or, if no values
+		# were given, use fallback.
+		if _name in _dict:
+			# try to get provided values
+			for val in _dict.get(_name,'').split('|'):
+				if val and val in _fallback:
+					result.append(val)
+
+		# use '_fallback' if result is empty
+		return result or _fallback
+
+	# parse sources/categories from request arguments
+	sources		= parse_piped_argument( args, 'sources', defaults._sources() )
+	categories	= parse_piped_argument( args, 'categories', defaults._categories() )
+
+	# build and execute the database query
+	with session_scope() as session:
+		articles = session.query( models.Article )\
+					.filter( models.Article.source.in_(sources) )\
+					.filter( models.Article.category.in_(categories) )\
+					.order_by( models.Article.fetched.desc() )
+
+		# check for the search string in the title and content
+		articles = articles.filter( models.Article.title.contains(search) | models.Article.content.contains(search))\
+					.slice(start,end)\
+					.all()
+
+		# if they explicitly request json, or we're responding to
+		# a _next request, then return json.
+		if _json or _next:
+			data = [ a.serialize() for a in articles ]
+			return jsonify( data )
+
+		# if we've gotten here, then we should have articles and the request didn't call for a json response
+		return render_template( 'articles.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories() )
+
+	abort(404)
+
 # ------------------------------------------------------------------------------
-# ANNOTATIONS
-# 	These routes handle fetching info about annotations
-#		1. annotate:		fetch annotations for article
-#		2. annotations: 	get annotation data for modal
-@app.route('/article/<int:pk>/annotate', methods=['GET'])
-def annotate( pk ):
+# ARTICLES/<ID>		(GET)
+#	This view returns a single article in html or json format
+@app.route('/articles/<int:_id>/', methods=['GET','POST'])
+def article( _id ):
+	args	= request.values.to_dict()			# convenience assignment
+	_json	= (args.get('format') == 'json')	# boolean set json response
+	add		= ( 'add' in args )					# boolean add switch
+	phrase	= args.get('annotation','').strip()	# the annotation to add/remove
+
+	try:
+		# try to fetch the article with pk '_id'
+		with session_scope() as session:
+			article = session.query( models.Article ).get( _id )
+			if request.method == 'POST':
+				existing = session.query( models.Annotation.id ).filter_by(name=phrase).scalar() is not None
+
+				# if the annotation doesn't exist, try to create it
+				if not existing:
+					annotation = wikimedia.summarize( phrase )
+
+					if annotation:									# if the annotation was created:
+						if add: article.unblacklist_name( phrase )	# 	unblacklist if we're adding it
+						session.add(annotation)						# 	add it to the session
+						existing = True
+
+
+				if existing and not add:
+					article.blacklist_name( phrase )				# exists + removing = blacklist it
+
+			if _json:
+				# if they request json, return article as json
+				return jsonify( article.serialize() )
+
+			# try to build a display-ready list of blacklisted terms
+			try:	blacklist = ', '.join(article.get_blacklist())
+			except:	blacklist = ''
+
+			# try to get a plain-text meta-description (for google)
+			try:	intro = article.get_intro()
+			except:	intro = article.content[:100]
+
+			# return the article as html
+			return render_template( 'article.html', article=article, blacklist=blacklist, date=datetime.datetime.now(), intro=intro )
+
+	except Exception as e:
+		# couldn't fetch, so log the error and
+		# fall through to a 404 page
+		log.exception(e)
+
+	abort(404)
+
+# ------------------------------------------------------------------------------
+# ARTICLES/<ID>/ANNOTATIONS
+#	Returns annotations in json for a given article
+@app.route('/articles/<int:_id>/annotations/', methods=['GET'])
+def article_annotations( _id ):
 	try:
 		with session_scope() as session:
-			article = session.query( models.Article ).get( pk )
-			annotations = session.query( models.Annotation ).filter( literal(article.content).contains(models.Annotation.name)).all()
-			data = {
-				'annotations':[ a.name for a in annotations if a.name not in article.get_blacklist() ],
-				'blacklist':article.get_blacklist(),
-			}
-			return make_response( json.dumps(data) )
+			# get the article, and fetch annotations whose names
+			# are in the text of the article
+			article		= session.query( models.Article ).get( _id )
+			annotations = session.query( models.Annotation )\
+							.filter( literal(article.content)\
+							.contains(models.Annotation.name))\
+							.all()
+
+			# get the article blacklist
+			blacklist = article.get_blacklist()
+
+			# filter the results based on the blacklist
+			results = [ a.serialize() for a in annotations if a not in blacklist ]
+
+			# return json
+			return jsonify( results )
+
 	except Exception as e:
-		log.exception('at /article/<int:pk>/annotate: '.format(e))
-		print(e)
-		return abort(404)
+		# failed to annotate the article, so log
+		# and fall through to the 404 page
+		log.exception(e)
 
+	abort(404)
 
+# ------------------------------------------------------------------------------
+# ANNOTATIONS
+#	Returns annotations (in json) by the page and
+#	in alphabetical order.
+@app.route('/annotations/', methods=['GET'])
+def annotations_all():
+	args 		= request.values.to_dict()	# convenience assignment
+	page 		= args.get('page')			# page of annotations to fetch
+	page_size	= int(settings.page_size)	# size of pages to return
 
-@app.route('/annotations', methods=['GET'])
-def annotations():
-	name = request.values.get('name',None)
-	with session_scope() as session:
-		anno = session.query( models.Annotation ).filter( models.Annotation.name==name ).first() or wikimedia.summarize(name)
-		if not anno:
-			return abort(404)
+	# convert page to 'int' or '0'
+	try:	page = int(page)
+	except: page = 0
 
-		rating, slug = politifact.get_rating(name=anno.name,slug=anno.slug) if anno.slug else (None,None)
-		table_items = []
+	# calculate starting and ending indexes
+	start = (page*page_size)
+	end	  = (page*page_size) + page_size
 
-		if rating != None:
-			table_items.append({'key':'Truth Score','value':'{}%'.format(rating)})
+	try:
+		with session_scope() as session:
+			# get annotations sorted alphabetically by name,
+			# and slice to get requested page.
+			annotations = session.query( models.Annotation )\
+							.order_by( models.Annotation.name )\
+							.slice( start, end )\
+							.all()
 
-		data = anno.serialize(data_table=table_items)
-		return make_response(data)
+			# serialize to json and return results
+			results = [ a.serialize() for a in annotations ]
+			return jsonify( results )
+	except Exception as e:
+		# failed to fetch annotations, so log
+		# and fall through to a 404 response
+		log.exception(e)
+
+	abort(404)
+
+# ------------------------------------------------------------------------------
+# ANNOTATION
+#	Returns json for a single annotation
+@app.route('/annotations/<int:_id>/', methods=['GET'])
+def annotations_one( _id ):
+	try:
+
+		with session_scope() as session:
+			annotation = session.query( models.Annotation ).get( _id )	# get annotation by id
+			return jsonify( annotation.serialize() )					# serialize to json and return
+
+	except Exception as e:
+		# failed to fetch annotation, so log
+		# and fall through to a 404 response
+		log.exception(e)
+
+	abort(404)
+
 
 # ------------------------------------------------------------------------------
 # Error Pages
