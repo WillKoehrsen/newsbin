@@ -52,15 +52,14 @@ class Filter:
         # so that they'll continue to work
         root.make_links_absolute(url)
 
+        image = ''
+        if self.img:
+            print( self.img(root) )
+
         # because who needs React-generated comments
         etree.strip_tags(root,'img',etree.Comment)
 
         content = []
-
-        image = ''
-        if self.img:
-            pass
-            #print( self.img(root) )
 
         # if we have a selector and a whitelist
         # then we can work.
@@ -133,7 +132,7 @@ class Filter:
 #   Add new filters by finding the css selector necessary
 #   to pick out the top-level blocks of the article text.
 sources = {
-    'cnn':Filter(css='.zn-body__paragraph, #storytext p',img='.media__image'),
+    'cnn':Filter(css='.zn-body__paragraph, #storytext p',img='.media__video--thumbnail img.media__image'),
     'cnbc':Filter(css='div[itemprop=articleBody]>p, .article-body>p'),
     'nytimes':Filter(css='.story-body-text.story-content'),
     'washpo':Filter(css='article[itemprop=articleBody]>p, .row .span8>p:not(.interstitial-link), article.pg-article>p:not(.interstitial-link)'),
