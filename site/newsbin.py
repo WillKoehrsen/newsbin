@@ -138,13 +138,12 @@ def article( _id ):
 					annotation = wikimedia.summarize( phrase )
 
 					if annotation:									# if the annotation was created:
-						if add: article.unblacklist_name( phrase )	# 	unblacklist if we're adding it
 						session.add(annotation)						# 	add it to the session
 						existing = True
 
-
-				if existing and not add:
-					article.blacklist_name( phrase )				# exists + removing = blacklist it
+				if existing:
+					if add:	article.unblacklist_name( phrase )		# exists + add = unblacklist
+					else: article.blacklist_name( phrase )			# exists + removing = blacklist it
 
 			if _json:
 				# if they request json, return article as json
@@ -187,7 +186,7 @@ def article_annotations( _id ):
 			blacklist = article.get_blacklist()
 
 			# filter the results based on the blacklist
-			results = [ a.serialize() for a in annotations if a not in blacklist ]
+			results = [ a.serialize() for a in annotations if a.name not in blacklist ]
 
 			# return json
 			return jsonify( results )
