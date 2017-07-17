@@ -32,6 +32,10 @@ class Filter:
         # we need css selectors in order to parse articles
         self.css = CSSSelector( kwargs['css'] )
 
+        image_selector = kwargs.get('img',None)
+        if image_selector:
+            self.img = CSSSelector( image_selector )
+
         # the whitelist is for child elements we want to retain
         # html for
         self.whitelist = kwargs.get('whitelist',('a','b','i','cite','br'))
@@ -53,6 +57,11 @@ class Filter:
 
         content = []
 
+        image = ''
+        if self.img:
+            pass
+            #print( self.img(root) )
+
         # if we have a selector and a whitelist
         # then we can work.
         if self.css and self.whitelist:
@@ -71,7 +80,7 @@ class Filter:
                 log.exception('{} in filter at: {}'.format(type(e),url))
 
         # return a list of paragraphs
-        return content
+        return {'content':content,'image':image}
 
     def __parse( self, block ):
         """Parse a single top-level block"""
@@ -124,7 +133,7 @@ class Filter:
 #   Add new filters by finding the css selector necessary
 #   to pick out the top-level blocks of the article text.
 sources = {
-    'cnn':Filter(css='.zn-body__paragraph, #storytext p'),
+    'cnn':Filter(css='.zn-body__paragraph, #storytext p',img='.media__image'),
     'cnbc':Filter(css='div[itemprop=articleBody]>p, .article-body>p'),
     'nytimes':Filter(css='.story-body-text.story-content'),
     'washpo':Filter(css='article[itemprop=articleBody]>p, .row .span8>p:not(.interstitial-link), article.pg-article>p:not(.interstitial-link)'),
@@ -136,42 +145,6 @@ sources = {
 
 
 if __name__=='__main__':
-    import defaults
-    import feedparser
-
-    limit = 20
-    count = 0
-    links = {}
-    for source, feed, tags in defaults.sources:
-        if source not in links:
-            links[source] = []
-
-        if source in sources:
-            data = feedparser.parse(feed)
-            for item in data['items']:
-                links[source].append( (item['link'],item['title'],'item{}'.format(count)) )
-                count += 1
-
-    with open('output.html','w') as out:
-        out.write('<style>div{ width:500px; margin:10px auto 10px auto; }</style>')
-
-        out.write('<div>')
-        for source in links:
-            if source in sources:
-                out.write('<h1>{}</h1>'.format(source))
-                for idx, item in enumerate(links[source]):
-                    link, title, tag = item
-                    if idx <= limit:
-                        out.write( '<a href="#{}">{}</a><br/><br/>'.format(tag,title) )
-
-        out.write('</div>')
-        out.write('<br/><hr/><br/>')
-
-        for source in links:
-            if source in sources:
-                for idx, item in enumerate(links[source]):
-                    link, title, tag = item
-                    if idx <= limit:
-                        doc = requests.get(link).text
-                        content = ''.join([ '<p>{}</p>'.format(p) for p in sources[source]( doc, link ) ])
-                        out.write('<div><a name="{}"></a><hr/><a href="{}" target="_blank"><h3>{}</h3></a>{}<hr/></div>'.format(tag,link,title,content))
+    cnn = sources['cnn']
+    response = requests.get('http://www.cnn.com/2017/07/16/politics/trump-defends-trump-jr-twitter/index.html')
+    content, img = cnn(response.text,url='http://www.cnn.com/')

@@ -86,7 +86,7 @@ class NewsbinEngine:
 					# fetch and filter the article, and then update
 					# with additional information (content, for one)
 					response = requests.get( article.link, verify=False )
-					content = sfilter( response.text, url=article.link )
+					content,image = sfilter( response.text, url=article.link )
 
 					article.content = '\n'.join([ '<p>{}</p>'.format(p) for p in content if p.strip() ])
 					article.fetched = datetime.now()
@@ -109,7 +109,7 @@ class NewsbinEngine:
 				log.exception('{} exception- info follows'.format(type(e)))
 				log.debug('title: {}'.format(title))
 				log.debug('link: {}'.format(link))
-				log.debug('source: {}'.format(source)) 
+				log.debug('source: {}'.format(source))
 
 			finally:
 				self.visited.append(item['title'])
