@@ -35,41 +35,34 @@ var modal = (function( target ){
 			for(ref in target.refs){ target.refs[ref].innerHTML = ''; }
 			target.style.display = 'none';
 		},
-		open:function( name ){
-			var handle = new XMLHttpRequest();
+		open:function( annotation ){
 			var refs = target.refs;
 
-			handle.onload = function(){
-				if(this.status==200){
-                    handlers.close();
-					var response = JSON.parse(this.responseText);
-					refs.close.innerHTML = 'Close';
-					refs.title.innerHTML = response.name;
-					refs.image.innerHTML = '<img src="'+response.image+'"/>';
+            handlers.close();
 
-					var content = response.summary.split('\n\n')
-					content.forEach(function( p ){
-						refs.content.innerHTML += '<p>'+p+'</p>';
-					});
+			refs.close.innerHTML = 'Close';
+			refs.title.innerHTML = annotation.name;
+			refs.image.innerHTML = '<img src="'+annotation.image+'"/>';
 
-					refs.links.innerHTML += '<a href="https://en.wikipedia.org/wiki/'+response.name+'" target="_blank">on wikipedia</a>';
-					if(response.slug && response.slug!='None'){ refs.links.innerHTML += '<a href="http://www.politifact.com/personalities/'+response.slug+'" target="_blank">on politifact</a>'; }
+			var content = annotation.summary.split('\n\n')
+			content.forEach(function( p ){
+				refs.content.innerHTML += '<p>'+p+'</p>';
+			});
 
-					response.data_table.forEach(function( item ){
-						refs.data.innerHTML += '<div class="modal-data-item">\
-													<div>'+item.key+'</div>\
-													<div>'+item.value+'</div>\
-												</div>';
-                        tooltips.add(refs.data.lastChild);
-                    });
-					target.style.display = 'flex';
-				} else {
-					console.log(this.status);
-				}
-			}
+			refs.links.innerHTML += '<a href="https://en.wikipedia.org/wiki/'+annotation.name+'" target="_blank">on wikipedia</a>';
+			if(annotation.slug && annotation.slug!='None'){ refs.links.innerHTML += '<a href="http://www.politifact.com/personalities/'+annotation.slug+'" target="_blank">on politifact</a>'; }
 
-			handle.open("GET", '/annotations?name=' + name, true);
-			handle.send();
+            data = annotation.data_table;
+            for( var i=0; i<data.length; i++ ){
+                var item = data[i];
+                refs.data.innerHTML += '<div class="modal-data-item">\
+											<div>'+item.key+'</div>\
+											<div>'+item.value+'</div>\
+										</div>';
+                //tooltips.add(refs.data.lastChild);
+            }
+
+			target.style.display = 'flex';
 		},
 	}
 
@@ -83,10 +76,12 @@ var modal = (function( target ){
 		event handler that launches the modal window.
 */
 var annotations = (function(){
+    var storage = [];
     var active = true;
     function open_modal( _event ){
         if(active){
-            modal.open(this.getAttribute('name'));
+            var anno = handlers.get( this.getAttribute('id') );
+            modal.open( anno );
         }
     }
 
@@ -99,6 +94,7 @@ var annotations = (function(){
                 annotations[i].classList.remove('highlight');
     		}
         },
+
         enable:function(){
             active = true;
             var annotations = document.getElementsByClassName('annotation')
@@ -106,6 +102,7 @@ var annotations = (function(){
                 annotations[i].classList.add('highlight');
     		}
         },
+
         refresh:function(){
             var annotations = document.getElementsByClassName('annotation')
             var toggle = document.getElementById('js-eye-toggle');
@@ -118,6 +115,26 @@ var annotations = (function(){
                 }
             }
         },
+
+        add:function( annotation ){
+            for(var i=0; i<storage.length; i++){
+                if(annotation.id==storage[i].id){ return false; }
+            }
+            storage.push( annotation );
+            return true;
+        },
+
+        get:function( id ){
+            for(var i=0; i<storage.length; i++){
+                var item = storage[i];
+                if(id==item.id){ return item; }
+            }
+        },
+
+        test:function(){
+            console.log(storage);
+        },
+
     }
     handlers.refresh();
     handlers.enable();
@@ -198,22 +215,28 @@ var annotations = (function(){
 */
 (function( target ){
 
-	function annotate( element, values ){
+	function annotate( element, regex, annos ){
 		if(element.tagName!='A'){
 			var content = '';
 			for( var i = 0; i < element.childNodes.length; i++ ){
 				var node = element.childNodes[i];
 				switch( node.nodeType ){
 					case 1: // a nested element that we need to recurse into
-						node.innerHTML = annotate( node, values );
+						node.innerHTML = annotate( node, regex, annos );
 						content += node.outerHTML;
 						break;
 					case 3: // a textnode that we need to parse
-                        var names = [];
-                        for( var i = 0; i < values.length; i++ ){ names.push(values[i].name); }             // assemble an array of annotation names
-                        var regex = new RegExp(names.join('|'),'g');                                        // create a regex that matches all of them
 						content += node.nodeValue.replace(regex,function( value, index, text ){             // replace matches with new span
-							return '<span class="annotation" name="' + value + '">' + value + '</span>';
+                            var current = null;
+                            for( var i = 0; i < annos.length; i++){
+                                var anno = annos[i];
+                                if(anno.name==value){
+                                    current = anno;
+                                    break;
+                                }
+                            }
+                            annotations.add(current);
+                            return '<span class="annotation" id="' + current.id + '">' + value + '</span>';
 						});
 						break;
 					default:
@@ -233,10 +256,19 @@ var annotations = (function(){
         if(this.status==200){
             try {
                 var response = JSON.parse(this.responseText);
+
+                // sort by length and alphabetically if the same length
                 var values = response.sort(function(a,b){
                     return b.name.length - a.name.length || a.name.localeCompare(b.name);
                 });
-                target.innerHTML = annotate( target, values );
+
+                // build names
+                names = []
+                for(var i = 0; i < values.length; i++){
+                    names.push(values[i].name);
+                }
+                var regex = new RegExp(names.join('|'),'g');
+                target.innerHTML = annotate( target, regex, values );
                 annotations.refresh();
             } catch(err){
                 console.log(err);

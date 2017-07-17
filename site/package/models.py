@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import json
 
 from package import defaults
+from package import politifact
 
 # ------------------------------------------------------------------------------
 # HOUSEKEEPING
@@ -95,7 +96,16 @@ class Annotation(Base):
 		for key, value in kwargs.items():
 			setattr(self, key, value)
 
+	def get_ratings( self ):
+		table_items = []
+		rating, slug = politifact.get_rating(name=self.name,slug=self.slug)
+		if rating != None:
+			table_items.append({'key':'Truth Score','value':'{}%'.format(rating)})
+
+		return table_items
+
 	def serialize( self, **kwargs ):
 		variables = { key:value for key,value in vars( self ).items() if not key.startswith('_') }
+		variables['data_table'] = self.get_ratings()
 		variables.update(kwargs)
 		return variables

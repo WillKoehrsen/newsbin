@@ -119,15 +119,32 @@ def articles():
 # ------------------------------------------------------------------------------
 # ARTICLES/<ID>		(GET)
 #	This view returns a single article in html or json format
-@app.route('/articles/<int:_id>/', methods=['GET'])
-def article_get( _id ):
+@app.route('/articles/<int:_id>/', methods=['GET','POST'])
+def article( _id ):
 	args	= request.values.to_dict()			# convenience assignment
 	_json	= (args.get('format') == 'json')	# boolean set json response
+	add		= ( 'add' in args )					# boolean add switch
+	phrase	= args.get('annotation','').strip()	# the annotation to add/remove
 
 	try:
 		# try to fetch the article with pk '_id'
 		with session_scope() as session:
 			article = session.query( models.Article ).get( _id )
+			if request.method == 'POST':
+				existing = session.query( models.Annotation.id ).filter_by(name=phrase).scalar() is not None
+
+				# if the annotation doesn't exist, try to create it
+				if not existing:
+					annotation = wikimedia.summarize( phrase )
+
+					if annotation:									# if the annotation was created:
+						if add: article.unblacklist_name( phrase )	# 	unblacklist if we're adding it
+						session.add(annotation)						# 	add it to the session
+						existing = True
+
+
+				if existing and not add:
+					article.blacklist_name( phrase )				# exists + removing = blacklist it
 
 			if _json:
 				# if they request json, return article as json
@@ -146,45 +163,6 @@ def article_get( _id ):
 
 	except Exception as e:
 		# couldn't fetch, so log the error and
-		# fall through to a 404 page
-		log.exception(e)
-
-	abort(404)
-
-# ------------------------------------------------------------------------------
-# ARTICLES/<ID>		(POST)
-#	This view handles annotation submission to articles
-#	and then redirects the viewer back to the GET version
-#	of the page.
-@app.route('/articles/<int:_id>/', methods=['POST'])
-def article_post( _id ):
-	args	= request.values.to_dict()						# convenience assignment
-	_json	= (args.get('format') == 'json')				# boolean set json redirect
-	back	= redirect('/articles/{}'.format(_id))			# redirect to the GET version
-	add		= ( 'add' in args )								# boolean add switch
-	phrase	= args.get('annotation','').strip()				# the annotation to add/remove
-
-	try:
-		# try to create new annotation and reload
-		with session_scope() as session:
-			article		= session.query( models.Article ).get( _id )
-			existing	= session.query( models.Annotation.id ).filter_by(name=phrase).scalar() is not None
-
-			# if the annotation doesn't exist, try to create it
-			if not existing:
-				annotation	= wikimedia.summarize( phrase )
-
-				if annotation:									# if the annotation was created:
-					if add: article.unblacklist_name( phrase )	# 	unblacklist if we're adding it
-					session.add(annotation)						# 	add it to the session
-
-			elif not add:
-				article.blacklist_name( phrase )				# exists + removing = blacklist it
-
-			return back
-
-	except Exception as e:
-		# couldn't submit, so log the error and
 		# fall through to a 404 page
 		log.exception(e)
 
@@ -261,7 +239,7 @@ def annotations_all():
 # ------------------------------------------------------------------------------
 # ANNOTATION
 #	Returns json for a single annotation
-@app.route('/annotations/<int:_id>', methods=['GET'])
+@app.route('/annotations/<int:_id>/', methods=['GET'])
 def annotations_one( _id ):
 	try:
 

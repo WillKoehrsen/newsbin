@@ -180,7 +180,7 @@ if (!NodeList.prototype.forEach) {
                     for( var i = 0; i < response.length; i++ ){
                         var article = response[i];
                         astr =  '<div class="category">'+ article.category_label +'</div>' +
-                                '<a class="title" href="/article/'+ article.id +'">'+ article.title +'</a>' +
+                                '<a class="title" href="/articles/'+ article.id +'/" target="_blank">'+ article.title +'</a>' +
                                 '<div class="date-source"><a class="source" href="'+ article.link +'" target="_blank" rel="noopener">'+ article.source_label +'</a>' +
 									 ' on '+ article.fetched.split(' ')[0] +'</div>';
 
