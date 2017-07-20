@@ -16,25 +16,8 @@ log = logging.getLogger('newsbin.engine')
 class Filter:
 
     def __init__( self, *args, **kwargs ):
-        """Filter article text from news websites.
-
-        This class should be initialized with a string containing a comma separated
-        series of valid CSS3 selectors that represent the top-level blocks from which
-        to capture plain text.
-
-        Keyword arguments:
-            (str)   css:            CSS3 selector   (required)
-            (tuple) whitelist:      HTML tags       (optional)
-            (tuple) attr_whitelist: Attribute names (optional)
-
-        """
-
         # we need css selectors in order to parse articles
         self.css = CSSSelector( kwargs['css'] )
-
-        image_selector = kwargs.get('img',None)
-        if image_selector:
-            self.img = CSSSelector( image_selector )
 
         # the whitelist is for child elements we want to retain
         # html for
@@ -52,19 +35,13 @@ class Filter:
         # so that they'll continue to work
         root.make_links_absolute(url)
 
-        image = ''
-        if self.img:
-            print( self.img(root) )
-
-        # because who needs React-generated comments
-        etree.strip_tags(root,'img',etree.Comment)
 
         content = []
 
         # if we have a selector and a whitelist
         # then we can work.
         if self.css and self.whitelist:
-
+            etree.strip_tags(root,'img',etree.Comment)  # remove img/comment tags
             try:
                 # get each matching block that we want
                 # the text from
@@ -79,7 +56,7 @@ class Filter:
                 log.exception('{} in filter at: {}'.format(type(e),url))
 
         # return a list of paragraphs
-        return {'content':content,'image':image}
+        return content
 
     def __parse( self, block ):
         """Parse a single top-level block"""
@@ -132,18 +109,18 @@ class Filter:
 #   Add new filters by finding the css selector necessary
 #   to pick out the top-level blocks of the article text.
 sources = {
-    'cnn':Filter(css='.zn-body__paragraph, #storytext p',img='.media__video--thumbnail img.media__image'),
-    'cnbc':Filter(css='div[itemprop=articleBody]>p, .article-body>p'),
-    'nytimes':Filter(css='.story-body-text.story-content'),
-    'washpo':Filter(css='article[itemprop=articleBody]>p, .row .span8>p:not(.interstitial-link), article.pg-article>p:not(.interstitial-link)'),
-    'reuters':Filter(css='#article-text>p, #article-text>.article-prime'),
-    'foxnews':Filter(css='.article-text>p, .article-body>p'),
-    'wired':Filter(css='article.article-body-component>div>p'),
-    'techcrunch':Filter(css='div.article-entry>p'),
+    'cnn':Filter(css='.zn-body__paragraph, #storytext p',),
+    'cnbc':Filter(css='div[itemprop=articleBody]>p, .article-body>p',),
+    'nytimes':Filter(css='.story-body-text.story-content',),
+    'washpo':Filter(css='article[itemprop=articleBody]>p, .row .span8>p:not(.interstitial-link), article.pg-article>p:not(.interstitial-link)',),
+    'reuters':Filter(css='#article-text>p, #article-text>.article-prime',),
+    'foxnews':Filter(css='.article-text>p, .article-body>p',),
+    'wired':Filter(css='article.article-body-component>div>p',),
+    'techcrunch':Filter(css='div.article-entry>p',),
 }
 
 
 if __name__=='__main__':
     cnn = sources['cnn']
-    response = requests.get('http://www.cnn.com/2017/07/16/politics/trump-defends-trump-jr-twitter/index.html')
-    content, img = cnn(response.text,url='http://www.cnn.com/')
+    response = requests.get('http://money.cnn.com/2017/07/17/technology/culture/sexual-harassment-tech-reaction/index.html?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+rss%2Fmoney_latest+%28CNNMoney%3A+Latest+News%29')
+    content, test = cnn(response.text,url='http://www.cnn.com/')

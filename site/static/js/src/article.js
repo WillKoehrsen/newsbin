@@ -181,8 +181,8 @@ var annotations = (function(){
 		This adds a 'click' eventlistener to the 'eye' in the menu
         that toggles the display of annotations in the article
 */
-(function( eye, eye_btn ){
-    if( eye && eye_btn ){
+(function( eye ){
+    if( eye ){
         if(eye.id in sessionStorage){
             var initial = sessionStorage.getItem(eye.id)!='false';
             if(initial){
@@ -193,20 +193,17 @@ var annotations = (function(){
                 annotations.disable();
             }
         }
-        eye_btn.addEventListener('click',function(){
-            if(eye.classList.toggle('active-toggle')){
+        eye.addEventListener('click',function(){
+            if(this.classList.toggle('active-toggle')){
                 annotations.enable();
-                window.sessionStorage.setItem(eye.id,true);
+                window.sessionStorage.setItem(this.id,true);
             } else {
                 annotations.disable();
-                window.sessionStorage.setItem(eye.id,false);
+                window.sessionStorage.setItem(this.id,false);
             }
         });
     }
-})(
-    document.getElementById('js-eye-toggle'),
-    document.getElementById('js-eye-btn')
-);
+})(document.getElementById('js-eye-toggle'));
 
 /* -----------------------------------------------------------------------------
 	ANNOTATE ARTICLE
@@ -256,20 +253,21 @@ var annotations = (function(){
         if(this.status==200){
             try {
                 var response = JSON.parse(this.responseText);
+                if(response.length>0){
+                    // sort by length and alphabetically if the same length
+                    var values = response.sort(function(a,b){
+                        return b.name.length - a.name.length || a.name.localeCompare(b.name);
+                    });
 
-                // sort by length and alphabetically if the same length
-                var values = response.sort(function(a,b){
-                    return b.name.length - a.name.length || a.name.localeCompare(b.name);
-                });
-
-                // build names
-                names = []
-                for(var i = 0; i < values.length; i++){
-                    names.push(values[i].name);
+                    // build names
+                    names = []
+                    for(var i = 0; i < values.length; i++){
+                        names.push(values[i].name);
+                    }
+                    var regex = new RegExp(names.join('|'),'g');
+                    target.innerHTML = annotate( target, regex, values );
+                    annotations.refresh();
                 }
-                var regex = new RegExp(names.join('|'),'g');
-                target.innerHTML = annotate( target, regex, values );
-                annotations.refresh();
             } catch(err){
                 console.log(err);
             }

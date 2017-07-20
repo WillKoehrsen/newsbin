@@ -26,28 +26,12 @@
 		<!-- End Inline Styles -->
 	</head>
 	<body>
-		<noscript class="noscript-notification">
-			<div>
-				<h2>without javascript enabled, this site won't work. Sorry about that :/</h2>
-				<p>
-					If you turned javascript off by accident, you can find instructions to turn it on
-					<a href="http://www.enable-javascript.com/" target="_blank" rel="noopener">here</a>,
-					or you can upgrade your browser <a href="http://outdatedbrowser.com" target="_blank" rel="noopener">here</a>.
-					Remember to refresh the page when you're done!
-				</p>
-			</div>
-			<style>
-				.noscript-hide {
-					display:none;
-				}
-			</style>
-		</noscript>
-		<div class="container noscript-hide">
+		<div class="container">
 
 			<form class="menu" id="js-submit">
 
 				<input name="sources" id="js-sources-str" type="hidden">
-				<div class="sub-menu sources menu-btn noclear" onclick="expand( this );">
+				<div class="sub-menu sources menu-btn noclear" onclick="expand( this );" title="filter by news source">
 					Sources
 					<div class="drop-down-menu expand-me">
 						<label class="option-item all ">All<input type="checkbox" id="all_source_check" checked></label>
@@ -58,7 +42,7 @@
 				</div>
 
 				<input name="categories" id="js-categories-str" type="hidden">
-				<div class="sub-menu categories menu-btn noclear" onclick="expand( this );">
+				<div class="sub-menu categories menu-btn noclear" onclick="expand( this );" title="filter by news category">
 					Categories
 					<div class="drop-down-menu expand-me">
 						<label class="option-item all ">All<input type="checkbox" id="all_category_check" checked></label>
@@ -81,6 +65,7 @@
 					placeholder="Search . . ."
 					onfocus="this.placeholder='';"
 					onblur="this.placeholder='Search . . .';"
+					title="search for keywords in article titles and body"
 				>
 
 				<input
@@ -92,12 +77,23 @@
 			</form>
 
 			<div class="main-container" id="js-titlecard-list" role="main">
+				<noscript id="noscript-notification">
+					<div>
+						<h2>without javascript enabled, this site won't work well. Sorry about that :/</h2>
+						<p>
+							If you turned javascript off by accident, you can find instructions to turn it on
+							<a href="http://www.enable-javascript.com/" target="_blank" rel="noopener">here</a>,
+							or you can upgrade your browser <a href="http://outdatedbrowser.com" target="_blank" rel="noopener">here</a>.
+							Remember to refresh the page when you're done!
+						</p>
+					</div>
+				</noscript>
 				{% if articles %}
 					{% for article in articles %}
 					<div class="titlecard">
-							<div class="category">{{ article.category_label }}</div>
-							<a class="title" href="/article/{{ article.id }}">{{ article.title }}</a>
-							<div class="date-source"><a class="source" href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_label() }}</a>
+							<div class="category">{{ article.get_category() }}</div>
+							<a class="title" href="/articles/{{ article.id }}" target="_blank">{{ article.title }}</a>
+							<div class="date-source"><a class="source" href="{{ article.link }}" target="_blank" rel="noopener">{{ article.get_source() }}</a>
 								 on {{ article.fetched.strftime('%Y-%m-%d') }}</div>
 					</div>
 					{% endfor %}
@@ -113,16 +109,16 @@
 				{% endif %}
 			</div>
 
-			<!--<div class="footer" role="contentinfo">
+			<div class="footer" role="contentinfo">
 				newsbin &copy; <span id="js-year"></span> Michael House
-			</div>-->
+			</div>
 
 		</div>
 
 		<!-- External Javascript -->
-		<script src="/static/js/ui.js"></script>
-		<script src="/static/js/src/index.js" defer></script>
-		<script src="/static/js/analytics.js" defer></script>
+		<script>{% include 'ui.js' %}</script>
+		<script>{% include 'index.js' %}</script>
+		<script>{% include 'analytics.js' %}</script>
 		<!-- End External Javascript -->
 	</body>
 </html>

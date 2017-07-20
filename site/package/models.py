@@ -18,10 +18,9 @@ class Article(Base):
 	source = Column(String(10), nullable=True)
 
 	content = Column(Text, nullable=True )
-	image = Column(Text, nullable=True )
 	blacklist = Column(Text, nullable=True)
+	description = Column(Text, nullable=True)
 	title = Column(String(250), unique=True)
-	author = Column(String(100), nullable=True)
 	category = Column(String(250), nullable=True)
 	fetched = Column(DateTime(timezone=True), nullable=True)
 

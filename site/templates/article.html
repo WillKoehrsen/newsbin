@@ -23,22 +23,6 @@
 
 	</head>
 	<body>
-		<noscript class="noscript-notification">
-			<div>
-				<h2>without javascript enabled, this site won't work. Sorry about that :/</h2>
-				<p>
-					If you turned javascript off by accident, you can find instructions to turn it on
-					<a href="http://www.enable-javascript.com/" target="_blank" rel="noopener">here</a>,
-					or you can upgrade your browser <a href="http://outdatedbrowser.com" target="_blank" rel="noopener">here</a>.
-					Remember to refresh the page when you're done!
-				</p>
-			</div>
-			<style>
-				.noscript-hide {
-					display:none;
-				}
-			</style>
-		</noscript>
 
 		<div id="js-modal-annotation" class="modal-annotation noscript-hide" >
 			<div class="modal-close" ref="close" onClick="modal.close()">Close</div>
@@ -59,14 +43,10 @@
 						onblur="this.placeholder='Annotate . . .';">
 
 					<input type="submit" class="menu-btn" name="add" value="Add"
-					tooltip="<b>add</b> key phrases like 'Panama Canal' to<br/>annotate the article
-							with information from <br/>wikipedia."
-					tooltip-apply="tooltip-bottom">
+					title="Add key phrases to annotate the article with information from Wikipedia.">
 
 					<input type="submit" class="menu-btn" name="remove" value="Remove" style="margin-right:auto;"
-					tooltip="<b>remove</b> to blacklist
-							inaccurate<br/>annotations in this article."
-					tooltip-apply="tooltip-bottom">
+					title="Blacklist annotations for this article.">
 
 					<svg class="eye-toggle active-toggle" id="js-eye-toggle" xmlns="http://www.w3.org/2000/svg"
 						width="24"
@@ -82,12 +62,6 @@
 						<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
 						<circle cx="12" cy="12" r="3"/>
 					</svg>
-					<span
-						id="js-eye-btn"
-						class="eye-toggle-block"
-						tooltip="toggle annotations on and off"
-						tooltip-apply="tooltip-left">
-					</span>
 				</form>
 
 			<div class="sub-container main-container article" role="main">
@@ -100,6 +74,17 @@
 						<td></td>
 					</tr>
 				</table>
+				<noscript id="noscript-notification">
+					<div>
+						<h2>without javascript enabled, this site won't work well. Sorry about that :/</h2>
+						<p>
+							If you turned javascript off by accident, you can find instructions to turn it on
+							<a href="http://www.enable-javascript.com/" target="_blank" rel="noopener">here</a>,
+							or you can upgrade your browser <a href="http://outdatedbrowser.com" target="_blank" rel="noopener">here</a>.
+							Remember to refresh the page when you're done!
+						</p>
+					</div>
+				</noscript>
 				<div class="article-content" id="js-article-content" aria-label="article content">
 					{{ article.content|safe }}
 				</div>
@@ -124,9 +109,9 @@
 		</script>
 
 		<!-- External Javascript -->
-		<script src="/static/js/ui.js"></script>
-		<script src="/static/js/src/article.js" defer></script>
-		<script src="/static/js/analytics.js" defer></script>
+		<script>{% include 'ui.js' %}</script>
+		<script>{% include 'article.js' %}</script>
+		<script>{% include 'analytics.js' %}</script>
 		<!-- End External Javascript -->
 	</body>
 </html>

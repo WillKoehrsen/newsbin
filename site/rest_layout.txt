@@ -1,5 +1,0 @@
-/articles							?page=<NUM>&format=json&next	list all articles (index page, format defaults to html)
-/articles/<int:id> 					?format=json					view single article (article page, format defaults to html)
-/articles/<int:id>/annotations 		?								list annotations for article (in json)
-/annotations						?								list all annotations (in json)
-/annotations/<int:id>				?								view single annotation (in json)

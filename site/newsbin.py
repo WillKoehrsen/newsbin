@@ -24,10 +24,11 @@ log	 = logging.getLogger('newsbin.site')
 # init the app
 app = Flask(__name__)
 
-# custom loader so we can inline css
+# custom loader
 loader = jinja2.ChoiceLoader([
 	app.jinja_loader,
-	jinja2.FileSystemLoader('static/css/'),
+	jinja2.FileSystemLoader('static/css/'),	# so that we can inline css
+	jinja2.FileSystemLoader('static/js/'),	# for inline javascript
 ])
 
 app.jinja_loader = loader
@@ -112,7 +113,7 @@ def articles():
 			return jsonify( data )
 
 		# if we've gotten here, then we should have articles and the request didn't call for a json response
-		return render_template( 'articles.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories() )
+		return render_template( 'index.html', articles=articles, sources=defaults.default_sources(), categories=defaults.default_categories() )
 
 	abort(404)
 

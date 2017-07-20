@@ -7,7 +7,7 @@ import signal
 
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, InvalidSchema
 
 # ------------------------------------------------------------------------------
 # LOCALS
@@ -74,22 +74,30 @@ class NewsbinEngine:
 	def __crawl_article( self, item, meta ):
 		sfilter, source, category = meta
 		title = item.get('title')
-		link = item.get('link')
 		if title and title not in self.visited:
 			try:
 				# the title hasn't been fetched before, so try to add
 				# it to the database
 				with session_scope() as session:
-					# set initial values based off the rss item
-					article = models.Article( title=title, link=link, source=source, category=category )
+					link		= item.get('link')
+					description = item.get('description')
 
 					# fetch and filter the article, and then update
 					# with additional information (content, for one)
-					response = requests.get( article.link, verify=False )
-					content,image = sfilter( response.text, url=article.link )
+					response = requests.get( link, verify=False )
 
-					article.content = '\n'.join([ '<p>{}</p>'.format(p) for p in content if p.strip() ])
-					article.fetched = datetime.now()
+					content = sfilter( response.text, url=link )
+					content = '\n'.join([ '<p>{}</p>'.format(p) for p in content if p ])
+
+					article = models.Article(
+								title		= title,
+								content		= content,
+								description	= description,
+								fetched		= datetime.now(),
+								link		= link,
+								source		= source,
+								category	= category
+							  )
 
 					# if there is a title and some sort of content,
 					# try to add it to the database
@@ -99,17 +107,14 @@ class NewsbinEngine:
 			except IntegrityError as e:
 				pass
 
+			except requests.exceptions.InvalidSchema as e:
+				pass
+
 			except ConnectionError as e:
 				log.warning('ConnectionError at: {}'.format(link))
 
 			except Exception as e:
 				log.exception('{} exception in __crawl_article'.format(type(e)))
-
-			except requests.exceptions.InvalidSchema as e:
-				log.exception('{} exception- info follows'.format(type(e)))
-				log.debug('title: {}'.format(title))
-				log.debug('link: {}'.format(link))
-				log.debug('source: {}'.format(source))
 
 			finally:
 				self.visited.append(item['title'])
